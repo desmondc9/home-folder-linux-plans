@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+# sunshine-display — 切换 Sunshine 串流捕获的显示器
+#
+# 用法:
+#   sunshine-display            显示当前捕获的显示器
+#   sunshine-display 0|1        切换到指定显示器(0=eDP-1 笔记本内屏, 1=HDMI-A-1 小米外接屏)
+#   sunshine-display toggle     在 0/1 之间来回切换
+#
+# 原理: 修改 ~/.config/sunshine/sunshine.conf 的 output_name,然后重启 Sunshine 用户服务。
+#
+# 注意:
+#   - 本机 Sunshine 版本 2026.516 的 KMS 后端只认数字序号,不认 connector 名(名字会被
+#     解析成乱码序号导致 "Couldn't find monitor"),所以这里写数字。
+#   - 实测映射(2026-08-19, plane 枚举顺序): 0 = eDP-1 (connector 140), 1 = HDMI-A-1 (connector 137)。
+#     日志里 "Monitor N is ..." 列表的顺序会随重启翻转,不可信;真实捕获顺序以
+#     "Found connector ID" 为准,脚本切换后会自动核对并告警。
+#   - 重启会断开当前串流,需在 Moonlight 客户端重连。
+set -euo pipefail
+
+CONF="$HOME/.config/sunshine/sunshine.conf"
+SERVICE="app-dev.lizardbyte.app.Sunshine.service"
+
+# Sunshine KMS 序号 -> connector 名 / connector_id(实测,见文件头注释)
+declare -A MON_NAME=( [0]="eDP-1" [1]="HDMI-A-1" )
+declare -A MON_ID=(   [0]="140"   [1]="137" )
+declare -A MON_DESC=( [0]="笔记本内屏" [1]="小米外接显示器" )
+
+current_index() {
+    grep -E '^\s*output_name' "$CONF" 2>/dev/null | tail -1 | cut -d= -f2 | tr -d ' \t'
+}
+
+show_status() {
+    local cur; cur="$(current_index)"
+    if [[ -n "${MON_NAME[$cur]:-}" ]]; then
+        echo "当前捕获: $cur (${MON_NAME[$cur]}, ${MON_DESC[$cur]})"
+    else
+        echo "当前 output_name = '${cur:-未设置}'(无法识别)"
+    fi
+    echo "  0 = eDP-1    (笔记本内屏)"
+    echo "  1 = HDMI-A-1 (小米外接显示器)"
+}
+
+verify_capture() {
+    local idx="$1" expect_id="${MON_ID[$1]}"
+    # 启动时编码器探测会触发一次捕获初始化,日志里会打出实际捕获的 connector
+    local log
+    log="$(journalctl --user -u "$SERVICE" --since "-20 s" 2>/dev/null)"
+    if grep -q "Couldn't find monitor" <<<"$log"; then
+        echo "⚠️  Sunshine 报 'Couldn't find monitor',目标显示器可能未找到!" >&2
+        return 1
+    fi
+    local got
+    got="$(grep -oE 'Found connector ID \[[0-9]+\]' <<<"$log" | tail -1 | grep -oE '[0-9]+')"
+    if [[ "$got" == "$expect_id" ]]; then
+        echo "已核对: 实际捕获 connector $got = ${MON_NAME[$idx]} ✓"
+    elif [[ -n "$got" ]]; then
+        echo "⚠️  实际捕获 connector $got,与预期的 $expect_id (${MON_NAME[$idx]}) 不一致 —— 枚举顺序可能变了!" >&2
+        return 1
+    else
+        echo "(日志中暂无捕获记录,连接串流后可再确认)"
+    fi
+}
+
+set_output() {
+    local idx="$1"
+    touch "$CONF"
+    if grep -qE '^\s*output_name' "$CONF"; then
+        sed -i -E "s|^\s*output_name.*|output_name = $idx|" "$CONF"
+    else
+        echo "output_name = $idx" >> "$CONF"
+    fi
+    echo "已设置 output_name = $idx (${MON_NAME[$idx]}, ${MON_DESC[$idx]}),正在重启 Sunshine ..."
+    # reset-failed 防 systemd 重启限流(连续多次切换会触发 "start attempted too often")
+    systemctl --user reset-failed "$SERVICE" 2>/dev/null || true
+    if ! systemctl --user restart "$SERVICE"; then
+        echo "重启被限流,10 秒后重试 ..." >&2
+        sleep 10
+        systemctl --user reset-failed "$SERVICE" 2>/dev/null || true
+        systemctl --user restart "$SERVICE"
+    fi
+    sleep 6   # 等启动时的编码器探测完成,日志里才会有捕获记录
+    verify_capture "$idx" || true
+    echo "完成 —— 请在 Moonlight 客户端重新连接。"
+}
+
+case "${1:-}" in
+    "")        show_status ;;
+    0|1)       set_output "$1" ;;
+    toggle)
+        cur="$(current_index)"
+        [[ "$cur" == "0" ]] && set_output 1 || set_output 0
+        ;;
+    -h|--help) sed -n '2,17p' "$0" ;;
+    *) echo "未知参数: $1(只接受 0 / 1 / toggle)" >&2; exit 1 ;;
+esac
