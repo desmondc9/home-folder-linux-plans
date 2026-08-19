@@ -7,12 +7,14 @@ Wants=network-pre.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/sbin/nft -f /etc/sing-box/tproxy.nft
-ExecStart=/usr/sbin/ip rule add fwmark 1 lookup 100
-ExecStart=/usr/sbin/ip route add local 0.0.0.0/0 dev lo table 100
+ExecStart=-/usr/sbin/nft -f /etc/sing-box/tproxy.nft
+ExecStart=-/usr/sbin/ip rule add fwmark 1 lookup 100
+ExecStart=-/usr/sbin/ip route add local 0.0.0.0/0 dev lo table 100
 ExecStart=-/usr/sbin/ip -6 rule add fwmark 1 lookup 100
 ExecStart=-/usr/sbin/ip -6 route add local ::/0 dev lo table 100
-ExecStop=/usr/sbin/nft delete table inet singbox
+# tailscale0 创建后设置 accept_local(修复 martian source 静默丢弃,详见 99-exit-node.conf)
+ExecStart=-/usr/sbin/sysctl -w net.ipv4.conf.tailscale0.accept_local=1
+ExecStop=-/usr/sbin/nft delete table inet singbox
 ExecStop=-/usr/sbin/ip rule del fwmark 1 lookup 100
 ExecStop=-/usr/sbin/ip route del local 0.0.0.0/0 dev lo table 100
 ExecStop=-/usr/sbin/ip -6 rule del fwmark 1 lookup 100

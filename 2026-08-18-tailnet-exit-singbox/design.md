@@ -79,15 +79,16 @@ iPad/Android ──WireGuard P2P(IPv6,~52ms)──> 笔记本 tailscaled
 | 国内域名 | AliDNS UDP 直连 | 延迟低、CDN 返回就近节点 |
 | 国外/被墙域名 | DoH 1.1.1.1 经 VPS | 绕开 GFW DNS 投毒 |
 
-### 已知限制
+### 已解决的历史问题(根因档案)
 
-1. **tailnet 客户端经笔记本出口的 v4-only 国外域名不可达**(2026-08-19 确认,放弃修复)
-   - 现象:iPad/Android 选笔记本为 Exit Node 时,`ipv4.google.com`、`api.ipify.org` 等 v4-only 国外域名打不开;v6 双栈域名(google.com、apple.com 等)正常
-   - 根因:tailscaled netstack 模式将出口客户端 v4 包注入 tailscale0 时带 0x80000 mark,这些包在内核转发路径上无法被 nftables/iptables 的 TPROXY 或 REDIRECT 正确路由到 sing-box 监听(跨栈套接字查找失败)
-   - 已穷举:nftables TPROXY、iptables TPROXY、nftables REDIRECT(nat 链)、`TS_USERSPACE=false`(内核 TUN)、7896/7897 端口分离、MagicDNS/QUIC/DNS64——均无效
-   - **Workaround**:遇到 v4-only 国外网站时,iPad/Android 临时把 Exit Node 切到 `brave-goose-1`(VPS,v4 正常),用完切回笔记本(分流)
-   - 放弃修复理由:v4-only 国外网站极少见,workaround 成本低于继续深挖 tailscaled netstack 的内核路径
-2. **笔记本睡眠/关机时,客户端出口失效** → 客户端需切 VPS 出口或 None
+**tailnet 客户端经笔记本出口的 v4-only 国外域名不可达**(2026-08-19 定位并修复)
+
+- 现象:iPad/Android 选笔记本为 Exit Node 时,`ipv4.google.com`、`api.ipify.org` 等 v4-only 国外域名打不开;v6 双栈域名正常
+- **真正根因(内核 martian source 检查)**:TPROXY 规则给包打 fwmark 1 后,内核在路由时做源地址校验(fib_validate_source),该查找**同样使用 fwmark 1** → 命中策略路由表 100 的 `local default dev lo` → 内核判定源地址(tailnet 客户端的 100.64.x.x)"属于本机" → 从非 lo 接口(tailscale0)收到本地源地址 = martian → **静默丢弃**(无 RST、无 ICMP、不进 INPUT hook)
+- 三大谜团的解释:本机 lo 路径 v4 正常(lo 豁免 martian 检查)、v6 正常(IPv6 无此检查)、tproxy 规则计数器涨但 sing-box 收不到包(包在校验阶段被丢)
+- 诊断手段:`sysctl -w net.ipv4.conf.all.log_martians=1` 后 dmesg 出现 `martian source (src=100.64.0.x, dev=tailscale0)`;nft trace 显示包死在 mangle prerouting 之后
+- **修复**:`sysctl -w net.ipv4.conf.tailscale0.accept_local=1`(允许非 lo 接口接受"本地源"包;tailscale0 是可信内网入口,安全)。持久化:99-exit-node.conf(all/default)+ sing-box-tproxy.service ExecStart(tailscale0 创建后再设一次)
+- 走过的弯路(勿重复):0x80000 mark 豁免(实际 v4 出口流量不带此 mark)、iptables vs nftables(无关)、REDIRECT 替代 TPROXY(无关)、TS_USERSPACE=false(无关)、独立 v4 监听端口(无关)、DNS64/QUIC/MagicDNS(真实存在的独立问题,已各自修复)
 
 ## 验收标准
 

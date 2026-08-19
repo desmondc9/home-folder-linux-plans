@@ -2,23 +2,15 @@ table inet singbox {
     chain prerouting {
         type filter hook prerouting priority mangle; policy accept;
         meta mark 0xff counter return
-        # 不要在 prerouting 豁免 0x80000:tailscaled netstack 重注入的出口客户端流量带此 mark
+        # 不要在 prerouting 豁免 0x80000(2026-08-19 已删除并验证无效果)
         ip daddr 104.194.83.82 counter return
         ip daddr { 127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 100.64.0.0/10, 169.254.0.0/16, 224.0.0.0/4 } counter return
         ip6 daddr { ::1, fc00::/7, fe80::/10, fd7a:115c:a1e0::/48 } counter return
         # 本机流量(OUTPUT 打标→策略路由回环到 lo)
         iifname "lo" meta l4proto { tcp, udp } counter tproxy to :7896 meta mark set 1 accept
-        # tailnet 客户端 v4:见下方 redirect_nat 链(NAT redirect)
-        # tailnet 客户端 v6:TPROXY(已验证工作正常)
+        # tailnet 客户端流量(v4/v6)
         iifname "tailscale0" meta l4proto { tcp, udp } counter tproxy to :7896 meta mark set 1 accept
         counter accept
-    }
-    chain redirect_nat {
-        type nat hook prerouting priority dstnat; policy accept;
-        # tailnet 客户端 v4:REDIRECT(DNAT)到 100.64.0.1:7896
-        # 替代 TPROXY:TUN 接口跨栈 tproxy 套接字查找丢包(2026-08-19 事故)
-        iifname "tailscale0" meta nfproto ipv4 udp dport != 41641 counter redirect to :7897
-        iifname "tailscale0" meta nfproto ipv4 tcp dport != 41641 counter redirect to :7897
     }
     chain output {
         type route hook output priority mangle; policy accept;

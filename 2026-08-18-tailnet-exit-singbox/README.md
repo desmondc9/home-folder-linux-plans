@@ -119,7 +119,7 @@ journalctl -u tailscaled -f
 
 ## 已知限制
 
-- **tailnet 客户端经笔记本出口的 v4-only 国外域名不可达**(如 ipv4.google.com)——已穷举 TPROXY(nftables/iptables)、REDIRECT、内核 TUN 模式,均因 tailscaled netstack 在 TUN 接口上注入的 v4 包无法被正确路由到 sing-box 监听。**Workaround**:遇此类网站临时切 Exit Node 到 `brave-goose-1`(VPS,v4 正常),用完切回笔记本。详见 [design.md](design.md) 已知限制节。
+- ~~tailnet 客户端经笔记本出口的 v4-only 国外域名不可达~~ **已于 2026-08-19 修复**——根因是内核 martian source 检查:TPROXY 打的 fwmark 使内核源地址校验命中表 100 的 local default,判定 tailnet 客户端源地址"属于本机",非 lo 接口收到本地源即静默丢弃。修复 = `net.ipv4.conf.tailscale0.accept_local=1`(已持久化到 99-exit-node.conf 和 sing-box-tproxy.service 的 ExecStart,后者保证在 tailscale0 创建后设置)。诊断方法:`sysctl -w net.ipv4.conf.all.log_martians=1` 后 dmesg 可见 `martian source ... dev=tailscale0`。
 - 笔记本睡眠/关机时,客户端出口失效 → 切 VPS 出口或 None。
 
 ## 文件清单
@@ -133,3 +133,5 @@ journalctl -u tailscaled -f
 | `/etc/sysctl.d/99-exit-node.conf` | IP 转发持久化 |
 | `/etc/default/tailscaled` | tailscaled 配置(含 `TS_USERSPACE=false`) |
 | `sing-box-deploy/` | 所有配置文件的源仓库(含沙盒测试脚本),部署到 `/etc/sing-box/` 前先在这里修改 |
+
+
