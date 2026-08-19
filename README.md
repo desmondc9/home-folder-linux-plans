@@ -16,6 +16,8 @@
 | 2026-07-01 | [wine-windows-apps](./2026-07-01-wine-windows-apps/) | Wine 跑 Windows 应用（微信等）的安装、HiDPI/混合 GPU、语音输入（Pulse→ALSA 后端）与电话/摄像头/远程控制等一系列排查 |
 | 2026-07-02 | [rime-wubi-shuangpin](./2026-07-02-rime-wubi-shuangpin/) | fcitx5 + Rime 五笔/双拼输入方案：码表加载顺序、custom 补丁与重启方式 |
 | 2026-08-18 | [tailnet-exit-singbox](./2026-08-18-tailnet-exit-singbox/) | 自建 headscale tailnet 双 Exit Node（笔记本 + VPS）+ sing-box 分流网关：国内直连/国外经 VLESS-Reality/自定义规则；含两日排查的内核 martian source 根因档案（`accept_local` 修复）与完整踩坑清单 |
+| 2026-08-18 | [sunshine-moonlight-tailnet](./2026-08-18-sunshine-moonlight-tailnet/) | iPad/Android 经 Moonlight+Sunshine 串流笔记本：自建 tailnet 主链路（IPv6 P2P）+ frp 备份链路双冗余；含 0819 开机端口冲突僵尸态排查与 1 分钟看门狗，附日常运维速查 |
+| 2026-08-19 | [touchpad-three-finger-drag](./2026-08-19-touchpad-three-finger-drag/) | macOS 式三指拖拽（linux-3-finger-drag）：文件位置、dragEndDelay=250、更新方式 |
 
 ## 关于本仓库
 
