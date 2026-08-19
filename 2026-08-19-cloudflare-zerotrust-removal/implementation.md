@@ -12,7 +12,7 @@
 - [x] 归档 frp 配置 → 独立档案 [../2026-08-19-frp-config-archive/](../2026-08-19-frp-config-archive/)(最初落在本目录 `frp/`,同日应用户要求 `git mv` 移出)
 - [x] Cloudflare DNS 审计(`~/.cloudflare/tokens.jsonc` 的 dns-token,CF API 直连可达):三 zone 全量记录核对,tunnel CNAME 早已不存在;唯一残留 `edgetunnel` AAAA `100::` 为 Workers Custom Domain 只读记录
 - [x] 尝试 API 删除 edgetunnel 记录 → 错误 1043 read-only(Workers 托管记录,DNS API 不可写);dns-token 无 Workers 权限 → 转 dashboard 手动项
-- [ ] (用户手动,见 design.md「遗留」)Cloudflare dashboard 删除 tunnel、Workers 自定义域及 7 月遗留资源
+- [x] (用户 dashboard 手动,已确认)删除 `yaoshi15pro` tunnel、Edgetunnel Worker + 自定义域;CF API 复查 DNS CLEAN;`/tmp` 中转副本已清
 
 ## 变更文件表
 

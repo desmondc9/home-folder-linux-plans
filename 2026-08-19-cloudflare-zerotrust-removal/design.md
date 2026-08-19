@@ -1,6 +1,6 @@
 # 移除 Cloudflare Zero Trust 残留 + 归档 frp 配置
 
-日期:2026-08-19 · 状态:已完成,本机侧已验证(Cloudflare dashboard 侧 tunnel 删除为手动遗留项) · 实施记录:[implementation.md](implementation.md)
+日期:2026-08-19 · 状态:**全部完成**(本机 + CF 云端均已验证无残留) · 实施记录:[implementation.md](implementation.md)
 
 ## 背景与目标
 
@@ -74,11 +74,12 @@ transport 调优(相对默认值):`tcpMuxKeepaliveInterval = 10`(yamux 心跳,�
 - **dashboard 残留 tunnel 的安全面** → token 随单元文件删除而从本机消失;云端 tunnel 记录转为 inactive,无入向连接能力,风险可忽略,列为手动清理项。
 - **ssh config 删条目后无法回退** → 该入口 7 月起已由 frp(`ssh -p 6000 desmond@laptop.signal-align.com`)完全替代,无回退需求。
 
-## 遗留(手动)
+## 云端清理(2026-08-19 已全部完成并验证)
 
-- https://one.dash.cloudflare.com/ → Networks → Tunnels:删除 `yaoshi15pro` tunnel。
-- 顺带核对 2026-07-20 记录的 dashboard 清理项是否完成:CIDR route(`192.168.31.100/32`)、Device enrollment policy("Allow Desmond")、关联 Access 应用。
-- **删除 Workers 自定义域 `edgetunnel.signal-align.com`**(用户已确认不再使用):Workers & Pages → 对应 Worker → Settings → Domains & Routes → 移除该自定义域;其 AAAA `100::` 记录是 Workers 自动托管的只读记录,会随之自动删除。DNS API 删不动它(错误 1043 read-only,实测),dns-token 也无 Workers 权限。
+- [x] Networks → Tunnels:删除 `yaoshi15pro` tunnel(用户 dashboard 手动,已确认)
+- [x] Workers & Pages:删除 Edgetunnel Worker 及 `edgetunnel.signal-align.com` 自定义域(用户 dashboard 手动;DNS 记录随绑定解除自动删除,API 复查 CLEAN)
+- [x] DNS 终审:CF API 全量复查 `signal-align.com`,`edgetunnel` / `yaoshi15pro` / `cfargotunnel` 零匹配
+- 7 月遗留的 CIDR route / enrollment policy / Access app:随 Zero Trust 整体弃用而失去意义,客户端侧已无任何组件,不再单独核对
 
 ## DNS 审计结果(2026-08-19,dns-token 走 CF API)
 
