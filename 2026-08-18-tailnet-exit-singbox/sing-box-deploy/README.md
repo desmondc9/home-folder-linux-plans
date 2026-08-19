@@ -86,11 +86,21 @@ curl -4 -s https://myip.ipip.net  # 应显示家宽 IP
 
 ```bash
 cd sing-box-deploy
+
+# 1. 下载 sing-box 二进制(只需一次)
+curl -fSL -o sing-box "https://github.com/SagerNet/sing-box/releases/download/v1.13.19/sing-box-1.13.19-linux-amd64.tar.gz"
+tar -xzf sing-box-1.13.19-linux-amd64.tar.gz --strip-components=1
+rm sing-box-1.13.19-linux-amd64.tar.gz
+chmod +x sing-box
+
+# 2. 构建并运行沙盒
 podman build -t singbox-sandbox .
 podman run --rm --cap-add=NET_ADMIN localhost/singbox-sandbox
 ```
 
 详见 `sandbox-test.sh` 和 `Containerfile`。
+
+**注意**:`sing-box` 二进制文件（约 66MB）已通过 `.gitignore` 排除，不入库。每次克隆仓库后需按上述步骤重新下载。
 
 ## 参考
 

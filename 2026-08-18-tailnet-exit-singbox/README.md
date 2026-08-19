@@ -19,12 +19,17 @@
 
 ### sing-box 本体
 
+**下载地址**:https://github.com/SagerNet/sing-box/releases
+
+选择合适的版本和平台（本机使用 `linux_amd64.deb`)。当前部署版本：**v1.13.19**。
+
 ```bash
 # 1. 查当前版本
 sing-box version
 
 # 2. 下载新版(走本机 10809 代理,或临时 export https_proxy=http://127.0.0.1:10809)
-curl -fSL -o /tmp/sing-box-new.deb "https://github.com/SagerNet/sing-box/releases/download/vX.Y.Z/sing-box_X.Y.Z_linux_amd64.deb"
+# 示例:v1.13.19
+curl -fSL -o /tmp/sing-box-new.deb "https://github.com/SagerNet/sing-box/releases/download/v1.13.19/sing-box_1.13.19_linux_amd64.deb"
 
 # 3. 备份配置后升级
 sudo cp /etc/sing-box/config.json /etc/sing-box/config.json.bak.$(date +%F)
