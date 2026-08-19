@@ -13,6 +13,7 @@
 - [x] 端到端测试: `toggle` → eDP-1 ✓(connector 140 核对通过); 再 `toggle` → HDMI-A-1 ✓(connector 137)
 - [x] 触发并修复 systemd 限流; 脚本内加入 `reset-failed` + 10s 重试
 - [x] 恢复用户原配置 `output_name = 0` 并确认服务 active、捕获 connector 140
+- [x] 真机验证: iPad 和 Android Moonlight 客户端切换后串流均正常(2026-08-19 用户确认)
 
 ## 变更文件
 
