@@ -1,5 +1,5 @@
 # 沙盒二进制(66MB,不应入库)
-sing-box-deploy/sing-box
+**/sing-box-deploy/sing-box
 
 # 系统文件
 *.swp
