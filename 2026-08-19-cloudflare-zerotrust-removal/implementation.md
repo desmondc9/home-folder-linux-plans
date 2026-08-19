@@ -9,7 +9,7 @@
 - [x] 用户以 `! sudo bash /tmp/remove-cloudflare-zerotrust.sh` 交互执行(人脸解锁 sudo)→ 输出 `ALL DONE`
 - [x] 删除 `~/.ssh/config` 的 `Host yaoshi15pro.signal-align.com` 块(无需 sudo)
 - [x] 验证:无二进制 / 无包 / 无单元 / 无进程 / 无 apt 源 / 无 keyring;`frpc.service` 仍 active running
-- [x] 归档 frp 配置 → [`frp/frpc.toml`](frp/frpc.toml)、[`frp/frpc.service`](frp/frpc.service)(与线上逐字节一致,`install -m644` 副本)
+- [x] 归档 frp 配置 → 独立档案 [../2026-08-19-frp-config-archive/](../2026-08-19-frp-config-archive/)(最初落在本目录 `frp/`,同日应用户要求 `git mv` 移出)
 - [ ] (用户手动,见 design.md「遗留」)Cloudflare dashboard 删除 tunnel 及 7 月遗留资源
 
 ## 变更文件表
@@ -22,7 +22,8 @@
 | `/usr/share/keyrings/cloudflare-public-v2.gpg`、`cloudflare-warp-archive-keyring.gpg` | 删除 |
 | `/usr/local/bin/cloudflared` | 删除(指向 `/usr/bin/cloudflared` 的软链,包删后会悬空) |
 | `~/.ssh/config` | 删除 `Host yaoshi15pro.signal-align.com` 3 行块 |
-| `~/plans/2026-08-19-cloudflare-zerotrust-removal/` | 新增(本档案 + frp 快照) |
+| `~/plans/2026-08-19-cloudflare-zerotrust-removal/` | 新增(本档案) |
+| `~/plans/2026-08-19-frp-config-archive/` | 新增(frp 配置实体快照,独立成档) |
 
 ## 验证
 

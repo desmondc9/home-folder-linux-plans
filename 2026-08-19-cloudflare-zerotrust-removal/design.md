@@ -6,7 +6,7 @@
 
 - 2026-07 已把本机对外 SSH 从 Cloudflare Tunnel 迁到自建 frp(bandwagon VPS);2026-08-18 串流方案又加了自建 tailnet 主链路(见 [../2026-08-18-sunshine-moonlight-tailnet/](../2026-08-18-sunshine-moonlight-tailnet/))。CF Zero Trust 对本机已无任何价值,且 WARP 在中国大陆不可用(GFW 封 WARP/MASQUE 协议本身,2026-07 实测确认)。
 - **目标 1**:彻底移除本机 Cloudflare Zero Trust 组件——cloudflared 包、手动安装的 systemd 单元、apt 源/keyring、软链、ssh config 条目,以及 cloudflare-warp 的 rc 残留配置。
-- **目标 2**:把本机 frp 配置归档进本仓库。此前 frp 只在串流档案里被文字引用,没有配置实体副本;本次把 `frpc.toml` / `frpc.service` 原样存入 [`frp/`](./frp/)。
+- **目标 2**:把本机 frp 配置归档进本仓库——已独立成档,见 [../2026-08-19-frp-config-archive/](../2026-08-19-frp-config-archive/)。
 
 ## 范围
 
@@ -16,7 +16,7 @@
 - apt 源 `cloudflared.list` / `cloudflare-client.list` 与两个 keyring 删除
 - `/usr/local/bin/cloudflared` 软链删除
 - `~/.ssh/config` 中 `Host yaoshi15pro.signal-align.com`(ProxyCommand cloudflared)条目删除
-- frp 配置快照归档(`frp/frpc.toml`、`frp/frpc.service`)
+- frp 配置快照归档 → 独立目录 [../2026-08-19-frp-config-archive/](../2026-08-19-frp-config-archive/)(最初落在本目录 `frp/`,同日移出)
 
 **Out of scope:**
 - Cloudflare dashboard 侧资源(tunnel、Access app、7 月遗留的 CIDR route / enrollment policy / `*.cfargotunnel.com` CNAME)——需用户登录控制台手动删,见「遗留」
@@ -34,7 +34,7 @@
 
 ## frp 现状(归档对象)
 
-`frpc.service`(enabled, running)→ `/usr/local/bin/frpc -c /etc/frp/frpc.toml`;对端 frps 在 bandwagon VPS(`bandwagon.signal-align.com:7000`,token auth)。实体文件见 [`frp/`](./frp/) 目录。
+`frpc.service`(enabled, running)→ `/usr/local/bin/frpc -c /etc/frp/frpc.toml`;对端 frps 在 bandwagon VPS(`bandwagon.signal-align.com:7000`,token auth)。**实体文件与详细说明已移至 [../2026-08-19-frp-config-archive/](../2026-08-19-frp-config-archive/)**,此处只留速览。
 
 代理一览:
 
@@ -82,4 +82,5 @@ transport 调优(相对默认值):`tcpMuxKeepaliveInterval = 10`(yamux 心跳,�
 ## 参考
 
 - [../2026-08-18-sunshine-moonlight-tailnet/](../2026-08-18-sunshine-moonlight-tailnet/) —— frp 作为串流备份链路的部署记录
+- [../2026-08-19-frp-config-archive/](../2026-08-19-frp-config-archive/) —— frp 配置实体快照与运维说明
 - 记忆:`moonlight-sunshine-tailscale-setup`(frp 端口矩阵、VPS 侧 frps 配置)
