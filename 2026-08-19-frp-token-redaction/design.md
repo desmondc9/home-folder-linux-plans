@@ -1,6 +1,6 @@
 # frp token 泄露清除与机密入库禁令
 
-日期:2026-08-19 · 状态:git 侧已完成;**token 轮换用户决定暂不执行(旧值仍生效,风险见下)**
+日期:2026-08-19 · 状态:**全部完成**(git 清除 + 文档纠错 + 立规 + token 轮换)
 
 ## 背景
 
@@ -20,7 +20,7 @@
 4. **强推**:`git push -f origin main`(`f0d8ff3...1963110 forced update`)。
 5. **纠错**:修正文档中"私人仓库/入库符合惯例"的说法;frp-config-archive 快照注明"已脱敏"。
 6. **立规**:新建 [../CLAUDE.md](../CLAUDE.md),写入机密禁令与泄露处置 SOP。
-7. **轮换**(建议项,用户 2026-08-19 决定暂不执行):公开过的 token 应当作已死,生成新 token 同步改 VPS `frps.toml` + 本机 `frpc.toml`,两端重启。历史清除只止血,轮换才除根——GitHub 对已强推掉的 commit 仍有缓存期,且无法排除已被人 clone/抓取。**在轮换之前,旧 token 对任何看过公开历史的人仍然有效。**
+7. **轮换**(已完成):新 token 同步改 VPS `frps.toml` + 本机 `frpc.toml`,两端重启,旧值已失效。历史清除只止血,轮换才除根——GitHub 对已强推掉的 commit 仍有缓存期,且无法排除已被人 clone/抓取。
 
 ## 风险与缓解
 
@@ -34,4 +34,4 @@
 
 - [x] gitleaks 全历史扫描无 leak
 - [x] GitHub 远端历史已不含 token(强推完成)
-- [-] ~~新 token 双端生效~~ 用户决定暂不轮换,接受旧 token 残留风险(见上)
+- [x] 新 token 双端生效,`frpc.service`/`frps.service` active,`nc -z bandwagon.signal-align.com 6000` 全链路通
