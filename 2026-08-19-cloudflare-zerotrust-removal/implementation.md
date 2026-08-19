@@ -10,7 +10,9 @@
 - [x] 删除 `~/.ssh/config` 的 `Host yaoshi15pro.signal-align.com` 块(无需 sudo)
 - [x] 验证:无二进制 / 无包 / 无单元 / 无进程 / 无 apt 源 / 无 keyring;`frpc.service` 仍 active running
 - [x] 归档 frp 配置 → 独立档案 [../2026-08-19-frp-config-archive/](../2026-08-19-frp-config-archive/)(最初落在本目录 `frp/`,同日应用户要求 `git mv` 移出)
-- [ ] (用户手动,见 design.md「遗留」)Cloudflare dashboard 删除 tunnel 及 7 月遗留资源
+- [x] Cloudflare DNS 审计(`~/.cloudflare/tokens.jsonc` 的 dns-token,CF API 直连可达):三 zone 全量记录核对,tunnel CNAME 早已不存在;唯一残留 `edgetunnel` AAAA `100::` 为 Workers Custom Domain 只读记录
+- [x] 尝试 API 删除 edgetunnel 记录 → 错误 1043 read-only(Workers 托管记录,DNS API 不可写);dns-token 无 Workers 权限 → 转 dashboard 手动项
+- [ ] (用户手动,见 design.md「遗留」)Cloudflare dashboard 删除 tunnel、Workers 自定义域及 7 月遗留资源
 
 ## 变更文件表
 
@@ -44,3 +46,5 @@ ALL DONE
 - 该单元的 `ExecStart` 内嵌 tunnel token;归档/贴日志前注意脱敏(本次单元已删,token 即失效)。
 - 本机 sudo 需交互认证(人脸):agent 把需要 root 的步骤写成脚本,请用户用 `! sudo bash <script>` 在本会话执行,输出直接回落到对话里,衔接顺畅。
 - frp 配置含 token,只允许进这个私人 plans 仓库;快照用 `install -m644` 落到 `/tmp` 再拷贝,绕开线上文件 0600 root 权限,agent 无需 sudo 读配置。
+- **Cloudflare Workers Custom Domain 会自动建一条 DNS 记录(AAAA `100::` 橙云),该记录由 Workers 托管、DNS API 只读**——`DELETE /dns_records/:id` 报 1043 "read only"。删除路径是拆 Worker 的自定义域绑定(Domains & Routes),记录随之消失;审计 CF 残留时见到 `100::` 地址的橙云 AAAA 基本就是它。
+- `~/.cloudflare/tokens.jsonc` 的 dns-token 对 CF API 直连可用(无需代理),但只有 DNS 权限,Workers/Zero Trust 资源需另配权限或走 dashboard。

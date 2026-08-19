@@ -77,7 +77,21 @@ transport 调优(相对默认值):`tcpMuxKeepaliveInterval = 10`(yamux 心跳,�
 ## 遗留(手动)
 
 - https://one.dash.cloudflare.com/ → Networks → Tunnels:删除 `yaoshi15pro` tunnel。
-- 顺带核对 2026-07-20 记录的 dashboard 清理项是否完成:CIDR route(`192.168.31.100/32`)、Device enrollment policy("Allow Desmond")、关联 Access 应用、`*.cfargotunnel.com` 的 DNS CNAME——当时标记为「未确认完成」。
+- 顺带核对 2026-07-20 记录的 dashboard 清理项是否完成:CIDR route(`192.168.31.100/32`)、Device enrollment policy("Allow Desmond")、关联 Access 应用。
+- **删除 Workers 自定义域 `edgetunnel.signal-align.com`**(用户已确认不再使用):Workers & Pages → 对应 Worker → Settings → Domains & Routes → 移除该自定义域;其 AAAA `100::` 记录是 Workers 自动托管的只读记录,会随之自动删除。DNS API 删不动它(错误 1043 read-only,实测),dns-token 也无 Workers 权限。
+
+## DNS 审计结果(2026-08-19,dns-token 走 CF API)
+
+`signal-align.com` 全区记录逐条核对:
+
+| 记录 | 归属 | 结论 |
+|---|---|---|
+| `bandwagon` / `derp` / `laptop` / apex 的 A+AAAA → VPS | frps / headscale+DERP / frp SSH 入口 / apex | 全部在用,保留 |
+| MX ×3 + SPF + `cf2024-1._domainkey` DKIM | Cloudflare Email Routing | 现役功能,保留 |
+| `edgetunnel` AAAA `100::` 橙云(2026-06-02 建) | Edgetunnel(Workers 版 VLESS)占位记录,Workers Custom Domain 托管 | 用户确认弃用 → 删除,但需走 dashboard(见上) |
+| ~~`yaoshi15pro` / `*.cfargotunnel.com` CNAME~~ | 7 月隧道 | **已不存在,无需清理** |
+
+另两个 zone(`centific.dev`、`uthant.studio`)均为工作域名(SendGrid/Passbolt/Azure 记录),无任何 CF Tunnel/Zero Trust 残留。
 
 ## 参考
 
