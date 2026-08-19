@@ -3,7 +3,7 @@
   "rules": [
     {
       "domain": [],
-      "domain_suffix": ["signal-align.com"],
+      "domain_suffix": ["signal-align.com", "el101.cam"],
       "domain_keyword": [],
       "ip_cidr": ["104.194.83.82/32"]
     }

@@ -81,12 +81,12 @@ iPad/Android ──WireGuard P2P(IPv6,~52ms)──> 笔记本 tailscaled
 
 ### 已知限制
 
-1. **tailnet 客户端经笔记本出口的 v4-only 国外域名不可达**(2026-08-19 确认,未修复)
+1. **tailnet 客户端经笔记本出口的 v4-only 国外域名不可达**(2026-08-19 确认,放弃修复)
    - 现象:iPad/Android 选笔记本为 Exit Node 时,`ipv4.google.com`、`api.ipify.org` 等 v4-only 国外域名打不开;v6 双栈域名(google.com、apple.com 等)正常
-   - 根因:tailscaled 的 netstack 模式将出口客户端 v4 包注入 tailscale0 时带 0x80000 mark,nftables/iptables 的 TPROXY 和 REDIRECT 都无法在 TUN 接口上完成跨栈套接字查找;切内核 TUN 模式(`TS_USERSPACE=false`)后包干脆不进内核转发路径
-   - 已验证排除:MagicDNS DNS64 合成(已关)、QUIC 卡死(已封)、tailscaled 自身 mark 豁免(已删)、7896/7897 端口冲突(已分离)、TPROXY→REDIRECT→内核 TUN(均无效)
+   - 根因:tailscaled netstack 模式将出口客户端 v4 包注入 tailscale0 时带 0x80000 mark,这些包在内核转发路径上无法被 nftables/iptables 的 TPROXY 或 REDIRECT 正确路由到 sing-box 监听(跨栈套接字查找失败)
+   - 已穷举:nftables TPROXY、iptables TPROXY、nftables REDIRECT(nat 链)、`TS_USERSPACE=false`(内核 TUN)、7896/7897 端口分离、MagicDNS/QUIC/DNS64——均无效
    - **Workaround**:遇到 v4-only 国外网站时,iPad/Android 临时把 Exit Node 切到 `brave-goose-1`(VPS,v4 正常),用完切回笔记本(分流)
-   - 候选解法(未试):给 tailscale/headscale 提 issue;或在笔记本上用独立的 v4 代理监听 + 客户端 SOCKS 而非透明代理
+   - 放弃修复理由:v4-only 国外网站极少见,workaround 成本低于继续深挖 tailscaled netstack 的内核路径
 2. **笔记本睡眠/关机时,客户端出口失效** → 客户端需切 VPS 出口或 None
 
 ## 验收标准

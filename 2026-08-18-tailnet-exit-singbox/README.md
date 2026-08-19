@@ -119,7 +119,7 @@ journalctl -u tailscaled -f
 
 ## 已知限制
 
-- **tailnet 客户端经笔记本出口的 v4-only 国外域名不可达**(如 ipv4.google.com)——iOS 客户端对"笔记本出口"特定路径不应用 v4 默认路由,已穷举 TPROXY/REDIRECT/内核 TUN 均无效。**Workaround**:遇此类网站临时切 Exit Node 到 `brave-goose-1`(VPS,v4 正常),用完切回笔记本。详见 [design.md](design.md) 已知限制节。
+- **tailnet 客户端经笔记本出口的 v4-only 国外域名不可达**(如 ipv4.google.com)——已穷举 TPROXY(nftables/iptables)、REDIRECT、内核 TUN 模式,均因 tailscaled netstack 在 TUN 接口上注入的 v4 包无法被正确路由到 sing-box 监听。**Workaround**:遇此类网站临时切 Exit Node 到 `brave-goose-1`(VPS,v4 正常),用完切回笔记本。详见 [design.md](design.md) 已知限制节。
 - 笔记本睡眠/关机时,客户端出口失效 → 切 VPS 出口或 None。
 
 ## 文件清单
