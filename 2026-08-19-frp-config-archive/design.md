@@ -22,8 +22,18 @@
 
 | 本目录 | 线上位置 | 权限 |
 |---|---|---|
-| [frpc.toml](frpc.toml) | `/etc/frp/frpc.toml` | 0600 root(含 `auth.token`,**勿入公开仓库**) |
-| [frpc.service](frpc.service) | `/etc/systemd/system/frpc.service` | 0644 root |
+| [frpc.toml](frpc.toml) | 本机 `/etc/frp/frpc.toml` | 0600 root(含 `auth.token`,**勿入公开仓库**) |
+| [frpc.service](frpc.service) | 本机 `/etc/systemd/system/frpc.service` | 0644 root |
+| [frps.toml](frps.toml) | VPS `/etc/frp/frps.toml` | 含同一个 `auth.token` |
+| [frps.service](frps.service) | VPS `/etc/systemd/system/frps.service` | |
+
+VPS 侧要点:
+
+- `bindPort = 7000`(frpc 控制面入口);`auth.token` 与本机 `frpc.toml` 一致——**改 token 必须两端同改**。
+- `allowPorts` 白名单:`6000-6010`(SSH 预留区间,现役用 6000)+ `47984` / `47989` / `47998-48002` / `48010`(Sunshine)。frpc 申请范围外端口会被 frps 直接拒绝,**新增代理端口要先加白名单**。
+- `frps.service` 以 `User=nobody` + `NoNewPrivileges=true` 运行(最小权限);`After=network.target`(客户端用的是 `network-online.target`,服务端不等网络就绪,先起无妨)。
+- 防火墙:VPS 上 ufw 默认 deny 入向,显式放行 7000/tcp + allowPorts 里的各端口(无云安全组,ufw 是唯一防火墙层)。
+- VPS sudo 需密码,凭据在 `~/.bandwagon/credentials.jsonc`;SSH 入口 `ssh desmond@bandwagon.signal-align.com`(22 端口直连 IP 不通)。
 
 ## 代理矩阵(frpc.toml 内容速览)
 
@@ -43,8 +53,10 @@ transport 调优(相对默认值):`tcpMuxKeepaliveInterval = 10`(yamux 心跳,�
 
 ## 日常运维
 
-- 改配置后:`sudo systemctl restart frpc`(Restart=on-failure,5s 间隔,不怕误杀)
-- 查日志:`journalctl -u frpc -f`
+- 改本机配置后:`sudo systemctl restart frpc`(Restart=on-failure,5s 间隔,不怕误杀)
+- 改 VPS 配置后:VPS 上 `sudo systemctl restart frps`;查日志 `journalctl -u frps -f`
+- 本机查日志:`journalctl -u frpc -f`
+- **新增代理端口流程**:VPS `frps.toml` 的 `allowPorts` 加白名单 + ufw 放行 → 本机 `frpc.toml` 加 `[[proxies]]` → 两端各自 restart
 - 验证链路:外网设备 `ssh -p 6000 desmond@laptop.signal-align.com`;Moonlight 里主机 `laptop.signal-align.com`(与 LAN/tailnet 条目自动合并为同一图标)
 - 升级 frp:从能自由出网的机器查 `https://api.github.com/repos/fatedier/frp/releases/latest` 拿版本号,客户端/服务端版本保持一致
 - 主链路是 tailnet(见下),frp 是备份链路;两条都依赖 sing-box 分流配置里的 `custom-direct.json`(signal-align.com + VPS IP 强制直连),改分流规则时勿动

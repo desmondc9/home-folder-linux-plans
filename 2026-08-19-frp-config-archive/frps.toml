@@ -1,0 +1,12 @@
+bindPort = 7000
+
+auth.method = "token"
+auth.token = "__FRP_TOKEN_REDACTED__"
+
+allowPorts = [
+  { start = 6000, end = 6010 },
+  { single = 47984 },
+  { single = 47989 },
+  { start = 47998, end = 48002 },
+  { single = 48010 }
+]

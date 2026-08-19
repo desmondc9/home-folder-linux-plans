@@ -12,6 +12,7 @@
 - [x] 校验快照与 `/tmp` 中转副本逐字节一致(`diff` 无输出)
 - [x] 校验 `frpc.service` 全程 active running,frp 链路未受影响
 - [x] 清理 `/tmp` 含 token 的中转副本(需用户 sudo 执行)
+- [x] 补充 VPS 侧 frps 配置实体:[frps.toml](frps.toml)、[frps.service](frps.service)(用户从 VPS `sudo cat` 提供原文,逐字归档;含 `allowPorts` 白名单与 `User=nobody` 最小权限单元)
 
 ## 备注
 
