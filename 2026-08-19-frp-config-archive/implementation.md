@@ -17,4 +17,4 @@
 ## 备注
 
 - 归档方法可复用:对 0600 root 的配置文件,让 root 侧脚本 `install -m644 <src> /tmp/<name>`,agent 再从 `/tmp` 拷入 plans,全程无需交互 sudo 读配置。
-- `frpc.toml` 含 `auth.token`,只允许进这个私人 plans 仓库;`/tmp` 中转副本用后必须删。
+- ~~`frpc.toml` 含 `auth.token`,只允许进这个私人 plans 仓库~~ **认知错误,已纠正**:本仓库在 GitHub 上是**公开仓库**,token 因此泄露,2026-08-19 已从全部历史清除并轮换(见 [../2026-08-19-frp-token-redaction/](../2026-08-19-frp-token-redaction/));此后配置快照一律脱敏入库。`/tmp` 中转副本用后必须删。

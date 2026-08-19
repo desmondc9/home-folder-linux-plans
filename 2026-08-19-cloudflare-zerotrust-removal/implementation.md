@@ -45,6 +45,6 @@ ALL DONE
 - **token 型(远端托管)CF tunnel 的 systemd 单元由 `cloudflared service install` 写入 `/etc/systemd/system/`,`apt purge` 不覆盖**——卸载 CF 类软件时,删包之外要单独检查 `/etc/systemd/system/` 下同名单元。
 - 该单元的 `ExecStart` 内嵌 tunnel token;归档/贴日志前注意脱敏(本次单元已删,token 即失效)。
 - 本机 sudo 需交互认证(人脸):agent 把需要 root 的步骤写成脚本,请用户用 `! sudo bash <script>` 在本会话执行,输出直接回落到对话里,衔接顺畅。
-- frp 配置含 token,只允许进这个私人 plans 仓库;快照用 `install -m644` 落到 `/tmp` 再拷贝,绕开线上文件 0600 root 权限,agent 无需 sudo 读配置。
+- frp 配置含 token,快照用 `install -m644` 落到 `/tmp` 再拷贝,绕开线上文件 0600 root 权限,agent 无需 sudo 读配置;**但本仓库实为公开仓库,快照入库前必须先脱敏**——2026-08-19 已因此泄露并清除+轮换,见 [../2026-08-19-frp-token-redaction/](../2026-08-19-frp-token-redaction/)。
 - **Cloudflare Workers Custom Domain 会自动建一条 DNS 记录(AAAA `100::` 橙云),该记录由 Workers 托管、DNS API 只读**——`DELETE /dns_records/:id` 报 1043 "read only"。删除路径是拆 Worker 的自定义域绑定(Domains & Routes),记录随之消失;审计 CF 残留时见到 `100::` 地址的橙云 AAAA 基本就是它。
 - `~/.cloudflare/tokens.jsonc` 的 dns-token 对 CF API 直连可用(无需代理),但只有 DNS 权限,Workers/Zero Trust 资源需另配权限或走 dashboard。

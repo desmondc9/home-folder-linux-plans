@@ -46,7 +46,7 @@
 
 transport 调优(相对默认值):`tcpMuxKeepaliveInterval = 10`(yamux 心跳,默认 30s)、`dialServerKeepAlive = 30`(底层 TCP SO_KEEPALIVE,默认 7200s 太长)。
 
-注意:`frpc.toml` 含 `auth.token`,本仓库为私人档案库,入库符合惯例;**不要**把本目录内容复制到任何公开仓库。
+注意:~~`frpc.toml` 含 `auth.token`,本仓库为私人档案库,入库符合惯例~~ 认知已纠正——本仓库实为 GitHub **公开仓库**,token 曾因此泄露,2026-08-19 已从全部 git 历史清除并轮换,归档实体移至 [../2026-08-19-frp-config-archive/](../2026-08-19-frp-config-archive/)(已脱敏),事故记录见 [../2026-08-19-frp-token-redaction/](../2026-08-19-frp-token-redaction/)。
 
 ## 移除方案
 

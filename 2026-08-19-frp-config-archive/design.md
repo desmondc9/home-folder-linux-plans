@@ -18,13 +18,15 @@
 - 服务端:bandwagon VPS(`104.194.83.82` / `2607:8700:5500:7bd3::2`),`frps.service`,`bindPort=7000`,token auth;ufw 放行 7000(控制面)+ 各 remotePort
 - DNS:`laptop.signal-align.com`、`bandwagon.signal-align.com` 均为 **A 记录灰云(DNS-only)** 指 VPS——Cloudflare 免费版只代理 80/443,frp 的任意 TCP/UDP 端口必须绕开橙云,SSH/串流流量实际不过 CF 边缘
 
-## 文件快照(与线上逐字节一致)
+## 文件快照(机密已脱敏,其余与线上一致)
+
+> **2026-08-19 安全变更**:本仓库实为 GitHub **公开仓库**,`auth.token` 曾随归档泄露,已从全部 git 历史清除(filter-repo 强推)并轮换,详见 [../2026-08-19-frp-token-redaction/](../2026-08-19-frp-token-redaction/)。快照中的 `__FRP_TOKEN_REDACTED__` 为占位符,真实 token 只存在于线上 0600 root 文件中。
 
 | 本目录 | 线上位置 | 权限 |
 |---|---|---|
-| [frpc.toml](frpc.toml) | 本机 `/etc/frp/frpc.toml` | 0600 root(含 `auth.token`,**勿入公开仓库**) |
+| [frpc.toml](frpc.toml) | 本机 `/etc/frp/frpc.toml` | 线上 0600 root 含 `auth.token`;快照已脱敏 |
 | [frpc.service](frpc.service) | 本机 `/etc/systemd/system/frpc.service` | 0644 root |
-| [frps.toml](frps.toml) | VPS `/etc/frp/frps.toml` | 含同一个 `auth.token` |
+| [frps.toml](frps.toml) | VPS `/etc/frp/frps.toml` | 线上含同一个 `auth.token`;快照已脱敏 |
 | [frps.service](frps.service) | VPS `/etc/systemd/system/frps.service` | |
 
 VPS 侧要点:

@@ -19,7 +19,8 @@
 | 2026-08-18 | [sunshine-moonlight-tailnet](./2026-08-18-sunshine-moonlight-tailnet/) | iPad/Android 经 Moonlight+Sunshine 串流笔记本：自建 tailnet 主链路（IPv6 P2P）+ frp 备份链路双冗余；含 0819 开机端口冲突僵尸态排查与 1 分钟看门狗，附日常运维速查 |
 | 2026-08-19 | [touchpad-three-finger-drag](./2026-08-19-touchpad-three-finger-drag/) | macOS 式三指拖拽（linux-3-finger-drag）：文件位置、dragEndDelay=250、更新方式 |
 | 2026-08-19 | [cloudflare-zerotrust-removal](./2026-08-19-cloudflare-zerotrust-removal/) | 移除 Cloudflare Zero Trust 本机残留（cloudflared/warp purge + 手动 systemd 单元 + apt 源 + ssh config 条目） |
-| 2026-08-19 | [frp-config-archive](./2026-08-19-frp-config-archive/) | frp 双端配置实体档案：本机 frpc + VPS frps 的 toml/systemd 快照、SSH:6000 + Sunshine 端口矩阵、allowPorts 白名单与日常运维 |
+| 2026-08-19 | [frp-config-archive](./2026-08-19-frp-config-archive/) | frp 双端配置实体档案：本机 frpc + VPS frps 的 toml/systemd 快照（token 已脱敏）、SSH:6000 + Sunshine 端口矩阵、allowPorts 白名单与日常运维 |
+| 2026-08-19 | [frp-token-redaction](./2026-08-19-frp-token-redaction/) | 安全事故：frp token 误提交到**公开**仓库——filter-repo 清历史 + 强推 + 全历史机密排查（gitleaks）+ token 轮换；据此新建 [CLAUDE.md](./CLAUDE.md) 机密红线规则 |
 
 ## 关于本仓库
 
