@@ -1,0 +1,75 @@
+serverAddr = "bandwagon.signal-align.com"
+serverPort = 7000
+
+auth.method = "token"
+auth.token = "__FRP_TOKEN_REDACTED__"
+
+[transport]
+tcpMuxKeepaliveInterval = 10   # yamux 层心跳,默认 30s,调短一点更保险
+dialServerKeepAlive = 30       # frpc<->frps 底层 TCP 的 SO_KEEPALIVE,默认 7200s(2小时)太长
+
+[[proxies]]
+name = "kubuntu-ssh"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 22
+remotePort = 6000
+
+# ---------- Sunshine / Moonlight ----------
+# TCP: API + RTSP
+[[proxies]]
+name = "sunshine-tcp-47984"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 47984
+remotePort = 47984
+
+[[proxies]]
+name = "sunshine-tcp-47989"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 47989
+remotePort = 47989
+
+[[proxies]]
+name = "sunshine-tcp-48010"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 48010
+remotePort = 48010
+
+# UDP: 视频 / 控制 / 音频 / 麦克风 / RTSP
+[[proxies]]
+name = "sunshine-udp-47998"
+type = "udp"
+localIP = "127.0.0.1"
+localPort = 47998
+remotePort = 47998
+
+[[proxies]]
+name = "sunshine-udp-47999"
+type = "udp"
+localIP = "127.0.0.1"
+localPort = 47999
+remotePort = 47999
+
+[[proxies]]
+name = "sunshine-udp-48000"
+type = "udp"
+localIP = "127.0.0.1"
+localPort = 48000
+remotePort = 48000
+
+[[proxies]]
+name = "sunshine-udp-48002"
+type = "udp"
+localIP = "127.0.0.1"
+localPort = 48002
+remotePort = 48002
+
+[[proxies]]
+name = "sunshine-udp-48010"
+type = "udp"
+localIP = "127.0.0.1"
+localPort = 48010
+remotePort = 48010
