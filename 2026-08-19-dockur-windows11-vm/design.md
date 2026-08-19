@@ -33,7 +33,7 @@
 | TPM/SecureBoot | dockur 内置 swtpm,满足 Win11 25H2 要求 |
 | 端口 (仅 127.0.0.1) | 3389 RDP · 8006 web 控制台 · 2222 SSH |
 | 账号 | `user` / `password` (localhost-only;改 compose env 后需重建 storage) |
-| 持久化 | storage/ 卷 + `unless-stopped` + linger → 重启宿主机自动拉起 |
+| 持久化 | storage/ 卷持久保存;`restart: "no"` —— 不随宿主机自启(用户明确要求),用 `winvm start` 手动拉起 |
 
 ## 访问方式
 

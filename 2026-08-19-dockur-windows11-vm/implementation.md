@@ -31,15 +31,19 @@
 
 ## 日常管理
 
+统一入口 `winvm` (`~/.local/bin/winvm`):
+
 ```bash
-cd ~/windows-vm
-podman compose logs -f      # 看日志
-podman restart windows11    # 重启 (ACPI 优雅关机)
-podman stop windows11       # 关机
-podman start windows11      # 开机 (重启宿主机后也会自动拉起: linger + unless-stopped)
+winvm           # status: 容器状态/端口/磁盘实占/访问方式
+winvm start     # compose up -d (引导约 1-2 分钟)
+winvm stop      # ACPI 优雅关机 (约 1 分钟)
+winvm restart   # 重启
+winvm logs      # 跟日志
+winvm rdp       # Remmina 连 127.0.0.1:3389
+winvm web       # 浏览器开 8006 控制台
+winvm edit      # 编辑 compose.yml (改资源后 winvm start 应用, 数据保留)
 ```
 
-- RDP: Remmina 连 `127.0.0.1:3389`,账号 `user` / `password`
-- Web 控制台: http://localhost:8006
 - SSH: `ssh -p 2222 user@localhost`
-- 重装系统 (慎用): `podman compose down && rm ~/windows-vm/storage/data.img && podman compose up -d`
+- **不随宿主机自启** (2026-08-19 用户要求): `restart: "no"`,已 `podman update --restart=no` 热生效
+- 重装系统 (慎用): `winvm stop && rm ~/windows-vm/storage/data.img && winvm start`
