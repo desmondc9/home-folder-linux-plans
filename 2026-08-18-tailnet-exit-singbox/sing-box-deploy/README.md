@@ -13,6 +13,9 @@
 | `99-exit-node.conf` | `/etc/sysctl.d/99-exit-node.conf` | IP 转发持久化 |
 | `singbox-dns.conf` | `/etc/systemd/resolved.conf.d/singbox-dns.conf` | 系统 DNS 指向 223.5.5.5（经 sing-box 分流） |
 | `sing-box-tproxy.service` | `/etc/systemd/system/sing-box-tproxy.service` | TPROXY 规则加载/清理的 systemd 单元 |
+| `update-rules.sh` | `/etc/sing-box/update-rules.sh` | rule-set 智能更新脚本（检查远程更新并触发） |
+| `sing-box-rules-update.service` | `/etc/systemd/system/sing-box-rules-update.service` | 更新服务（oneshot） |
+| `sing-box-rules-update.timer` | `/etc/systemd/system/sing-box-rules-update.timer` | 定时器（每周一、四 03:30） |
 
 ## 敏感信息
 
@@ -49,15 +52,21 @@ sudo cp 99-exit-node.conf /etc/sysctl.d/
 sudo cp singbox-dns.conf /etc/systemd/resolved.conf.d/
 sudo cp sing-box-tproxy.service /etc/systemd/system/
 
-# 5. 启动服务
+# 5. 部署 rule-set 自动更新
+sudo cp update-rules.sh /etc/sing-box/
+sudo chmod +x /etc/sing-box/update-rules.sh
+sudo cp sing-box-rules-update.service sing-box-rules-update.timer /etc/systemd/system/
+
+# 6. 启动服务
 sudo sysctl --system
 sudo systemctl daemon-reload
-sudo systemctl enable --now sing-box sing-box-tproxy
+sudo systemctl enable --now sing-box sing-box-tproxy sing-box-rules-update.timer
 sudo systemctl restart systemd-resolved
 
-# 6. 验证
+# 7. 验证
 curl -4 -s https://api.ipify.org  # 应显示 VPS IP
 curl -4 -s https://myip.ipip.net  # 应显示家宽 IP
+systemctl list-timers sing-box-rules-update.timer  # 确认定时器已启用
 ```
 
 ## 自定义规则使用

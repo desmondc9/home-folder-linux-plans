@@ -1,0 +1,18 @@
+[Unit]
+Description=sing-box rule-set intelligent update
+After=sing-box.service
+Requires=sing-box.service
+
+[Service]
+Type=oneshot
+# 通过 sing-box 的 mixed 代理下载(确保能访问 GitHub)
+Environment="https_proxy=http://127.0.0.1:10809" "http_proxy=http://127.0.0.1:10809"
+ExecStart=/usr/bin/bash /etc/sing-box/update-rules.sh
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=sing-box-rules-update
+# 脚本会重启 sing-box,等待其恢复后再退出
+TimeoutStartSec=120
+
+[Install]
+WantedBy=multi-user.target

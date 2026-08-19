@@ -1,0 +1,14 @@
+[Unit]
+Description=sing-box rule-set intelligent update timer
+Requires=sing-box-rules-update.service
+
+[Timer]
+# 每周一、周四凌晨 3:30 执行(错开高峰)
+OnCalendar=Mon,Thu *-*-* 03:30:00
+# 如果错过了开机时间,开机后 10 分钟补执行
+Persistent=true
+# 随机延迟 0-30 分钟,避免所有机器同时请求
+RandomizedDelaySec=1800
+
+[Install]
+WantedBy=timers.target
