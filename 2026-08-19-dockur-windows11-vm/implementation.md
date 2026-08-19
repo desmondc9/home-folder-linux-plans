@@ -39,7 +39,7 @@ winvm start     # compose up -d (引导约 1-2 分钟)
 winvm stop      # ACPI 优雅关机 (约 1 分钟)
 winvm restart   # 重启
 winvm logs      # 跟日志
-winvm rdp       # Remmina 连 127.0.0.1:3389
+winvm rdp       # 连 127.0.0.1:3389 (优先 KRDC, 未安装则回退 Remmina)
 winvm web       # 浏览器开 8006 控制台
 winvm edit      # 编辑 compose.yml (改资源后 winvm start 应用, 数据保留)
 ```
