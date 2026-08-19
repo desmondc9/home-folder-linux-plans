@@ -1,0 +1,14 @@
+FROM ubuntu:26.04
+
+RUN if [ -f /etc/apt/sources.list.d/ubuntu.sources ]; then sed -i 's|archive.ubuntu.com|mirrors.aliyun.com|g; s|security.ubuntu.com|mirrors.aliyun.com|g' /etc/apt/sources.list.d/ubuntu.sources; fi \
+ && apt-get update \
+ && apt-get install -y --no-install-recommends curl nftables iproute2 bind9-dnsutils ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+
+COPY sing-box /usr/local/bin/sing-box
+RUN chmod +x /usr/local/bin/sing-box
+
+COPY config.json tproxy.nft sandbox-test.sh /deploy/
+COPY rules/ /deploy/rules/
+
+ENTRYPOINT ["bash", "/deploy/sandbox-test.sh"]

@@ -1,0 +1,22 @@
+[Unit]
+Description=sing-box TPROXY nftables rules and policy routing
+Before=sing-box.service
+After=network-pre.target tailscaled.service
+Wants=network-pre.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/sbin/nft -f /etc/sing-box/tproxy.nft
+ExecStart=/usr/sbin/ip rule add fwmark 1 lookup 100
+ExecStart=/usr/sbin/ip route add local 0.0.0.0/0 dev lo table 100
+ExecStart=-/usr/sbin/ip -6 rule add fwmark 1 lookup 100
+ExecStart=-/usr/sbin/ip -6 route add local ::/0 dev lo table 100
+ExecStop=/usr/sbin/nft delete table inet singbox
+ExecStop=-/usr/sbin/ip rule del fwmark 1 lookup 100
+ExecStop=-/usr/sbin/ip route del local 0.0.0.0/0 dev lo table 100
+ExecStop=-/usr/sbin/ip -6 rule del fwmark 1 lookup 100
+ExecStop=-/usr/sbin/ip -6 route del local ::/0 dev lo table 100
+
+[Install]
+WantedBy=multi-user.target

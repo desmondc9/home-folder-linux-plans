@@ -1,0 +1,16 @@
+# 敏感配置文件(含节点 UUID/密钥)
+sing-box-deploy/config.json
+sing-box-deploy/rules/
+
+# 沙盒二进制(66MB,不应入库)
+sing-box-deploy/sing-box
+
+# 系统文件
+*.swp
+*.swo
+*~
+.DS_Store
+
+# 临时文件
+*.bak
+*.tmp
