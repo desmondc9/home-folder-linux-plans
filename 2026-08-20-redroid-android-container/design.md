@@ -18,15 +18,18 @@
 | GPU | SwiftShader 软渲染 (`gpu_mode=guest`) | 宿主 N 卡只有单个 render 节点,virtio-gpu 路径容器内不可用;日常 App 流畅,3D 游戏不适合 |
 | 网络 | bridge 网络 + 显式 `mtu: "1500"` | **netavark 会误读 sing-box tproxy 表 (table 100, `local default dev lo`, MTU 65536) 作为默认路由接口**,65536 超过 veth 上限 65535 → 创建 veth EINVAL,容器起不来 |
 | 机型伪装 | OnePlus 13 (PJZ110, Android 15) | 镜像降为 15 后伪装目标随之从 OnePlus 15 (PLK110) 调整;fingerprint 取自 GitHub 上公开的真实设备值 |
-| ARM 翻译 | 预留 libndk/ 目录,暂未挂 | 先跑通 x86_64 原生,ARM-only 应用后续再接 |
+| ARM 翻译 | libndk_translation (berberis 后端),烘焙进本地镜像 | 官方镜像只有框架配置没有库;从 Google 模拟器镜像 (google_apis API 35, x86_64-35_r09) 提取,见 implementation.md |
 
 ## 布局
 
 ```
 ~/redroid/
-├── compose.yml      # redroid/redroid:15.0.0-latest
+├── compose.yml      # localhost/redroid15-oneplus:latest (本地烘焙)
+├── Containerfile    # FROM redroid/redroid:15.0.0-latest + ADD libndk.tar
+├── rebuild-nb.sh    # 一键重建: libndk 打包 → build → 离线 spoof 补丁 → commit
+├── libndk/system/   # ARM64 翻译层文件树 (提取自 Google 模拟器镜像)
 ├── data/            # /data 持久化卷 (删它 = 恢复出厂; rootful 运行故为 root 所有)
-└── libndk/          # (预留) arm64→x86_64 翻译层 blobs
+└── libndk.tar       # (rebuild-nb.sh 生成的中间产物)
 ```
 
 管理命令: `~/.local/bin/droidvm` — `start/stop/restart/status/logs/screen/shell/spoof/edit`。
