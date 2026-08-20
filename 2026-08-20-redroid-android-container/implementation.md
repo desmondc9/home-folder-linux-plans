@@ -26,6 +26,9 @@
 6. **镜像内路径 ≠ 设备路径**: 设备上 `/odm` → `/vendor/odm`、`/system_ext` → `/system/system_ext`,离线补丁要用真实路径。
 7. **abilist 收窄**: 翻译层只有 64 位,spoof 时同步把 `ro.*.product.cpu.abilist` 的 armeabi-v7a/armeabi 去掉,防止 32 位 ARM-only 应用装上却跑不起来。
 8. **验证**: 手工构造最小 ARM64 静态 ELF (write+exit),经 binfmt → ndk runner → berberis 完整链路执行成功输出 `ARM64-OK`。berberis 对 ELF 头有严格校验 (必须有节区头、e_shstrndx 合法、禁 W+E 段)。
+9. **首个 rdump 不完整只拿了 12/56 个客户态库** —— 导致 App 启动时 `native_bridge_initialize: unable to open /system/lib64/arm64/libnative_bridge_vdso.so`。教训: debugfs rdump 后要核对文件数。补齐 56 个 arm64 客户态库 + `libnative_bridge_vdso.so` + `etc/ld.config.arm64.txt` (访客链接器命名空间) + `etc/cpuinfo.arm64.txt` (访客 cpuinfo 模拟)。
+10. **加固 SDK (顶象 DexHelper) 对抗**: Nico App 加载 `libDexHelper-x86.so` 后在宿主 libc `__vfprintf` 里 SEGV, tombstone 的内存快照显示它正在打印 `"test-keys"` —— 指纹说 release-keys 但 `ro.build.tags`/`ro.build.type` 还是 test-keys/userdebug,被它抓个正着。修复: 全分区 `build.tags=release-keys`、`build.type=user`、`ro.build.description/display.id/flavor` 改 OnePlus 正式版值 (rebuild-nb.sh 和 droidvm spoof 均已内置)。修后 App 正常启动渲染。
+    - 仍未处理的暴露面 (如再被检测就往这些方向查): `ro.debuggable=1` (改成 0 会失去 adb root)、`ro.hardware=redroid` (来自 androidboot.hardware,redroid init 依赖,不能乱改)、binderfs 路径、容器网络接口名等。
 
 ## 关键调试记录
 
