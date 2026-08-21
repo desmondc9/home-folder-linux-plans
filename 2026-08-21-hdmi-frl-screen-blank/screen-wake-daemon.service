@@ -1,0 +1,12 @@
+[Unit]
+Description=Screen wake daemon: wake displays on Sunshine/SSH connection or HTTP wake event
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/screen-wake-daemon.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

@@ -38,3 +38,14 @@
 - S2a FAIL 是脚本竞态(dpms off 异步生效,2s 检查太早),非系统问题 —— watchdog 日志证明熄屏确实发生且在 ≤100s 内被救回;已修为轮询等待
 - 演练期间用户 iPad 两次真实重连均 CLIENT CONNECTED ✓
 - 已知残余窗口: 客户端恰好在熄屏~watchdog 救回(≤~70s)之间连接仍会 500,重试即可
+
+## 事件驱动唤醒 daemon (13:27 上线)
+
+用户提议的思路,替代/补充"防关屏": 只要有远程连接事件就点亮屏幕。
+
+- `~/.local/bin/screen-wake-daemon.sh` + `screen-wake-httpd.py` + `~/.config/systemd/user/screen-wake-daemon.service`(已 enable)
+- 触发源: ①Moonlight HTTPS/RTSP 入站连接(47984/47989/48010) ②SSH(22) ③`curl http://<主机>:47800/任意路径` 专用端点
+- 轮询周期 2s,唤醒延迟实测 ≤1s;仅在屏幕确实 off 时动作,避免无意义 HDMI 重训练
+- **踩坑记录**: ①ss 过滤要用 `sport`(本机是服务端,dport 是客户端临时端口) ②`state established` 会漏——Sunshine RTSP 对裸 TCP 秒拒(CLOSE-WAIT),须用 `state connected` ③zsh 无 /dev/tcp,测试用 nc
+- E2E(13:27): 熄屏状态 iPad 发起连接 → daemon 1s 内点亮 → CLIENT CONNECTED,0 次探测失败 ✓
+- HTTP 端点安全说明: 只亮屏不解锁,LAN/tailnet 暴露无副作用
