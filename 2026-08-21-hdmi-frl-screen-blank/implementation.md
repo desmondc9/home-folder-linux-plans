@@ -30,3 +30,11 @@
 - [x] T7 13:06 iPad 实测连接成功、画面正常、无探测报错 ✓
 - [x] T8 watchdog 增强: 触发时 dump 每屏 DPMS 状态(区分 eDP-1/HDMI-A-1),并新增 DPMS 跳变秒级取证监控(找"谁在关屏")
 - [ ] T9 关屏元凶待定位: 已排除 dim(≠DPMS off)/锁屏/合盖;下次无故关屏时取证监控会抓到案发时刻
+
+## 演练验证 (13:10)
+
+新增 `~/.local/bin/sunshine-drill.sh`(状态遍历实测: 基线/锁屏/手动熄屏+watchdog 救回/SIGKILL 崩溃恢复,每步强制 Sunshine 重探测判定)。首轮 6 PASS / 1 FAIL:
+
+- S2a FAIL 是脚本竞态(dpms off 异步生效,2s 检查太早),非系统问题 —— watchdog 日志证明熄屏确实发生且在 ≤100s 内被救回;已修为轮询等待
+- 演练期间用户 iPad 两次真实重连均 CLIENT CONNECTED ✓
+- 已知残余窗口: 客户端恰好在熄屏~watchdog 救回(≤~70s)之间连接仍会 500,重试即可
