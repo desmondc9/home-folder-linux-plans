@@ -49,3 +49,16 @@
 - **踩坑记录**: ①ss 过滤要用 `sport`(本机是服务端,dport 是客户端临时端口) ②`state established` 会漏——Sunshine RTSP 对裸 TCP 秒拒(CLOSE-WAIT),须用 `state connected` ③zsh 无 /dev/tcp,测试用 nc
 - E2E(13:27): 熄屏状态 iPad 发起连接 → daemon 1s 内点亮 → CLIENT CONNECTED,0 次探测失败 ✓
 - HTTP 端点安全说明: 只亮屏不解锁,LAN/tailnet 暴露无副作用
+
+## 最终架构落地 (13:32)
+
+按用户要求,恢复所有"防关屏"设置,以事件驱动唤醒 daemon 作为唯一主防线:
+
+- [x] T10 恢复 powerdevilrc: `TurnOffDisplayIdleTimeoutSec` 0 → **1800**(原始值),DimDisplay=900 保持;plasma-powerdevil 已重启且值未被回写
+- [x] T11 恢复后安全网验证: screen-wake-daemon(active+enabled+47800 LISTEN)/watchdog.timer/Sunshine 全绿,脚本语法 OK
+- [x] T12 保留 4K@60(不动 160Hz): FRL 警告仅出现在 dpms-on 链路重建时(驱动先试 FRL 失败回退 TMDS,良性);160Hz 下是使用中闪黑的元凶,daemon 无法覆盖"使用中"场景。恢复命令: `kscreen-doctor output.HDMI-A-1.mode.2`
+
+最终分层(屏幕可自由熄灭,连接即唤醒):
+1. 事件驱动(主): screen-wake-daemon 每 2s 盯 47984/47989/48010/22 入站连接,off → ≤1s 点亮;`:47800` HTTP 专用唤醒端点
+2. 周期兜底(备): sunshine-watchdog 每分钟,进程崩溃重启 + 屏幕 off 强制点亮
+3. 演练工具: sunshine-drill.sh 一键回归(基线/锁屏/熄屏救回/崩溃恢复)
