@@ -62,3 +62,14 @@
 1. 事件驱动(主): screen-wake-daemon 每 2s 盯 47984/47989/48010/22 入站连接,off → ≤1s 点亮;`:47800` HTTP 专用唤醒端点
 2. 周期兜底(备): sunshine-watchdog 每分钟,进程崩溃重启 + 屏幕 off 强制点亮
 3. 演练工具: sunshine-drill.sh 一键回归(基线/锁屏/熄屏救回/崩溃恢复)
+
+## 捕获自动校准 (14:00 上线)
+
+Meta+L 实测暴露: 外接屏待机从总线消失(DDCA_EVENT_DISPLAY_DISCONNECTED)再上线时,枚举顺序翻转(13:46:03 时 HDMI=Monitor 0,Sunshine 抓到外接屏)。watchdog 增加自动校准:
+
+- 原理: 每次运行读 Sunshine 当前进程的启动日志 `Monitor N is eDP-1`,与 conf 的 output_name 比对,不一致就 stop→改 conf→start
+- 振荡护栏: 10 分钟内最多校准 2 次(状态文件 ~/.cache/sunshine-watchdog-cal)
+- **两个深坑(都实证过)**:
+  1. 改 sunshine.conf 必须 `stop` 之后、`start` 之前: Sunshine 退出时会用内存配置回写文件,restart 前 sed 会被覆盖。sunshine-display 同步修复(同款隐患)
+  2. `grep -oE "[0-9]+"` 提取 "Monitor 0 is eDP-1" 会得到 "0\n1"(eDP-1 的 1 也算)→ 多行变量拼进 sed 脚本 → sed 报 unknown command 静默不改文件。改用 `sed -nE 's/^Monitor ([0-9]+).*/\1/p'` 只取第一个数
+- E2E 验证(14:00): 制造 output_name=1 错误配置 → watchdog 自动校准回 0 → Sunshine 读到 0、捕获 connector 140、0 探测失败 ✓
