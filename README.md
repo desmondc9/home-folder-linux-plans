@@ -21,6 +21,18 @@
 | 2026-08-19 | [cloudflare-zerotrust-removal](./2026-08-19-cloudflare-zerotrust-removal/) | 移除 Cloudflare Zero Trust 本机残留（cloudflared/warp purge + 手动 systemd 单元 + apt 源 + ssh config 条目） |
 | 2026-08-19 | [frp-config-archive](./2026-08-19-frp-config-archive/) | frp 双端配置实体档案：本机 frpc + VPS frps 的 toml/systemd 快照（token 已脱敏）、SSH:6000 + Sunshine 端口矩阵、allowPorts 白名单与日常运维 |
 | 2026-08-19 | [frp-token-redaction](./2026-08-19-frp-token-redaction/) | 安全事故：frp token 误提交到**公开**仓库——filter-repo 清历史 + 强推 + 全历史机密排查（gitleaks）+ token 轮换；据此新建 [CLAUDE.md](./CLAUDE.md) 机密红线规则 |
+| 2026-08-19 | [dockur-windows11-vm](./2026-08-19-dockur-windows11-vm/) | dockur/windows Win11 25H2 VM（rootless podman）：8C/16G/128G、RDP 3389 / Web 8006 / SSH 2222 仅 localhost、`winvm` 管理命令 |
+| 2026-08-19 | [headscale-custom-derp](./2026-08-19-headscale-custom-derp/) | 自建 DERP 兜底（region 998，derp.signal-align.com）：独立 derper + nginx 443 反代 + STUN 3479，与内嵌 999 共存 |
+| 2026-08-19 | [sunshine-display-switch](./2026-08-19-sunshine-display-switch/) | Sunshine 显示器切换（output_name 只认数字）+ DPMS 关屏=串流必死（500/503）根因与 screen-wake-daemon / watchdog 唤醒体系 |
+| 2026-08-20 | [redroid-android-container](./2026-08-20-redroid-android-container/) | redroid Android 15 容器（rootful podman）：SwiftShader 软渲染、OnePlus PJZ110 七文件 spoof、ARM 翻译层、tproxy 表 100 致 netavark MTU 65536 坑 |
+| 2026-08-20 | [redroid-backup](./2026-08-20-redroid-backup/) | redroid 数据备份导出（data/ 卷，有效性未确认） |
+| 2026-08-20 | [sunshine-dpms-off-fix](./2026-08-20-sunshine-dpms-off-fix/) | Sunshine RTSP 500/503 根因 = PowerDevil DPMS 关屏杀 KMS 抓屏：TurnOffDisplayIdleTimeoutSec=0 修复 |
+| 2026-08-20 | [windows11-vm-backup](./2026-08-20-windows11-vm-backup/) | Win11 VM 备份（qcow2 + state tarball，归档并提交） |
+| 2026-08-21 | [hdmi-frl-screen-blank](./2026-08-21-hdmi-frl-screen-blank/) | 4K@160 FRL 链路训练失败致闪黑：降 4K@60 + DPMS 自愈 + 唤醒 daemon/取证监控增强 |
+| 2026-08-21 | [kernel-7.0.0-30-boot-binderfs-race](./2026-08-21-kernel-7.0.0-30-boot-binderfs-race/) | binderfs fstab 行与 systemd-modules-load 开机竞态致启动失败：nofail + x-systemd.after 修复 |
+| 2026-08-21 | [sunshine-notebook](./2026-08-21-sunshine-notebook/) | Sunshine/Moonlight 知识重组为 Obsidian 风格 Notebook（~/Notebook/Sunshine-Moonlight-串流/）：MOC + 6 笔记 + wikilink 约定 |
+| 2026-08-22 | [kscreen-doctor-crash-loop](./2026-08-22-kscreen-doctor-crash-loop/) | screen-wake-daemon 开机竞态致 kscreen-doctor SIGABRT 循环：unit 排序 + 脚本环境守卫修复 |
+| 2026-08-22 | [singbox-notebook](./2026-08-22-singbox-notebook/) | sing-box/tproxy 知识重组为 Obsidian 风格 Notebook（~/Notebook/sing-box-分流网关/）：MOC + 6 笔记（架构/配置/TPROXY/DNS/运维/深坑），跨域与 Sunshine MOC 互链 |
 
 ## 关于本仓库
 
