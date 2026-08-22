@@ -1,0 +1,178 @@
+{
+  "log": {
+    "level": "info",
+    "timestamp": true
+  },
+  "dns": {
+    "servers": [
+      {
+        "tag": "alidns",
+        "type": "udp",
+        "server": "223.5.5.5"
+      },
+      {
+        "tag": "cfdoh",
+        "type": "https",
+        "server": "1.1.1.1",
+        "detour": "proxy"
+      }
+    ],
+    "rules": [
+      {
+        "rule_set": [
+          "custom-direct"
+        ],
+        "server": "alidns"
+      },
+      {
+        "rule_set": [
+          "custom-proxy"
+        ],
+        "server": "cfdoh"
+      },
+      {
+        "rule_set": [
+          "geosite-cn"
+        ],
+        "server": "alidns"
+      },
+      {
+        "rule_set": [
+          "geosite-greatfire"
+        ],
+        "server": "cfdoh"
+      }
+    ],
+    "final": "cfdoh",
+    "strategy": "prefer_ipv4",
+    "independent_cache": true
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "interface_name": "tun0",
+      "address": [
+        "172.18.0.1/30",
+        "fdfe:dcba:9876::1/126"
+      ],
+      "mtu": 9000,
+      "auto_route": true,
+      "strict_route": true,
+      "stack": "gvisor"
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "vless",
+      "tag": "proxy",
+      "server": "<VPS-IP>",
+      "server_port": "<VPS-PORT>",
+      "uuid": "<VLESS-UUID>",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "<REALITY-SNI>",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "<REALITY-PUBLIC-KEY>",
+          "short_id": ""
+        }
+      }
+    },
+    {
+      "type": "direct",
+      "tag": "direct"
+    }
+  ],
+  "route": {
+    "default_domain_resolver": "alidns",
+    "rules": [
+      {
+        "action": "sniff"
+      },
+      {
+        "protocol": "dns",
+        "action": "hijack-dns"
+      },
+      {
+        "network": "udp",
+        "port": 443,
+        "outbound": "block"
+      },
+      {
+        "ip_is_private": true,
+        "outbound": "direct"
+      },
+      {
+        "rule_set": [
+          "custom-direct"
+        ],
+        "outbound": "direct"
+      },
+      {
+        "rule_set": [
+          "custom-proxy"
+        ],
+        "outbound": "proxy"
+      },
+      {
+        "rule_set": [
+          "geosite-cn",
+          "geoip-cn"
+        ],
+        "outbound": "direct"
+      },
+      {
+        "rule_set": [
+          "geosite-greatfire"
+        ],
+        "outbound": "proxy"
+      }
+    ],
+    "rule_set": [
+      {
+        "tag": "geosite-cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-cn.srs",
+        "download_detour": "proxy",
+        "update_interval": "7d"
+      },
+      {
+        "tag": "geoip-cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs",
+        "download_detour": "proxy",
+        "update_interval": "7d"
+      },
+      {
+        "tag": "geosite-greatfire",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-greatfire.srs",
+        "download_detour": "proxy",
+        "update_interval": "7d"
+      },
+      {
+        "tag": "custom-direct",
+        "type": "local",
+        "format": "source",
+        "path": "/storage/emulated/0/Android/data/io.nekohasekai.sfa/files/custom-direct.json"
+      },
+      {
+        "tag": "custom-proxy",
+        "type": "local",
+        "format": "source",
+        "path": "/storage/emulated/0/Android/data/io.nekohasekai.sfa/files/custom-proxy.json"
+      }
+    ],
+    "final": "proxy",
+    "auto_detect_interface": true
+  }
+}
