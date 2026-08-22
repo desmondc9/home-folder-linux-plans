@@ -6,9 +6,9 @@
 
 - [x] 诊断:定位根因为 `/proc/sys/kernel/modprobe` 为空致模块按需加载失效(证据链见 design.md)
 - [x] 即时修复:`sudo modprobe exfat` —— 用户实测挂载成功
-- [ ] 持久化:新建 `/etc/modules-load.d/exfat.conf`(内容 `exfat`)
-- [ ] 运行时恢复:`sudo sysctl -w kernel.modprobe=/sbin/modprobe`
-- [ ] 归档:本目录 design.md + implementation.md 提交至 ~/plans 仓库
+- [x] 持久化:新建 `/etc/modules-load.d/exfat.conf`(内容 `exfat`)
+- [x] 运行时恢复:`sudo sysctl -w kernel.modprobe=/sbin/modprobe`
+- [x] 归档:本目录 design.md + implementation.md 提交至 ~/plans 仓库
 
 ## 变更文件表
 
@@ -20,8 +20,9 @@
 ## 验证方式
 
 - [x] 用户实测:modprobe 后重新挂载 U 盘成功(2026-08-22 23:00 前确认)
-- [ ] `cat /etc/modules-load.d/exfat.conf` 输出 `exfat`
-- [ ] `cat /proc/sys/kernel/modprobe` 输出 `/sbin/modprobe`
+- [x] `cat /etc/modules-load.d/exfat.conf` 输出 `exfat`
+- [x] `cat /proc/sys/kernel/modprobe` 输出 `/sbin/modprobe`
+- [x] `lsmod` 中 exfat 已加载(122880, refcount=1 为已挂载的盘),`/proc/filesystems` 已注册
 - [ ] 下次开机直接插 exFAT U 盘验证(持久化验收,留待下次开机)
 
 ## 备注(可迁移经验)

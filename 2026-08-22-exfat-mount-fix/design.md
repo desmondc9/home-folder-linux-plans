@@ -1,7 +1,7 @@
 # exFAT U 盘挂载失败 "Filesystem type exfat not configured in kernel"
 
 日期: 2026-08-22
-状态: 即时修复已验证(手动 `modprobe exfat` 后挂载成功);持久化配置已交付,待下次开机验证
+状态: 已修复——即时修复与持久化配置均已验证;最终验收(下次开机直接挂载)待下次开机确认
 
 ## 背景
 
@@ -55,8 +55,9 @@
 ## 验收标准
 
 - [x] `sudo modprobe exfat` 后 U 盘挂载成功(用户实测)
-- [ ] `/etc/modules-load.d/exfat.conf` 存在且内容为 `exfat`
-- [ ] `sysctl -w` 后 `cat /proc/sys/kernel/modprobe` 输出 `/sbin/modprobe`
+- [x] `/etc/modules-load.d/exfat.conf` 存在且内容为 `exfat`(cat 验证)
+- [x] `sysctl -w` 后 `cat /proc/sys/kernel/modprobe` 输出 `/sbin/modprobe`
+- [x] exfat 模块已加载并注册进 `/proc/filesystems`(`lsmod` + grep 验证)
 - [ ] 下次开机直接插入 exFAT U 盘可挂载(留待下次开机验证)
 
 ## 风险与缓解
