@@ -58,6 +58,10 @@
 
 待办(需 sudo):复制到 `/etc/sing-box/android/` 与本机配置并排(root 归档,与线上机密同保护等级)。
 
+## 阶段 6:真机验证
+
+2026-08-22 用户实际 Android 手机(arm64-v8a SFA)导入验证成功 — DNS 分流/流量分流/override 行为与 redroid 实测一致。
+
 ## 复盘要点
 
 - **文档站 ≠ 目标版本**:sing-box 官方文档展示 1.14+ 字段(dns_mode),1.13.19 会报 unknown field;以目标版本二进制 `check` 为准

@@ -41,7 +41,7 @@
 5. **VPN 建立后 adb 被 VPN 吞掉**(redroid 的本地子网未豁免);测试 profile 加 `route_exclude_address: ["10.89.0.0/16"]` 保住控制通道——交付配置不含此项(真机 VpnService 自动豁免本地子网)。
 6. redroid 里静态 curl 无 resolv.conf 可用 → 测试用 busybox nslookup(查询进 tun 被 hijack)+ curl --resolve;设备 toybox 无 awk/`{n,m}` 正则,管道解析细节见 implementation.md。
 
-## 验收标准(全部在 redroid 内实测通过)
+## 验收标准(redroid 内实测通过;2026-08-22 用户真机导入亦验证成功)
 
 - a. DNS:国内域名(baidu→a.shifen.com CDN、myip.ipip.net 5-10ms)走 AliDNS;国外域名(google→真实 142.251.x、api.ipify.org 578ms DoH)走 Cloudflare DoH 经 VLESS
 - b. 分流:api.ipify.org→VPS IP、myip.ipip.net→家宽、google/github→代理连通、taobao→直连+国内 CDN
