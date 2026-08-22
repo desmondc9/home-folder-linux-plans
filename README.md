@@ -35,6 +35,7 @@
 | 2026-08-22 | [singbox-notebook](./2026-08-22-singbox-notebook/) | sing-box/tproxy 知识重组为 Obsidian 风格 Notebook（~/Notebook/sing-box-分流网关/）：MOC + 6 笔记（架构/配置/TPROXY/DNS/运维/深坑），跨域与 Sunshine MOC 互链 |
 | 2026-08-22 | [tailscale-notebook](./2026-08-22-tailscale-notebook/) | tailscale/headscale/DERP 知识重组为 Obsidian 风格 Notebook（~/Notebook/Tailscale-Headscale-DERP/）：MOC + 7 笔记（架构/控制面/节点打洞/DERP/双出口/运维/深坑），与 Sunshine、sing-box 域 MOC 互链 |
 | 2026-08-22 | [notebook-readme](./2026-08-22-notebook-readme/) | ~/Notebook 纵览 README：三域按依赖排序（组网层 tailnet → 网关层 sing-box → 应用层 Sunshine），症状索引 + 共同约定 + 仓库信息 |
+| 2026-08-22 | [exfat-mount-fix](./2026-08-22-exfat-mount-fix/) | exFAT U 盘挂载失败：kernel.modprobe sysctl 被清空致模块按需加载失效（写入者未定，crun/conmon 已源码排除）；modules-load.d 预加载 + sysctl 恢复修复 |
 
 ## 关于本仓库
 
