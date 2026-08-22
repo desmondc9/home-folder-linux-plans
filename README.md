@@ -33,6 +33,7 @@
 | 2026-08-21 | [sunshine-notebook](./2026-08-21-sunshine-notebook/) | Sunshine/Moonlight 知识重组为 Obsidian 风格 Notebook（~/Notebook/Sunshine-Moonlight-串流/）：MOC + 6 笔记 + wikilink 约定 |
 | 2026-08-22 | [kscreen-doctor-crash-loop](./2026-08-22-kscreen-doctor-crash-loop/) | screen-wake-daemon 开机竞态致 kscreen-doctor SIGABRT 循环：unit 排序 + 脚本环境守卫修复 |
 | 2026-08-22 | [singbox-notebook](./2026-08-22-singbox-notebook/) | sing-box/tproxy 知识重组为 Obsidian 风格 Notebook（~/Notebook/sing-box-分流网关/）：MOC + 6 笔记（架构/配置/TPROXY/DNS/运维/深坑），跨域与 Sunshine MOC 互链 |
+| 2026-08-22 | [tailscale-notebook](./2026-08-22-tailscale-notebook/) | tailscale/headscale/DERP 知识重组为 Obsidian 风格 Notebook（~/Notebook/Tailscale-Headscale-DERP/）：MOC + 7 笔记（架构/控制面/节点打洞/DERP/双出口/运维/深坑），与 Sunshine、sing-box 域 MOC 互链 |
 
 ## 关于本仓库
 
