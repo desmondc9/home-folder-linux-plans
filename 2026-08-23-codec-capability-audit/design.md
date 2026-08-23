@@ -53,6 +53,16 @@
 
 修复:复制系统 `google-chrome-beta.desktop` 到用户目录,3 条 Exec 追加同款 flags + `kbuildsycoca6 --noincremental` 重建缓存。验收标准追加:用户从开始菜单重启 Beta 后控制台 `video/mp4; codecs=hev1.1.6.L120.90` → "probably"。
 
+## 补充(同日):任务栏启动为何不带 flags
+
+用户实测:开始菜单启动 chrome/beta → hevc: probably;任务栏固定图标启动 → 无 HEVC。
+
+根因:任务栏固定图标(appletsrc `launchers=applications:com.google.Chrome.desktop,...`)引用的是 Chrome 新版安装的**反向域名 ID 桌面文件**(`com.google.Chrome.desktop`/`com.google.Chrome.beta.desktop`/`com.microsoft.Edge.desktop`),与菜单用的 `google-chrome.desktop` 是**两套不同的文件**。前者只存在于系统目录且零 flags。
+
+修复:三个反向域名文件各复制一份到用户目录,9 条 Exec 全部追加同款三特性 flags + ksycoca 重建。
+
+注意:用户目录现在同时存在 `google-chrome.desktop` 与 `com.google.Chrome.desktop`,KDE 菜单若出现重复的 Chrome 条目,可用 NoDisplay=true 隐藏其一。
+
 ## 风险与缓解
 
 - **registry 抖动**:白名单刚放开时曾出现一次 qtdemux not-linked(registry 缓存旧特征),之后 2/2 稳定通过;若复发 `rm ~/.cache/gstreamer-1.0/registry.x86_64.bin`。
