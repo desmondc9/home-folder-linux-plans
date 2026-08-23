@@ -44,6 +44,15 @@
 - [x] `~/.config/environment.d/70-gst-vaapi.conf` 已写入
 - [ ] 下次登录后 GStreamer 应用无需手工 env 即可硬解(待确认)
 
+## 补充(同日):Chrome Beta 对齐
+
+用户追问 Beta(153.0.8010.5)是否与 Stable 同等能力。实测:
+
+- **无 flags(Beta 原状)**:HEVC **完全不支持**(canPlayType 空),H.264/AV1 仅软解(powerEfficient: false);
+- **带同款三特性 flags**:与 Stable 完全对齐——H.264/HEVC/AV1 全部 "probably" + `powerEfficient: true`(NVDEC 硬解)。
+
+修复:复制系统 `google-chrome-beta.desktop` 到用户目录,3 条 Exec 追加同款 flags + `kbuildsycoca6 --noincremental` 重建缓存。验收标准追加:用户从开始菜单重启 Beta 后控制台 `video/mp4; codecs=hev1.1.6.L120.90` → "probably"。
+
 ## 风险与缓解
 
 - **registry 抖动**:白名单刚放开时曾出现一次 qtdemux not-linked(registry 缓存旧特征),之后 2/2 稳定通过;若复发 `rm ~/.cache/gstreamer-1.0/registry.x86_64.bin`。

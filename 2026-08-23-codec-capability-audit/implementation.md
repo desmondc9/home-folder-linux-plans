@@ -12,6 +12,8 @@
 - [x] `GST_VAAPI_ALL_DRIVERS=1` 验证 + E2E 硬解(裸流 + baseline/high mp4)
 - [x] 持久化 ~/.config/environment.d/70-gst-vaapi.conf
 - [x] 归档提交 ~/plans
+- [x] Chrome Beta 实测对齐:无 flags 时 HEVC 全无、H.264/AV1 仅软解;带 flags 后与 Stable 一致(NVDEC 硬解三件套)
+- [x] Beta 用户级 .desktop 追加同款 flags + ksycoca 重建
 
 ## 变更文件表
 
