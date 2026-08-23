@@ -38,6 +38,7 @@
 | 2026-08-22 | [exfat-mount-fix](./2026-08-22-exfat-mount-fix/) | exFAT U 盘挂载失败：kernel.modprobe sysctl 被清空致模块按需加载失效（写入者未定，crun/conmon 已源码排除）；modules-load.d 预加载 + sysctl 恢复修复 |
 | 2026-08-22 | [browser-hevc-bilibili](./2026-08-22-browser-hevc-bilibili/) | Chrome/Edge 报"浏览器不支持 HEVC"：独显直连 + 无 NVIDIA VAAPI 驱动 + Chromium 默认跳过 NVIDIA + 特性开关未开四层叠加；nvidia-vaapi-driver + 三特性 flags + ksycoca 重建修复 |
 | 2026-08-22 | [konsole-autoswitch-removal](./2026-08-22-konsole-autoswitch-removal/) | 拆除 Konsole 随系统主题自动切换 rig 的自动部分（开机 kdeglobals 未落定误判 light）；保留手动 Meta+Shift+T toggle，默认 profile 修正为 Dark |
+| 2026-08-23 | [codec-capability-audit](./2026-08-23-codec-capability-audit/) | 音视频编解码能力审计：浏览器侧完整（H.264/HEVC/AV1 均 NVDEC 硬解，VP9 硬解为 Chromium+NVIDIA 已知限制）；OS 侧补 GStreamer bad+vaapi，解锁 gst-vaapi 驱动白名单（GST_VAAPI_ALL_DRIVERS=1） |
 
 ## 关于本仓库
 
