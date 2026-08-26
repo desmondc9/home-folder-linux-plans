@@ -1,0 +1,187 @@
+{
+    "automation": {
+        "behavior": "OnOff",
+        "enabled": true,
+        "mode": "system"
+    },
+    "changeBrowserTheme": false,
+    "customThemes": [
+        {
+            "builtIn": true,
+            "theme": {
+                "brightness": 100,
+                "contrast": 100,
+                "darkColorScheme": "Default",
+                "darkSchemeBackgroundColor": "#181a1b",
+                "darkSchemeTextColor": "#e8e6e3",
+                "engine": "cssFilter",
+                "fontFamily": "Segoe UI",
+                "grayscale": 0,
+                "immediateModify": false,
+                "lightColorScheme": "Default",
+                "lightSchemeBackgroundColor": "#dcdad7",
+                "lightSchemeTextColor": "#181a1b",
+                "mode": 1,
+                "scrollbarColor": "",
+                "selectionColor": "auto",
+                "sepia": 0,
+                "styleSystemControls": false,
+                "stylesheet": "",
+                "textStroke": 0,
+                "useFont": false
+            },
+            "url": [
+                "*.officeapps.live.com"
+            ]
+        },
+        {
+            "builtIn": true,
+            "theme": {
+                "brightness": 100,
+                "contrast": 100,
+                "darkColorScheme": "Default",
+                "darkSchemeBackgroundColor": "#181a1b",
+                "darkSchemeTextColor": "#e8e6e3",
+                "engine": "cssFilter",
+                "fontFamily": "Segoe UI",
+                "grayscale": 0,
+                "immediateModify": false,
+                "lightColorScheme": "Default",
+                "lightSchemeBackgroundColor": "#dcdad7",
+                "lightSchemeTextColor": "#181a1b",
+                "mode": 1,
+                "scrollbarColor": "",
+                "selectionColor": "auto",
+                "sepia": 0,
+                "styleSystemControls": false,
+                "stylesheet": "",
+                "textStroke": 0,
+                "useFont": false
+            },
+            "url": [
+                "*.sharepoint.com"
+            ]
+        },
+        {
+            "builtIn": true,
+            "theme": {
+                "brightness": 100,
+                "contrast": 100,
+                "darkColorScheme": "Default",
+                "darkSchemeBackgroundColor": "#181a1b",
+                "darkSchemeTextColor": "#e8e6e3",
+                "engine": "cssFilter",
+                "fontFamily": "Segoe UI",
+                "grayscale": 0,
+                "immediateModify": false,
+                "lightColorScheme": "Default",
+                "lightSchemeBackgroundColor": "#dcdad7",
+                "lightSchemeTextColor": "#181a1b",
+                "mode": 1,
+                "scrollbarColor": "",
+                "selectionColor": "auto",
+                "sepia": 0,
+                "styleSystemControls": false,
+                "stylesheet": "",
+                "textStroke": 0,
+                "useFont": false
+            },
+            "url": [
+                "docs.google.com"
+            ]
+        },
+        {
+            "builtIn": true,
+            "theme": {
+                "brightness": 100,
+                "contrast": 100,
+                "darkColorScheme": "Default",
+                "darkSchemeBackgroundColor": "#181a1b",
+                "darkSchemeTextColor": "#e8e6e3",
+                "engine": "cssFilter",
+                "fontFamily": "Segoe UI",
+                "grayscale": 0,
+                "immediateModify": false,
+                "lightColorScheme": "Default",
+                "lightSchemeBackgroundColor": "#dcdad7",
+                "lightSchemeTextColor": "#181a1b",
+                "mode": 1,
+                "scrollbarColor": "",
+                "selectionColor": "auto",
+                "sepia": 0,
+                "styleSystemControls": false,
+                "stylesheet": "",
+                "textStroke": 0,
+                "useFont": false
+            },
+            "url": [
+                "onedrive.live.com"
+            ]
+        }
+    ],
+    "detectDarkTheme": true,
+    "disabledFor": [
+        "claude.ai",
+        "cloudflare.com",
+        "cursor.com",
+        "github.com",
+        "google.com",
+        "kimi.com",
+        "okx.com",
+        "__ADULT_SITE_REDACTED__",
+        "v.qq.com",
+        "x.com",
+        "youtube.com"
+    ],
+    "displayedNews": [
+        "google-docs-bugs"
+    ],
+    "enableContextMenus": false,
+    "enableForPDF": true,
+    "enableForProtectedPages": false,
+    "enabled": true,
+    "enabledByDefault": true,
+    "enabledFor": [],
+    "fetchNews": true,
+    "installation": {
+        "date": 1741398010149.0,
+        "reason": "install",
+        "version": "4.9.103"
+    },
+    "location": {
+        "latitude": null,
+        "longitude": null
+    },
+    "presets": [],
+    "previewNewDesign": false,
+    "previewNewestDesign": false,
+    "schemeVersion": 2,
+    "syncSettings": true,
+    "syncSitesFixes": false,
+    "theme": {
+        "brightness": 100,
+        "contrast": 100,
+        "darkColorScheme": "Default",
+        "darkSchemeBackgroundColor": "#181a1b",
+        "darkSchemeTextColor": "#e8e6e3",
+        "engine": "dynamicTheme",
+        "fontFamily": "Segoe UI",
+        "grayscale": 0,
+        "immediateModify": false,
+        "lightColorScheme": "Default",
+        "lightSchemeBackgroundColor": "#dcdad7",
+        "lightSchemeTextColor": "#181a1b",
+        "mode": 1,
+        "scrollbarColor": "",
+        "selectionColor": "auto",
+        "sepia": 0,
+        "styleSystemControls": false,
+        "stylesheet": "",
+        "textStroke": 0,
+        "useFont": false
+    },
+    "time": {
+        "activation": "18:00",
+        "deactivation": "9:00"
+    }
+}

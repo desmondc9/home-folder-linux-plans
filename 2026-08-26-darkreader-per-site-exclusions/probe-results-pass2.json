@@ -1,0 +1,112 @@
+{
+ "bilibili.com": {
+  "url": "https://www.bilibili.com/",
+  "dark_boot_lum": 0.9484690196078431,
+  "title": "哔哩哔哩 (゜-゜)つロ 干杯~-bilibili",
+  "follows": false
+ },
+ "google.com": {
+  "url": "https://www.google.com/",
+  "dark_boot_lum": 0.1412078431372549,
+  "title": "Google",
+  "follows": true
+ },
+ "youtube.com": {
+  "url": "https://www.youtube.com/",
+  "dark_boot_lum": 0.058823529411764705,
+  "title": "YouTube",
+  "follows": true
+ },
+ "apple.com.cn": {
+  "url": "https://www.apple.com.cn/",
+  "dark_boot_lum": 0.9999999999999999,
+  "title": "Apple (中国大陆) - 官方网站",
+  "follows": false
+ },
+ "notion.com": {
+  "url": "https://www.notion.com/",
+  "dark_boot_lum": 0.9999999999999999,
+  "title": "The AI workspace that works for you. | Notion",
+  "follows": false
+ },
+ "supabase.com": {
+  "url": "https://supabase.com/docs",
+  "dark_boot_lum": 0.9999999999999999,
+  "title": "Supabase Docs",
+  "follows": false
+ },
+ "bandwagonhost.com": {
+  "url": "https://bandwagonhost.com/",
+  "dark_boot_lum": 0.8588235294117647,
+  "title": "Mass VPS hosting on Enterprise equipment - Bandwag",
+  "follows": false
+ },
+ "skills.sh": {
+  "url": "https://www.skills.sh/",
+  "error": "no close frame received or sent"
+ },
+ "amazon.com": {
+  "url": "https://www.amazon.com/",
+  "error": "no close frame received or sent"
+ },
+ "douyu.com": {
+  "url": "https://www.douyu.com/",
+  "dark_boot_lum": 0.9999999999999999,
+  "title": "",
+  "follows": false
+ },
+ "dedao.cn": {
+  "url": "https://www.dedao.cn/",
+  "dark_boot_lum": 0.9999999999999999,
+  "title": "",
+  "follows": false
+ },
+ "nvidia.com": {
+  "url": "https://www.nvidia.com/",
+  "dark_boot_lum": 0.9999999999999999,
+  "title": "The AI workspace that works for you. | Notion",
+  "follows": false
+ },
+ "godaddy.com": {
+  "url": "https://www.godaddy.com/",
+  "dark_boot_lum": 0.9999999999999999,
+  "title": "Supabase Docs",
+  "follows": false
+ },
+ "minimaxi.com": {
+  "url": "https://www.minimaxi.com/",
+  "dark_boot_lum": 0.9999999999999999,
+  "title": "Mass VPS hosting on Enterprise equipment - Bandwag",
+  "follows": false
+ },
+ "z.ai": {
+  "url": "https://chat.z.ai/",
+  "dark_boot_lum": 0.9999999999999999,
+  "title": "",
+  "follows": false
+ },
+ "x.com": {
+  "url": "https://x.com/",
+  "dark_boot_lum": 0.9999999999999999,
+  "title": "",
+  "follows": false
+ },
+ "__ADULT_SITE_REDACTED__": {
+  "url": "__REDACTED__",
+  "dark_boot_lum": 0.9650047058823531,
+  "title": "__REDACTED__",
+  "follows": false
+ },
+ "okx.com": {
+  "url": "https://www.okx.com/",
+  "dark_boot_lum": 0.9999999999999999,
+  "title": "得到APP - 知识就是力量，知识就在得到",
+  "follows": false
+ },
+ "v.qq.com": {
+  "url": "https://v.qq.com/",
+  "dark_boot_lum": 0.9999999999999999,
+  "title": "World Leader in Artificial Intelligence Computing ",
+  "follows": false
+ }
+}

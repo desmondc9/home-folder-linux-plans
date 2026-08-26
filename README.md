@@ -43,6 +43,7 @@
 | 2026-08-24 | [hdmi21-4k120-test](./2026-08-24-hdmi21-4k120-test/) | HDMI 2.1 满血线验证：4K@160 压测通过 = FRL 实锤，4K@120 稳定；换线解决 |
 | 2026-08-26 | [darkreader-system-color-scheme](./2026-08-26-darkreader-system-color-scheme/) | Dark Reader "Use system color scheme" 警告：Linux 平台硬编码文案（非实测故障）；CDP 实证 Chrome 配色跟随链路健康（初值正确 + 实时更新 + change 事件） |
 | 2026-08-26 | [chrome-native-dark-mode-research](./2026-08-26-chrome-native-dark-mode-research/) | Chrome 原生暗色能力调研：UI 跟随系统原生可用；内容变暗仅 #enable-force-dark（152 仍在、实测质量尚可但无 per-site 控制）；Dark Reader 仍是最优解，Stylus 为大站轻量替代 |
+| 2026-08-26 | [darkreader-per-site-exclusions](./2026-08-26-darkreader-per-site-exclusions/) | 用 Chrome 历史 + CDP 双遍实测（实时翻转 / 暗色全新加载）筛出 11 个原生跟随系统配色的站点，加入 Dark Reader disabledFor；含 DR sync LevelDB 解析器 |
 
 ## 关于本仓库
 
