@@ -39,6 +39,10 @@
 | 2026-08-22 | [browser-hevc-bilibili](./2026-08-22-browser-hevc-bilibili/) | Chrome/Edge 报"浏览器不支持 HEVC"：独显直连 + 无 NVIDIA VAAPI 驱动 + Chromium 默认跳过 NVIDIA + 特性开关未开四层叠加；nvidia-vaapi-driver + 三特性 flags + ksycoca 重建修复 |
 | 2026-08-22 | [konsole-autoswitch-removal](./2026-08-22-konsole-autoswitch-removal/) | 拆除 Konsole 随系统主题自动切换 rig 的自动部分（开机 kdeglobals 未落定误判 light）；保留手动 Meta+Shift+T toggle，默认 profile 修正为 Dark |
 | 2026-08-23 | [codec-capability-audit](./2026-08-23-codec-capability-audit/) | 音视频编解码能力审计：浏览器侧完整（H.264/HEVC/AV1 均 NVDEC 硬解，VP9 硬解为 Chromium+NVIDIA 已知限制）；OS 侧补 GStreamer bad+vaapi，解锁 gst-vaapi 驱动白名单（GST_VAAPI_ALL_DRIVERS=1） |
+| 2026-08-24 | [discover-packagekit-proxy-db](./2026-08-24-discover-packagekit-proxy-db/) | Discover 报连旧代理：PackageKit transactions.db proxy 表僵尸行（SetProxy 上报，与 kioslaverc/apt 无关）；清 10 行 + 重启服务修复 |
+| 2026-08-24 | [hdmi21-4k120-test](./2026-08-24-hdmi21-4k120-test/) | HDMI 2.1 满血线验证：4K@160 压测通过 = FRL 实锤，4K@120 稳定；换线解决 |
+| 2026-08-26 | [darkreader-system-color-scheme](./2026-08-26-darkreader-system-color-scheme/) | Dark Reader "Use system color scheme" 警告：Linux 平台硬编码文案（非实测故障）；CDP 实证 Chrome 配色跟随链路健康（初值正确 + 实时更新 + change 事件） |
+| 2026-08-26 | [chrome-native-dark-mode-research](./2026-08-26-chrome-native-dark-mode-research/) | Chrome 原生暗色能力调研：UI 跟随系统原生可用；内容变暗仅 #enable-force-dark（152 仍在、实测质量尚可但无 per-site 控制）；Dark Reader 仍是最优解，Stylus 为大站轻量替代 |
 
 ## 关于本仓库
 
