@@ -62,6 +62,16 @@ opencode 侧只有静态 `AGENTS.md`,无自动记忆。两边知识不互通。
 第 5 步:LLM 侧接入 Kimi coding plan(`k3`),开启 auto-compress / consolidation / 知识图谱。
 embedding **保持在本地 Ollama**,不外发。详见 implementation.md 第 5 步。
 
+## 最终配置(2026-08-30 定稿)
+
+| 层 | 选型 | 依据 |
+|---|---|---|
+| Embedding | 本地 Ollama `qwen3-embedding:4b`(2560 维) | 本机基准 R@1 88% / MRR 0.91,显著优于 bge-m3(63%/0.75);数据不外发 |
+| LLM | Kimi coding plan `k3` | schema 100%,415 token 云端最省;auto-compress 是高频任务,配额比延迟重要 |
+| 检索融合 | 默认 `BM25_WEIGHT=0.4` / `VECTOR_WEIGHT=0.6` | 与向量主导(0.01/0.99)差异在噪声内,且精确 token 查询结果完全相同 |
+
+⚠️ 依赖 `ExecStartPost` 兜底才能在重启后保住语义检索,见 implementation.md 6d。
+
 ## 参考
 
 - https://github.com/rohitg00/agentmemory

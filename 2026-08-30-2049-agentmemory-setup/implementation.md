@@ -189,6 +189,95 @@ agentmemory 的 `OpenAIEmbeddingProvider` 支持一组 **embedding 专用**环�
 开 `AGENTMEMORY_AUTO_COMPRESS` 意味着**会话观测(prompt 原文、文件内容、工具输出)会发给 Kimi 做摘要**,
 比 embedding 那一层的外发面大得多。embedding 仍然留在本地 Ollama,没有外发。
 
+
+## - [x] 第 6 步:选型基准测试 + 一个上游缺陷
+
+### 6a. Embedding 选型:qwen3-embedding:4b
+
+不看模型卡宣传,用本机 34 条记忆 + 16 条"半年后会怎么问"的中文查询(刻意压低字面重合)做基准,
+纯余弦相似度隔离测量,每模型单独加载(避免显存争抢污染延迟),各跑 3 轮完全确定。
+
+| 模型 | 磁盘 | 维度 | 显存(独占) | 延迟 | R@1 | R@3 | MRR |
+|---|---|---|---|---|---|---|---|
+| **qwen3-embedding:4b** | 2.5G | 2560 | 4.4G 全 GPU | 42ms | **88%** | 94% | **0.91** |
+| qwen3-embedding:0.6b | 639M | 1024 | 2.4G 全 GPU | 26ms | 69% | 94% | 0.81 |
+| bge-m3 | 1.2G | 1024 | 664M 全 GPU | 37ms | 63% | 81% | 0.75 |
+| qwen3-embedding:8b | 4.7G | 4096 | 6.7G **溢出CPU** | 88ms | 56% | 88% | 0.74 |
+| nomic-embed-text | 274M | 768 | 397M | 16ms | **6%** | 19% | 0.19 |
+| mxbai-embed-large | 669M | 1024 | ~670M | 37ms | **6%** | 19% | 0.17 |
+
+结论:
+- 英文中心模型(nomic / mxbai)在中文语料上是灾难级的 6%,不是"差一点"。
+- **尺寸和效果不成正比**:8B 反而最差,4B 才是甜点。
+- 磁盘体积 ≠ 显存占用(bge-m3 磁盘 1.2G 只占 664M;qwen3:0.6b 磁盘 639M 却占 2.4G),
+  差在默认上下文窗口分配 —— 决策看显存那一列。
+- qwen3 系列加官方 instruct 前缀能到 R@1 75%/R@3 100%,但 agentmemory 发原始查询、
+  且文档与查询同端点无法区分,**这个上限拿不到**。对照组:同样前缀加给 bge-m3 反而
+  把 R@1 从 63% 打到 44%,证明是 qwen3 特有机制而非通用增益。
+
+**换维度必须清库重灌**:服务会拒绝启动并报
+`persisted vector index has N vectors with the wrong dimension ... Loading would silently corrupt search`,
+按提示用 `AGENTMEMORY_DROP_STALE_INDEX=true` 丢弃旧索引(这个保护设计得很好)。
+
+### 6b. LLM 选型:维持 Kimi k3
+
+从 bundle 里挖出真实的 `COMPRESSION_SYSTEM` prompt(要求严格 XML),按实际预算 `MAX_TOKENS=4096` 测:
+
+| Provider | 模型 | schema | 延迟 | 输出 token | 问题 |
+|---|---|---|---|---|---|
+| cursorbridge | glm-5.2 | 100% | **5.6s** | 456 | 第三方中转,多一层信任 |
+| MiniMax | MiniMax-M3 | 100% | 7.6s | 677 | 输出前带 `<think>` 散文,非纯 XML |
+| **Kimi(选用)** | k3 | 100% | 13–17s | **415–423** | 无 |
+| GLM | glm-5.3 | 100% | 13.5s | 1407(893 reasoning) | token 消耗最高 |
+| DeepSeek | deepseek-v4-pro | 100% | 15.5s | 1076 | 无 |
+| 本地 qwen2.5:7b | — | 100% | 27.6s | 302 | 与 embedding 抢显存(4.7+4.4>8G) |
+
+- **schema 遵循度不是区分项,全部 100%**。按延迟 / 配额消耗 / 隐私三个维度选。
+- **`MAX_TOKENS` 是隐藏的成败开关**:第一轮用 900 时 GLM 像"空输出"、DeepSeek 只有 2/5 标签,
+  全是 `finish_reason=length` 截断 —— 这些模型 60~70% 输出预算烧在 reasoning 上。别调小它。
+- 选 Kimi 的理由:415 token 是云端最省(GLM 的 1/3),auto-compress 是高频后台任务,
+  配额消耗比单次延迟重要。
+
+### 6c. 检索融合权重:维持默认 0.4/0.6
+
+RRF 融合(`1/(60+rank)`),不是分数加权 —— 我一开始"BM25 原始分量级淹没向量"的假设是错的。
+
+实测:BM25 权重越高越差(0.7 那组 R@3 掉到 56%);0.01/0.99 与默认 0.4/0.6 在语义查询上
+差 1 条(噪声),在精确 token 查询(`AADSTS700213` / `kscreen-doctor qFatal` / `winepulse ALSA`)上
+**结果完全相同**。既然没有可测量的取舍,回归官方默认。
+
+### 6d. ⚠️ 上游缺陷:重启后向量索引静默失效
+
+**症状**:重启后语义检索静默退化成纯 BM25,无任何报错。
+
+**证据链**:
+1. 检索时 ollama 的 `/v1/embeddings` 调用数为 0 → 查询侧从不向量化。
+2. `VECTOR_WEIGHT` 从 0.6 改到 0.99 分数一字不变 → 向量腿没参与排序。
+3. 闸门是 `if (this.vector && this.embeddingProvider && this.vector.size > 0)` —— `size` 为 0 就整条跳过。
+4. 重灌记忆后立即检索 → 向量化正常;一旦重启 → 又归零。
+5. 重灌后 DB 只涨 14KB(35×2560 维本该 1~2MB),启动日志里**从来没有** `Loaded persisted vector index`。
+
+**根因(两个缺陷叠加)**:
+- 向量索引的持久化不生效 —— 不落盘也不恢复,且应用层零报错(BM25 的持久化是正常的)。
+- 唯一能重建它的 `rebuildIndex()` 被 `if (bm25Index.size === 0)` 卡住 —— 而 BM25 持久化正常,
+  这个条件永远不成立。两者互相掩盖。
+
+**排除的误判**:一度以为是我 `TimeoutStopSec=20` 太短导致收尾落盘被 SIGKILL。
+放宽到 120s 后重启跑满整整 2 分钟仍然 timeout(进程根本不响应 SIGTERM),但向量依旧丢失 ——
+说明不是收尾问题。DEBOUNCE_MS 只有 5s,等 90s 也没落盘。
+
+**兜底**:`~/.local/bin/agentmemory-reindex` + unit 里的 `ExecStartPost`,
+重启后自动重灌记忆源文件恢复向量索引。重灌是**幂等**的 —— 同标题同 project 走版本演化
+(旧版标 `isLatest:false`),多次重灌记忆数稳定不涨。
+验证:重启后 ollama 收到 36 次 embedding 调用(35 记忆 + 1 查询),向量腿存活。
+**局限**:会话派生的记忆(auto-compress 产物)不在源文件里,重启后仍不可向量检索。
+
+### 6e. 关于 R@1 的诚实说明
+
+隔离基准里 qwen3:4b 是 R@1 88%,但走完整 agentmemory 混合检索只有 38~81%,跨轮次波动大。
+原因是语料一直在变:并行的 opencode 会话持续注入观测(137→200),auto-compress 又在生成新记忆,
+**几轮数字本就不可比**。稳定的结论是 **R@3 一直在 88~94%** —— 失败样本里正确答案大多排第 2。
+
 ## 教训:BM25 的失效是断崖式的
 
 中途验证犯过一个错:用「开机自动启动后台服务踩过什么坑」测出首位命中就断言"BM25 够好"。
