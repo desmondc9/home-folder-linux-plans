@@ -128,6 +128,67 @@ agentmemory 的 `OpenAIEmbeddingProvider` 支持一组 **embedding 专用**环�
 
 已存记忆的向量不会自动重算,`forget` 全部 + 重跑迁移脚本(34 条约 8 秒,模型热态下 28ms/条)。
 
+## - [x] 第 5 步:LLM 侧接入 Kimi coding plan
+
+### 5a. Kimi coding plan 附带一个未公开的 embedding 端点
+
+`https://api.kimi.com/coding/v1/embeddings` 用 coding plan 的 key(`Authorization: Bearer`
+和 `x-api-key` 都认)返回 200,**model 固定为 `bge_m3_embed`、1024 维**,且**无视请求里的 `model` 参数**。
+官方 API reference 里没有这个端点,只写了 chat completions。
+
+`api.moonshot.cn/v1/embeddings` 用同一把 key 是 401 —— coding plan 的 key 只在
+`api.kimi.com/coding/` 域下有效,和 moonshot 平台是两套账号体系。
+
+**没有采用**,理由不是能力而是取舍:它给的就是本地已在跑的同一个 bge-m3,
+质量零提升,却带来 260ms vs 36ms(7 倍延迟)和**每条记忆全文外发**。
+记录在案是因为它是无 GPU 机器上的现成后备方案。
+
+### 5b. LLM 侧配置
+
+    OPENAI_API_KEY=sk-kimi-...            # 见 ~/.agentmemory/.env,不入库
+    OPENAI_BASE_URL=https://api.kimi.com/coding/v1
+    OPENAI_MODEL=k3
+    OPENAI_REASONING_EFFORT=none
+    AGENTMEMORY_AUTO_COMPRESS=true
+    CONSOLIDATION_ENABLED=true
+    GRAPH_EXTRACTION_ENABLED=true
+
+三个坑,缺一个都跑不起来:
+
+1. **model id 必须是 `k3`**。`.zshrc` 里给 Claude Code 用的 `k3[1m]`(1M 上下文的环境变量写法)
+   在 API 上会被拒:`Your model id does not exist, recognized as other:k3[1m]`。
+2. **`reasoning_effort` 必须设 `none`**。k3 是推理模型,不设的话输出预算全烧在 thinking 上,
+   `content` 返回空字符串(实测 max_tokens=32 时 32 个 token 全是 `reasoning_tokens`)。
+3. **BASE_URL 必须自带 `/v1`**。`appendOpenAIRoute()` 的逻辑是:
+
+       if (pathname === "" || pathname === "/") return `${base}/v1${route}`;
+       return `${base}${route}`;
+
+   base 带了 `/coding` 这种路径就**不再补 `/v1`**,拼成 `.../coding/chat/completions` → 404
+   `resource_not_found_error`。反过来本地 Ollama 那条 base 没有路径,所以**不能**写 `/v1`。
+   同一份代码,两条 base URL 的写法正好相反。
+
+另外 unit 里有 `HTTPS_PROXY`,`NO_PROXY` 需加 `api.kimi.com,.kimi.com`(国内服务,不该绕 GFW 代理)。
+
+### 5c. 验证 —— 又一次「flag 绿 ≠ 真在调」
+
+四个 flag 全绿、`Provider: ✓ llm` 之后,存记忆仍然只花 75ms、`Graph: 0 nodes`。
+和 embedding 那次一模一样:**状态面板不能作为验证依据**。
+
+真正暴露问题的是显式调用 `POST /agentmemory/graph/extract`(带 `observations` 数组),
+它直接把 `OpenAI API error (404)` 抛了出来 —— 这才定位到 base URL 拼接的问题。
+
+修好后同一个调用:12 秒,`{"edgesAdded":7,"nodesAdded":7,"success":true}`,
+节点类型是 `concept` / `file` / `library`。`reflect` 的 `usedFallback` 也从 `true` 变成 `false`。
+
+`consolidate-pipeline` 能跑但按阈值跳过(`fewer than 5 summaries` / `fewer than 2 recurring patterns`),
+要等会话数据积累到量才会真正产出。
+
+### 5d. 数据外发范围变了
+
+开 `AGENTMEMORY_AUTO_COMPRESS` 意味着**会话观测(prompt 原文、文件内容、工具输出)会发给 Kimi 做摘要**,
+比 embedding 那一层的外发面大得多。embedding 仍然留在本地 Ollama,没有外发。
+
 ## 教训:BM25 的失效是断崖式的
 
 中途验证犯过一个错:用「开机自动启动后台服务踩过什么坑」测出首位命中就断言"BM25 够好"。
@@ -142,8 +203,7 @@ agentmemory 的 `OpenAIEmbeddingProvider` 支持一组 **embedding 专用**环�
 - [ ] `~/.config/opencode/opencode.json` 里有**明文** ADO PAT 和 Z.AI key(本次之前就有)。
       该文件不要进任何仓库。
 - [x] embedding 已通(Ollama + bge-m3),见第 4 步。
-- [ ] 未设 LLM provider key,所以 `AGENTMEMORY_AUTO_COMPRESS` / `CONSOLIDATION_ENABLED` /
-      `GRAPH_EXTRACTION_ENABLED` 都是关的 —— 目前只有「存了什么就是什么」,没有自动压缩和固化。
+- [x] LLM 侧已接 Kimi coding plan(k3),三个 flag 全开,见第 5 步。
 - [ ] 未启用 `CLAUDE_MEMORY_BRIDGE`。它会**反向写** `~/.claude/projects/<slug>/memory/MEMORY.md`
       并受 `CLAUDE_MEMORY_LINE_BUDGET=200` 行预算约束,有覆盖手工索引的风险;
       且该路径历史上出过 silent data loss(PR #625 砍掉 `memory/` 子目录写错位置,#1134 才修回)。

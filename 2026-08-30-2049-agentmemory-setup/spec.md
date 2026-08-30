@@ -57,6 +57,11 @@ opencode 侧只有静态 `AGENTS.md`,无自动记忆。两边知识不互通。
 - [x] 中文语义检索命中正确条目
 - [x] 本地 embedding 生效(Ollama + bge-m3;`EMBEDDING_PROVIDER=local` 是死路,详见 implementation.md 4a/4d)
 
+## 后续扩展(2026-08-30 当日追加)
+
+第 5 步:LLM 侧接入 Kimi coding plan(`k3`),开启 auto-compress / consolidation / 知识图谱。
+embedding **保持在本地 Ollama**,不外发。详见 implementation.md 第 5 步。
+
 ## 参考
 
 - https://github.com/rohitg00/agentmemory
