@@ -42,6 +42,7 @@
 | 2026-08-24 | [discover-packagekit-proxy-db](./2026-08-24-discover-packagekit-proxy-db/) | Discover 报连旧代理：PackageKit transactions.db proxy 表僵尸行（SetProxy 上报，与 kioslaverc/apt 无关）；清 10 行 + 重启服务修复 |
 | 2026-08-24 | [hdmi21-4k120-test](./2026-08-24-hdmi21-4k120-test/) | HDMI 2.1 满血线验证：4K@160 压测通过 = FRL 实锤，4K@120 稳定；换线解决 |
 | 2026-08-26 | [chrome-wayland-dark-mode](./2026-08-26-chrome-wayland-dark-mode/) | Linux Wayland + Chrome light/dark 自动切换（三阶段合一）：① DR "Use system color scheme" 警告=Linux 硬编码文案，CDP 实证 KDE→portal→Chrome 链路健康；② Chrome 原生暗色调研：UI 跟随原生可用、内容变暗仅 #enable-force-dark、DR 仍最优、Stylus 为大站轻量替代；③ Chrome 历史+CDP 双遍实测筛 11 个原生跟随配色的站点加入 DR disabledFor，含 sync LevelDB 解析器 |
+| 2026-08-30 | [scalability-verify-gate](./2026-08-30-scalability-verify-gate/) | 开发流程加装「性能验收门禁」：~/CLAUDE.md 新增 Step E（提 PR 前强制过关）+ Step A/B/C 三个前置触发点；~/docs/scalability-review-checklist.md 重构（139→382 行），新增 §0.1 先查监控再问人（GCP/Azure/Grafana 取数速查 + 七条取数坑）、§0.2 infra 家底盘点（含硬限制专表）、§12 verify 门禁，并补入 20+ 条来自真实生产事故的教训 |
 
 ## 关于本仓库
 
