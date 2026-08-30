@@ -1,0 +1,18 @@
+[
+ {"q":"微信里按住说话录不了音怎么解决的","gold":["wine-wechat-voice-alsa-fix"]},
+ {"q":"刷视频画面一卡一卡的风扇还狂转","gold":["browser-hevc-nvidia-vaapi"]},
+ {"q":"在平板上远程玩电脑游戏突然连不上了","gold":["sunshine-display-switch","moonlight-sunshine-tailscale-setup","sunshine-knowledge-notebook"]},
+ {"q":"怎么让电脑记住我常用的打字方案","gold":["rime-fcitx5-shuangpin"]},
+ {"q":"公司那个任务看板的凭证过期了要怎么弄","gold":["ado-mcp-pat-auth"]},
+ {"q":"三个手指头在触摸板上拖东西","gold":["touchpad-three-finger-drag"]},
+ {"q":"不用输密码刷脸就能解锁","gold":["howdy-face-unlock-kubuntu2604"]},
+ {"q":"插了个U盘系统认不出来挂载失败","gold":["kernel-modprobe-cleared-exfat"]},
+ {"q":"某些汉字显示出来长得像日文","gold":["fontconfig-cjk-sc-fallback"]},
+ {"q":"聊天软件在国内连不上要怎么让它走梯子","gold":["electron-app-proxy-cn"]},
+ {"q":"开机进不去系统卡在挂载那一步","gold":["binderfs-fstab-boot-race-fixed"]},
+ {"q":"手机上复制的东西传不到电脑","gold":["kdeconnect-clipboard-oem-fork"]},
+ {"q":"编辑器一启动就崩溃跟显卡有关","gold":["vscode-wayland-hybrid-gpu-crash"]},
+ {"q":"想在电脑里跑一个安卓系统","gold":["redroid-droidvm-setup"]},
+ {"q":"应用商店老提示连不上一个不存在的代理","gold":["packagekit-proxy-db-gotcha"]},
+ {"q":"整理笔记应该放哪个目录才对","gold":["plans-archive-for-system-tasks","memory-location-preference"]}
+]
