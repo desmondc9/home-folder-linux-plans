@@ -73,23 +73,67 @@ skills(`npx skills add rohitg00/agentmemory -g -y -a <agent> -s <skill>`):
 - `~/.agents/skills/handoff` 被更新——查 `.skill-lock.json` 确认它**本来就是** 2026-08-27
   从 `rohitg00/agentmemory` 装的同一个 skill,不是覆盖了别的东西。`claude-handoff` 是另一个,未受影响。
 
-## - [~] 第 4 步:本地 embedding —— 未达预期
+## - [x] 第 4 步:embedding —— 经两次换型后打通
 
-`~/.agentmemory/.env` 里 `EMBEDDING_PROVIDER=local` 已启用,unit 里加了代理环境变量
-(`HTTPS_PROXY=http://127.0.0.1:10809` + `NO_PROXY=localhost,127.0.0.1,::1`)供 HuggingFace 下模型。
+### 4a. `EMBEDDING_PROVIDER=local` 是死路
 
-`agentmemory status` 从 `bm25-only` 变成 `✓ embeddings`,**但模型从未真正加载**:
+状态标签会从 `bm25-only` 翻成 `✓ embeddings`,**但模型从未加载**:全盘无新下载的 `.onnx`,
+`~/.cache/huggingface` 无变化;保存记忆、`smart-search`、`/search` 带 `mode=vector|semantic`
+三条路径都试过,零 embedding 活动。代码里实现是有的
+(`pipeline("feature-extraction","Xenova/all-MiniLM-L6-v2",{dtype:"q8"})`,懒加载),
+`@huggingface/transformers` 也装了,但没找到能触发那条懒加载路径的调用。**别信那个状态标签。**
 
-- 全盘找不到任何新下载的 `.onnx`,`~/.cache/huggingface` 停在 716K(且都是别的项目的旧文件)
-- 保存新记忆、`smart-search`、`/search` 带 `mode=vector|semantic` 三条路径都试过,journal 里
-  零 embedding 活动、零下载
-- 代码确实实现了(`dist/index.mjs` 里 `pipeline("feature-extraction","Xenova/all-MiniLM-L6-v2",{dtype:"q8"})`,
-  懒加载),`@huggingface/transformers` 这个 optional dep 也确实装了
-- 结论:**状态标签会翻成「embeddings」但检索实际仍是 BM25**。没找到能触发那条懒加载路径的调用。
+### 4b. DeepSeek 不能做 embedding
 
-保留现状(设置无害,哪天那条路径被触发就会自动生效)。实测 BM25 + jieba 的中文召回已经够好:
-「开机自动启动后台服务踩过什么坑」→ 首位 `systemd-user-service-gui-env`(score 1.0),查询词与
-条目无任何字面重叠。
+官方文档只有 chat completions + Anthropic 格式端点,模型全是 chat/vision
+(`deepseek-v4-flash`/`pro`/`flash-vision-exp`),无 embedding 模型。
+GitHub issue 里直接请求 `/v1/embeddings` 得到 404,stale 关闭无官方回应。
+(DeepSeek 可以做 **LLM** 侧 —— auto-compress / consolidation / 知识图谱 —— 但那是另一回事。)
+
+### 4c. 本地 Ollama 走 OpenAI 兼容协议 —— 可行
+
+agentmemory 的 `OpenAIEmbeddingProvider` 支持一组 **embedding 专用**环境变量,
+与 LLM 侧完全隔离(不会触发 `OPENAI_API_KEY` 的 LLM 自动检测):
+
+    EMBEDDING_PROVIDER=openai
+    OPENAI_EMBEDDING_API_KEY=ollama              # 占位即可,Ollama 不校验
+    OPENAI_EMBEDDING_BASE_URL=http://127.0.0.1:11434   # 不带 /v1,代码自己拼
+    OPENAI_EMBEDDING_MODEL=bge-m3
+    OPENAI_EMBEDDING_DIMENSIONS=1024             # 模型不在 known-models 表里时必填
+
+注意 unit 里加了 `HTTPS_PROXY`,所以 `NO_PROXY` 必须含 `127.0.0.1`,否则 Ollama 调用会被代理吞掉。
+
+验证方式:`journalctl -u ollama | grep '/v1/embeddings'` 看 GIN 访问日志——
+这是唯一能证明链路真通的证据(agentmemory 自己的日志里没有 embedding 记录)。
+冷启动约 3.3s/次,模型常驻 GPU 后约 28ms/次。
+
+### 4d. 模型选型:mxbai-embed-large 不行,bge-m3 才行
+
+先用了本机已有的 `mxbai-embed-large`(1024 维),链路通了但**检索质量反而比 BM25 差** ——
+英文中心模型,中文向量挤成一团,「远程玩游戏画面断了连不上」返回的第一名是「个人数据脱敏」。
+
+换 `bge-m3`(多语言,1024 维)后立竿见影。同一组零关键词重合的中文查询:
+
+| 查询 | mxbai | bge-m3 |
+|---|---|---|
+| 视频播放画面卡顿风扇狂转 | ✗ | ✓ HEVC 硬解 (1.05) |
+| 远程玩游戏画面断了连不上 | ✗ | ✓ sunshine-display-switch (1.05) + Moonlight (0.59) |
+| 笔记本合盖后外接屏幕不亮 | ✗ | ✓ sunshine-display-switch (1.05) |
+| 怎么让电脑记住我打字的习惯 | ✗ | ✗(该命中 Rime) |
+| 登录不上公司的看板系统 | ✗ | ✗(该命中 ADO PAT,需一层"看板→ADO"的业务跳跃) |
+
+**3/5 vs 0/5。** 中文场景下模型选型比"有没有向量"更决定成败。
+
+### 4e. 换 embedding 模型必须重灌
+
+已存记忆的向量不会自动重算,`forget` 全部 + 重跑迁移脚本(34 条约 8 秒,模型热态下 28ms/条)。
+
+## 教训:BM25 的失效是断崖式的
+
+中途验证犯过一个错:用「开机自动启动后台服务踩过什么坑」测出首位命中就断言"BM25 够好"。
+实测该条记忆里「开机」出现 4 次、「启动」2 次 —— **那是标准的词面命中,没有证明任何语义能力**。
+真正零重合的查询(「怎么让电脑记住我打字的习惯」)BM25 是 0 分,不是"差一点",是查不到。
+验证检索质量必须先确认查询词与目标文档的字面重合度为零。
 
 ## 遗留 / 待办
 
@@ -97,7 +141,7 @@ skills(`npx skills add rohitg00/agentmemory -g -y -a <agent> -s <skill>`):
       本机有 frp 和 tailnet,建议确认它没穿出去或加防火墙规则。
 - [ ] `~/.config/opencode/opencode.json` 里有**明文** ADO PAT 和 Z.AI key(本次之前就有)。
       该文件不要进任何仓库。
-- [ ] 本地 embedding 见上。
+- [x] embedding 已通(Ollama + bge-m3),见第 4 步。
 - [ ] 未设 LLM provider key,所以 `AGENTMEMORY_AUTO_COMPRESS` / `CONSOLIDATION_ENABLED` /
       `GRAPH_EXTRACTION_ENABLED` 都是关的 —— 目前只有「存了什么就是什么」,没有自动压缩和固化。
 - [ ] 未启用 `CLAUDE_MEMORY_BRIDGE`。它会**反向写** `~/.claude/projects/<slug>/memory/MEMORY.md`

@@ -1,7 +1,7 @@
 # agentmemory 跨 agent 记忆层落地
 
 - 日期: 2026-08-30
-- 状态: 已完成(第 4 步 embedding 部分未达预期,见下)
+- 状态: 已完成
 
 ## 背景与目标
 
@@ -55,7 +55,7 @@ opencode 侧只有静态 `AGENTS.md`,无自动记忆。两边知识不互通。
 - [x] Claude Code 与 opencode 均已接线
 - [x] 33 条记忆迁移完成,标题可读
 - [x] 中文语义检索命中正确条目
-- [ ] 本地 embedding 真正生效(见 implementation.md「未达预期」)
+- [x] 本地 embedding 生效(Ollama + bge-m3;`EMBEDDING_PROVIDER=local` 是死路,详见 implementation.md 4a/4d)
 
 ## 参考
 
