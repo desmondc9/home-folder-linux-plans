@@ -161,7 +161,7 @@ ls -lh /tmp/sing-box.deb   # 期望 ~10MB
 
 用法(写进 Task 10 文档):往数组里加 `"openai.com"`(domain_suffix)或 `"1.2.3.0/24"`(ip_cidr),然后 `sudo systemctl restart sing-box`。
 
-- [x] **Step 3: 发布配置并校验** `[用户执行]` ✅ CONFIG-OK(补了 sing-box 1.12+ 必填的 `route.default_domain_resolver: alidns`,详见 design.md 风险表)
+- [x] **Step 3: 发布配置并校验** `[用户执行]` ✅ CONFIG-OK(补了 sing-box 1.12+ 必填的 `route.default_domain_resolver: alidns`,详见 spec.md 风险表)
 
 ---
 
@@ -317,7 +317,7 @@ iPad(4G,Tailscale 开,Shadowrocket 关): Exit Node 选 `desmond-yaoshi15proserie
 - [x] `myip.ipip.net` → ✅ 114.92.157.156 上海电信(国内直连)
 - [x] `google.com` → ✅ 正常访问(经 VPS,v6 路径)
 - [x] `api.ipify.org` → ✅ 104.194.83.82(经 VPS,v6 路径)
-- [ ] `ipv4.google.com` → ❌ **已知问题**:tailnet 客户端经笔记本出口的 v4-only 国外域名不可达(v6 全通;TPROXY/REDIRECT 在 TUN 接口跨栈查找丢包,详见 design.md 已知限制)
+- [ ] `ipv4.google.com` → ❌ **已知问题**:tailnet 客户端经笔记本出口的 v4-only 国外域名不可达(v6 全通;TPROXY/REDIRECT 在 TUN 接口跨栈查找丢包,详见 spec.md 已知限制)
 
 - [x] **Step 2: Exit Node = VPS(全局美国模式)** ✅ `brave-goose-1` 出口正常
 

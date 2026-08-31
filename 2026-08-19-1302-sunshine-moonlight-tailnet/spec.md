@@ -1,6 +1,6 @@
 # Sunshine + Moonlight 串流接入自建 Tailnet 设计文档
 
-日期:2026-08-18(2026-08-19 补记并加固) · 状态:已完成,已验证 · 实施记录:[implementation.md](implementation.md) · 后续演进:[../2026-08-18-2224-tailnet-exit-singbox/design.md](../2026-08-18-2224-tailnet-exit-singbox/design.md)(tailnet 升级为双 Exit Node + sing-box 分流网关)
+日期:2026-08-18(2026-08-19 补记并加固) · 状态:已完成,已验证 · 实施记录:[implementation.md](implementation.md) · 后续演进:[../2026-08-18-2224-tailnet-exit-singbox/spec.md](../2026-08-18-2224-tailnet-exit-singbox/spec.md)(tailnet 升级为双 Exit Node + sing-box 分流网关)
 
 ## 背景与目标
 
@@ -26,7 +26,7 @@
 
 **Out of scope:**
 
-- tailnet 的翻墙 / Exit Node 用法 → 独立档案 [2026-08-18-2224-tailnet-exit-singbox](../2026-08-18-2224-tailnet-exit-singbox/design.md)
+- tailnet 的翻墙 / Exit Node 用法 → 独立档案 [2026-08-18-2224-tailnet-exit-singbox](../2026-08-18-2224-tailnet-exit-singbox/spec.md)
 - 光猫桥接 / 端口映射改造(无光猫管理权)
 - 境内 DERP 部署(无国内服务器,DERP 只能走美国 VPS)
 

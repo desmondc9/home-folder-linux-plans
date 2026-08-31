@@ -1,10 +1,10 @@
 # implementation — Chrome/Edge HEVC 修复
 
-对应 [design.md](./design.md)。
+对应 [spec.md](./spec.md)。
 
 ## 任务清单
 
-- [x] 诊断:四层根因定位(见 design.md 证据链)
+- [x] 诊断:四层根因定位(见 spec.md 证据链)
 - [x] 安装 `nvidia-vaapi-driver`(vainfo 验证 HEVC profiles 齐备)
 - [x] 特性三件套在隔离测试实例验证通过(canPlayType "probably" + decodingInfo 全 true)
 - [x] 固化 flags 到用户级 desktop 文件(Chrome 3 条 Exec 追加;Edge 复制到用户目录后 3 条追加)

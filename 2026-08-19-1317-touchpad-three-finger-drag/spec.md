@@ -78,4 +78,4 @@
 - 上游仓库与 README(安装/配置/排障):https://github.com/lmr97/linux-3-finger-drag
 - KWin 可配置手势 MR:https://invent.kde.org/plasma/kwin/-/merge_requests/9598
 - KDE 手势定制 mini-sprint(2025-06):https://blogs.kde.org/2025/06/12/gesture-customization-mini-sprint/
-- 相关 memory:[touchpad-three-finger-drag](../../../../.claude/projects/-home-desmond/memory/touchpad-three-finger-drag.md)
+- 相关 memory:[touchpad-three-finger-drag](../../.claude/projects/-home-desmond/memory/touchpad-three-finger-drag.md)

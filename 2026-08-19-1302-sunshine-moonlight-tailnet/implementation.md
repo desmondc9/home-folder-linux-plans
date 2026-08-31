@@ -4,7 +4,7 @@
 
 **Goal:** iPad/Android 在任意网络下串流笔记本桌面/游戏:自建 headscale tailnet 为主链路(IPv6 P2P),frp 中继为备份链路,Sunshine 以 user 服务常驻笔记本。
 
-**Architecture:** 见 [design.md](design.md) 总体架构图。两链路共用 VPS 但故障域独立;Moonlight 依 Sunshine uniqueid 合并多来源主机条目。
+**Architecture:** 见 [spec.md](spec.md) 总体架构图。两链路共用 VPS 但故障域独立;Moonlight 依 Sunshine uniqueid 合并多来源主机条目。
 
 **Tech Stack:** Sunshine 2026.516(deb)/ Moonlight 1.x(iOS/Android)/ headscale 0.29.3 / tailscale 1.102.2 / frp
 

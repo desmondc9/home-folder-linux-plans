@@ -1,6 +1,6 @@
 # dockur/windows Windows 11 VM — 实施记录
 
-日期: 2026-08-19 · 关联: [design.md](design.md)
+日期: 2026-08-19 · 关联: [spec.md](spec.md)
 
 ## 任务清单
 

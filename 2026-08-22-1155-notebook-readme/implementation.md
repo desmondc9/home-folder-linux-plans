@@ -1,6 +1,6 @@
 # ~/Notebook 纵览 README — 实施记录
 
-日期: 2026-08-22 · 设计: [design.md](design.md)
+日期: 2026-08-22 · 设计: [spec.md](spec.md)
 
 ## 任务清单
 

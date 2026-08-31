@@ -1,6 +1,6 @@
 # 触控板三指拖拽 实施计划(单阶段)
 
-目标:落实 [design.md](design.md) 全部验收标准 · 依赖:cargo、input 组、/dev/uinput(实施前均已确认就绪)
+目标:落实 [spec.md](spec.md) 全部验收标准 · 依赖:cargo、input 组、/dev/uinput(实施前均已确认就绪)
 
 ## 文件变更清单
 
@@ -16,7 +16,7 @@
 ## 任务列表
 
 - [x] 环境盘点:Plasma 6.6.4 / Wayland / 触控板 event6 / cargo 1.95.0 / input 组 / /dev/uinput(全部就绪)
-- [x] 调研选型:确认 KDE 原生不支持,选定 lmr97/linux-3-finger-drag(见 design.md 选型表)
+- [x] 调研选型:确认 KDE 原生不支持,选定 lmr97/linux-3-finger-drag(见 spec.md 选型表)
 - [x] 克隆仓库(经代理)并审阅 README、install.sh、udev 规则、service、默认配置
 - [x] 发现并规避 install.sh EOF-重启陷阱 → 采用手动安装步骤
 - [x] `cargo build --release`(10.3s 成功;crates.io 直连可用,未动镜像)
@@ -24,7 +24,7 @@
 - [x] root 级安装(用户以 `! sudo bash -c '...'` 执行,howdy 面部认证):udev 规则、二进制、modules-load、`udevadm control --reload`
 - [x] `systemctl --user enable --now three-finger-drag.service`
 - [x] 验证(见下)
-- [x] 留档:design.md / implementation.md 入 `~/plans/`;写入 memory(touchpad-three-finger-drag)
+- [x] 留档:spec.md / implementation.md 入 `~/plans/`;写入 memory(touchpad-three-finger-drag)
 
 ## 验证方式与结果
 

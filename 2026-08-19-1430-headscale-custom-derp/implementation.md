@@ -1,6 +1,6 @@
 # 实施记录:自建 DERP 兜底中继
 
-日期:2026-08-19 · 对应设计:[design.md](design.md)
+日期:2026-08-19 · 对应设计:[spec.md](spec.md)
 
 所有 VPS 操作经 `ssh desmond@bandwagon.signal-align.com`(sudo 密码见 `~/.bandwagon/credentials.jsonc`,session 内 `sudo -S` 使用,未落盘到 VPS)。
 

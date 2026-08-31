@@ -14,7 +14,7 @@
   - 用 daemon 完整环境跑 `--dpms show` → EXIT 0 ✓
   - 重启后 daemon cgroup 零新崩溃(之后仅有的两个 coredump 均属 konsole,为排查期自己的测试)✓
   - Fix B 自愈模拟: `env -i` 干净环境(无显示变量)source 函数 → 从 manager 导入 → kscreen-doctor OK ✓
-- [x] T7 归档本文档 + design.md
+- [x] T7 归档本文档 + spec.md
 
 ## 变更的文件
 
@@ -23,7 +23,7 @@
 | `~/.config/systemd/user/screen-wake-daemon.service` | +`Wants=graphical-session.target`;`WantedBy` default.target → graphical-session.target | `.bak-20260822` |
 | `~/.local/bin/screen-wake-daemon.sh` | +`ensure_display_env()`;`wake_if_off` 与 httpd 拉起前调用 | `.bak-20260822` |
 
-未变更: sunshine-watchdog.service/timer(无此竞态,见 design.md)。
+未变更: sunshine-watchdog.service/timer(无此竞态,见 spec.md)。
 
 ## 验证方式
 

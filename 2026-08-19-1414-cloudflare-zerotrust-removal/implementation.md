@@ -1,6 +1,6 @@
 # 移除 Cloudflare Zero Trust 残留 + 归档 frp 配置 — 实施记录
 
-对应设计:[design.md](design.md) · 日期:2026-08-19
+对应设计:[spec.md](spec.md) · 日期:2026-08-19
 
 ## 任务清单
 

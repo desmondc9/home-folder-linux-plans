@@ -114,5 +114,5 @@ podman run --rm --cap-add=NET_ADMIN localhost/singbox-sandbox
 ## 参考
 
 - 完整部署文档：`../README.md`
-- 架构设计：`../design.md`
+- 架构设计：`../spec.md`
 - 实施记录：`../implementation.md`

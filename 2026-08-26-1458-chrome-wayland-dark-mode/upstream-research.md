@@ -173,7 +173,7 @@
 
 ### 1. 浏览器 UI 跟随系统(对应 §1)
 
-- 本目录 [design.md](./design.md) 的 Phase 1 调查(§1)已用 CDP 证实:真 Chrome 对 `prefers-color-scheme` 的读取**初值正确且实时跟随**(切配色 2.5s 内生效,change 事件双向触发)。浏览器 UI 主题同源跟随(portal 链路已验证健康)。
+- 本目录 [spec.md](./spec.md) 的 Phase 1 调查(§1)已用 CDP 证实:真 Chrome 对 `prefers-color-scheme` 的读取**初值正确且实时跟随**(切配色 2.5s 内生效,change 事件双向触发)。浏览器 UI 主题同源跟随(portal 链路已验证健康)。
 - `chrome://settings/appearance`(Linux 152)**没有** Light/Dark/Device 行;取而代之有一个 Linux 特有的 **Theme 下拉**(Use Classic / Use GTK / Qt)——浏览器界面用哪套平台主题渲染的选择器。Light/Dark/Device 官方入口在 NTP "Customize Chrome" 侧面板,该面板是**浏览器级侧栏**,页面级截图拍不到,未做像素级验证(官方 Help 已记载,见 §1)。
 
 ### 2. `#enable-force-dark` 存在性与质量(对应 §2b)

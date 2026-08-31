@@ -1,6 +1,6 @@
 # frp token 泄露清除与机密入库禁令 — 实施记录
 
-对应说明:[design.md](design.md) · 日期:2026-08-19
+对应说明:[spec.md](spec.md) · 日期:2026-08-19
 
 ## 任务清单
 
@@ -10,7 +10,7 @@
 - [x] 清历史:`git filter-repo --replace-text`(token → `__FRP_TOKEN_REDACTED__`),全部 commit 重写
 - [x] 验证:全历史 `git grep` 0 命中;gitleaks 复扫 `no leaks found`
 - [x] 强推覆盖远端:`git push -f origin main`(`f0d8ff3...1963110 forced update`)
-- [x] 修正 3 处"私人仓库"错误表述(zerotrust-removal design.md/implementation.md、frp-config-archive implementation.md),frp-config-archive design.md 快照表注明"已脱敏"
+- [x] 修正 3 处"私人仓库"错误表述(zerotrust-removal spec.md/implementation.md、frp-config-archive implementation.md),frp-config-archive spec.md 快照表注明"已脱敏"
 - [x] 新建 [../CLAUDE.md](../CLAUDE.md):机密禁令 + 提交前 gitleaks 扫描 + 泄露处置 SOP
 - [x] 轮换 frp token(同日 15:48–15:58 完成):`openssl rand -hex 24` 生成新 token(全程经 0600 临时文件传递,未落对话)→ VPS `frps.toml` 更新 + `frps` restart(ssh + `sudo -S`)→ 本机 `frpc.toml` 更新 + `frpc` restart(用户 `! sudo bash /tmp/frp-rotate-local.sh`,人脸授权)→ 验证:frps 日志全部代理注册成功、VPS 6000/47984/48010 正常监听、`nc -z bandwagon.signal-align.com 6000` 全链路通、双端临时 token 文件已删。**旧 token 已失效**(过渡期 frps 日志可见旧 token 登录被拒)。
 
@@ -19,8 +19,8 @@
 | 文件 | 变更 |
 |---|---|
 | `2026-08-19-1420-frp-config-archive/frpc.toml` / `frps.toml` | token → `__FRP_TOKEN_REDACTED__`(全历史) |
-| `2026-08-19-1420-frp-config-archive/design.md` / `implementation.md` | 快照表注明脱敏;纠正"私人仓库"说法 |
-| `2026-08-19-1414-cloudflare-zerotrust-removal/design.md` / `implementation.md` | 纠正"私人仓库"说法,补脱敏要求 |
+| `2026-08-19-1420-frp-config-archive/spec.md` / `implementation.md` | 快照表注明脱敏;纠正"私人仓库"说法 |
+| `2026-08-19-1414-cloudflare-zerotrust-removal/spec.md` / `implementation.md` | 纠正"私人仓库"说法,补脱敏要求 |
 | `CLAUDE.md`(新建) | 机密红线规则 |
 | `2026-08-19-1528-frp-token-redaction/`(新建) | 本档案 |
 

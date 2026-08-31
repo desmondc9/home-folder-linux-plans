@@ -1,6 +1,6 @@
 # implementation — 编解码能力审计与补齐
 
-对应 [design.md](./design.md)。
+对应 [spec.md](./spec.md)。
 
 ## 任务清单
 

@@ -1,6 +1,6 @@
 # sing-box / tproxy 知识库整理 → ~/Notebook — 实施记录
 
-日期: 2026-08-22 · 设计: [design.md](design.md)
+日期: 2026-08-22 · 设计: [spec.md](spec.md)
 
 ## 任务清单
 
@@ -10,7 +10,7 @@
 - [x] 跨域链接：Sunshine MOC "相关笔记"行改为 `[[00-sing-box-分流网关-MOC]]`
 - [x] 验证 wikilink：vault 内 13 个链接全部可解析，0 断链
 - [x] 敏感扫描：rg 无 UUID/私钥/token/密码命中；gitleaks v8.30.1（新装 `~/.local/bin/gitleaks`）扫描通过
-- [x] 本档案（design.md + implementation.md）归档
+- [x] 本档案（spec.md + implementation.md）归档
 - [x] README 任务索引补齐：新增本行 + 08-19 以来缺失的 11 行（dockur / headscale-custom-derp / sunshine-display-switch / redroid / redroid-backup / sunshine-dpms-off-fix / windows11-vm-backup / hdmi-frl / binderfs-race / sunshine-notebook / kscreen-doctor）
 
 ## 产出

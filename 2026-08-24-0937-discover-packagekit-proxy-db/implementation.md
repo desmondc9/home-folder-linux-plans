@@ -15,7 +15,7 @@
 | 文件/对象 | 变更 | 备份 |
 |---|---|---|
 | `~/.config/kioslaverc` | 删 httpProxy/httpsProxy/ftpProxy/socksProxy（均 10808） | `~/.config/kioslaverc.bak-20260824` |
-| `/var/lib/PackageKit/transactions.db` 表 `proxy` | DELETE 全部 10 行 | 无（僵尸数据，无保留价值；原始内容已记录在 design.md） |
+| `/var/lib/PackageKit/transactions.db` 表 `proxy` | DELETE 全部 10 行 | 无（僵尸数据，无保留价值；原始内容已记录在 spec.md） |
 
 ## 验证
 

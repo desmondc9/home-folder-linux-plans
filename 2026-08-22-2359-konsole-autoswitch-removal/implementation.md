@@ -1,6 +1,6 @@
 # implementation — Konsole 自动切换 rig 拆除
 
-对应 [design.md](./design.md)。
+对应 [spec.md](./spec.md)。
 
 ## 任务清单
 

@@ -1,14 +1,14 @@
 # implementation — exFAT U 盘挂载失败修复
 
-对应 [design.md](./design.md)。
+对应 [spec.md](./spec.md)。
 
 ## 任务清单
 
-- [x] 诊断:定位根因为 `/proc/sys/kernel/modprobe` 为空致模块按需加载失效(证据链见 design.md)
+- [x] 诊断:定位根因为 `/proc/sys/kernel/modprobe` 为空致模块按需加载失效(证据链见 spec.md)
 - [x] 即时修复:`sudo modprobe exfat` —— 用户实测挂载成功
 - [x] 持久化:新建 `/etc/modules-load.d/exfat.conf`(内容 `exfat`)
 - [x] 运行时恢复:`sudo sysctl -w kernel.modprobe=/sbin/modprobe`
-- [x] 归档:本目录 design.md + implementation.md 提交至 ~/plans 仓库
+- [x] 归档:本目录 spec.md + implementation.md 提交至 ~/plans 仓库
 
 ## 变更文件表
 

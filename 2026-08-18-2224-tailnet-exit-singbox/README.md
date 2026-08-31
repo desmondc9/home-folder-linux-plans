@@ -1,6 +1,6 @@
 # Tailnet 双 Exit Node + sing-box 分流网关
 
-**状态**: 生产可用(2026-08-19) · 设计文档: [design.md](design.md) · 实施记录: [implementation.md](implementation.md)
+**状态**: 生产可用(2026-08-19) · 设计文档: [spec.md](spec.md) · 实施记录: [implementation.md](implementation.md)
 
 ## 架构一句话
 

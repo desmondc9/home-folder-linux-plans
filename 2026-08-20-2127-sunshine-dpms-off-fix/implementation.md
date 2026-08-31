@@ -24,10 +24,10 @@
 ## 验证方式
 
 - Fix A 配置持久性: 重启 powerdevil 后 `grep TurnOff ~/.config/powerdevilrc` = 0
-- 故障机理: 手动 DPMS off 复现 500,屏幕回亮即恢复(见 design.md)
+- 故障机理: 手动 DPMS off 复现 500,屏幕回亮即恢复(见 spec.md)
 - 服务健康: 重启后启动探测成功、47990 UI 正常
 
 ## 未做(留待需要时)
 
-- watchdog 增强 "DPMS off 自动唤醒"(见 design.md 残余风险)
+- watchdog 增强 "DPMS off 自动唤醒"(见 spec.md 残余风险)
 - 真实 30 分钟闲置回归测试(机理已实证,价值低)

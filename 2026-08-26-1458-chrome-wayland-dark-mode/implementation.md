@@ -48,7 +48,7 @@
 
 | 文件 | 说明 |
 |---|---|
-| `design.md` | 三阶段总设计:Phase 1 警告调查 + Phase 2 摘要 + Phase 3 per-site 排除 |
+| `spec.md` | 三阶段总设计:Phase 1 警告调查 + Phase 2 摘要 + Phase 3 per-site 排除 |
 | `implementation.md` | 本文件 |
 | `upstream-research.md` | Phase 2 完整调研报告(官方文档 / Chromium 源码 / 替代品对比 + 本地实测) |
 | `screenshots/` | Phase 2 本地实测截图(baseline / forcedark / darkreader / flags / settings-appearance) |
