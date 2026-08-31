@@ -388,3 +388,58 @@ Provider ✓ llm、Embeddings ✓ embeddings,向量腿存活(重启后 36 次 em
 
 `am-export-before.json`(旧标题版)/ `am-export-33-clean.json`(当前版)/
 `claude.json.bak` / `settings.json.bak` / `opencode.json.bak` / `AGENTS.md.bak` / `agentmemory.env.bak`
+
+
+---
+
+## - [x] 第 8 步:彻底卸载(2026-08-31 10:16)
+
+**用户决定:agent memory 这类技术还不够成熟,彻底卸载。** 本档案转为「评估结论 + 反面教材」保留。
+
+### 卸载清单(逐项已验证)
+
+| 层 | 处理 |
+|---|---|
+| systemd unit | `disable --now` + 删除 unit 与 `default.target.wants` 软链 + `daemon-reload` + `reset-failed`;`list-unit-files` 现为 0 |
+| 兜底脚本 | `~/.local/bin/agentmemory-{reindex,import-memories}` 已删 |
+| Claude Code | `~/.claude.json` 的 MCP 块已摘除;`settings.json` 的 **12 个 hook 全部移除**(逐条过滤,保留其它 hook,结果事件数归 0) |
+| opencode | `opencode.json` 的 MCP 块、`plugins/agentmemory-capture.ts`、`commands/{recall,remember}.md` 全删(空的 commands 目录一并移除) |
+| skills | 10 个从 `~/.claude/skills` 与 `~/.agents/skills` 删除;14 个指向 `handoff` 的跨 agent 软链清理;`.skill-lock.json` 65→55 条 |
+| `~/CLAUDE.md` | `<!-- agentmemory:start -->` 围栏块移除(665 字符) |
+| npm | `npm uninstall -g @agentmemory/agentmemory`(193 个包) |
+| 数据 | `~/.agentmemory`(32M)+ `~/.local/share/agentmemory`(7.9M)删除 |
+| **机密** | `.env`(含 Kimi coding plan key)与 `backups/`(含 227KB `.claude.json` 快照,内有其它 MCP 密钥)**用 `shred -u` 安全清除**,而非普通删除 |
+| npx 缓存 | 两个 1012M 的缓存目录 + `_npx/bin/` 垫片,共 **~2.0 GB** |
+| MCP 日志 | `~/.cache/claude-cli-nodejs/*/mcp-logs-agentmemory` |
+
+**共释放约 2.04 GB。**
+
+### 保留的东西
+
+- Ollama 的 embedding 模型(qwen3-embedding:4b 等)—— 用户明确要求保留,且与 agentmemory 无关。
+- 本档案与 `benchmarks/` 下可复现的基准测试脚本。
+- Claude Code 原生 memory(`~/.claude/projects/<slug>/memory/*.md`)—— 从来就是源头,迁移只是复制。
+
+### 卸载后验证
+
+- 三个配置文件 JSON 均有效;**其它 5 个 MCP(ado / web-reader / web-search-prime / zai-mcp-server / zread)在两个 agent 里都完好**,没有误删。
+- 端口 3111/3112/3113/49134 全部释放,无残留进程。
+- `opencode run` 实测正常返回。
+- 全盘 `find -iname '*agentmemory*'` 无残留(plans 档案除外)。
+
+### 一个操作教训
+
+`pkill -f 'agentmemory'` 会匹配到**自己的命令行**(命令串里含该字样)从而自杀,
+整条命令一件事都没做就退出(exit 144)。查进程要用括号写法 `grep -E '[a]gentmemory'`。
+这条坑本机记忆里早有记录,仍然踩了。
+
+### 结论:为什么放弃
+
+一天的实测里,四个问题指向同一件事 —— **这类系统的"可用"与"看起来可用"之间差距很大**:
+
+1. 向量索引重启后静默失效(持久化不恢复 + 重建被死条件卡住),语义检索退化成纯 BM25 且零报错。
+2. `import-jsonl` 导入历史反而让检索质量腰斩,固化流水线因阈值永不满足而救不了。
+3. 状态面板的 `✓` 不代表功能在跑 —— embedding 和 LLM 两次都是 flag 绿但实际没调用,
+   只有查下游访问日志才发现。
+4. auto-compress 和 consolidation 的产出本身在拉低精度(删掉那 105 条记忆后 R@1 从 38% 升到 75%),
+   lesson 层还会把技能文档里的祈使句抠成"教训"注入上下文。
