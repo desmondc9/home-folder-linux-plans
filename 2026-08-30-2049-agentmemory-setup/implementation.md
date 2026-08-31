@@ -278,6 +278,93 @@ RRF 融合(`1/(60+rank)`),不是分数加权 —— 我一开始"BM25 原始分�
 原因是语料一直在变:并行的 opencode 会话持续注入观测(137→200),auto-compress 又在生成新记忆,
 **几轮数字本就不可比**。稳定的结论是 **R@3 一直在 88~94%** —— 失败样本里正确答案大多排第 2。
 
+
+## - [x] 第 7 步:对照官方功能清单的完整审计(2026-08-31)
+
+### 7a. 更正:`agent-memory.dev` 就是官方站
+
+本档案早前写"同名易混项目 jayzeng/agentmemory……域名 agent-memory.dev"——**域名归属判断错误**。
+实测 `https://www.agent-memory.dev/` 明确标注 Repository = `github.com/rohitg00/agentmemory`、Author = Rohit G,
+是本项目官方站。(jayzeng 那个同名项目确实存在,但站点是 `jayzeng.github.io/agentmemory`。)
+
+### 7b. 补上 Claude Code 的 12 个 hook
+
+审计发现 `~/.claude/settings.json` 的 `.hooks` 是 `{}`、agentmemory 出现 0 次 ——
+**Claude Code 一直只有 MCP,没有自动捕获**。官方明确 Claude Code 应有 12 个 hook。
+初次 `connect claude-code` 默认只写 MCP,必须显式 `--with-hooks`。
+
+修复:`agentmemory connect claude-code --with-hooks` → 12 个事件
+(SessionStart / UserPromptSubmit / PreToolUse / PostToolUse / PostToolUseFailure /
+PreCompact / SubagentStart / SubagentStop / Stop / SessionEnd / Notification / TaskCompleted)。
+
+实测验证(不是看配置,是看数据):跑 `claude -p` 无头会话 → sessions 2→5、observations 202→204,
+探针会话的 cwd 正确落库,内容被捕获为 `[conversation] User prompt requests exact string echo`。
+
+### 7c. 跨 agent 双向读取:实测通过
+
+- **CC 读 opencode**:Claude Code 用 MCP `memory_smart_search` 取回 `sessionId=ses_faa84e61...`
+  (opencode 的 `ses_*` ID 格式)的观测。
+- **opencode 读 CC**:`opencode run` 调用 `agentmemory_memory_smart_search`,返回了
+  `c7411741-...` 和 `6d4445ab-...`(Claude Code 的 UUID 格式会话)的观测。
+- opencode 自己的 hook 同时在发(`Session status hook triggered` / `LLM parameters hook triggered` 等),
+  印证 22-hook 覆盖。
+
+### 7d. ⚠️ `import-jsonl` 不要用 —— 实测让检索质量腰斩
+
+本机有 959 个 Claude Code JSONL transcript(918MB)从未导入。试跑 20 个文件:
+
+| 指标 | 导入前 | 导入后 | 回滚后 |
+|---|---|---|---|
+| observations | 245 | 2669 | 261 |
+| **R@1** | 38% | **19%** | **75%** |
+| **R@3** | 94% | **44%** | **94%** |
+
+原因:**79% 的导入观测是无标题的原始 hook 记录**(`post_tool_use` / `prompt_submit` /
+`post_tool_failure`),没有 LLM 写的标题和摘要。检索「Headscale DERP 部署」返回的就是
+一条 `[other] post_tool_use`。
+
+**固化流水线救不了它们**:`consolidate-pipeline` 的 semantic 层要求「至少 5 条会话摘要」,
+而摘要来自 Stop hook 的 LLM 压缩 —— 导入的历史会话从未经过那一步,永久停留在噪声态。
+实测 2669 条观测下跑固化,仍然 `{"semantic":{"reason":"fewer than 5 summaries","skipped":true}}`。
+
+**结论:全量 959 文件导入(推算 11.6 万条观测)会彻底毁掉检索,不要做。**
+回滚方式:按 sessionId 调 `POST /agentmemory/forget`。
+
+### 7e. `forget` 按 sessionId 不级联删除派生的 lesson
+
+回滚导入会话后,`memory_lesson_recall` 仍返回 28 条 `source=consolidation` `tags=[auto-import]`
+的垃圾 lesson —— 内容是从技能文档和提示词里正则抠出来的碎片
+(`never frontend-design,`、`Don't skim - read every line`、`Do NOT paste the whole report.`),
+`sourceIds` 全部指向已删除的会话。**lesson 会被注入 agent 上下文,污染代价比观测更高。**
+
+清理端点是 `POST /agentmemory/lessons/delete`(注意是复数 `lessons/`;
+`lesson/delete`、`lesson-delete` 都是 404)。已删除 28 条,只保留 1 条手写 lesson。
+
+### 7f. 官方 12 项功能对照结果
+
+| 官方功能 | 本机状态 | 证据 |
+|---|---|---|
+| Auto-Capture Hooks | ✅ | CC 12 个 + opencode 插件,双方实测触发 |
+| MCP Tools | ✅ | worker 注册 272 个函数,两个 agent 均可调用 |
+| REST Endpoints | ✅ | `api::` 触发器 130 个(与官方宣称一致) |
+| Hybrid Recall | ✅ | BM25 + 向量(查询侧实测调用 ollama)+ graph |
+| Provenance | ✅ | 每条带 `origin{capturedAt,channel}` + `project` |
+| Auto-Consolidation | ⚠️ | 开关已开,但阈值(≥5 摘要 / ≥2 模式)长期不满足,实际很少触发 |
+| Session Replay | ❌ | 见 7d,功能可用但**有害**,已弃用 |
+| Knowledge Graph | ✅ | 7 nodes / 7 edges |
+| Lesson Recall | ✅ | 手写 lesson 存取正常(见 7e 的污染坑) |
+| Peer Sync | ⏸ | 单机部署,未启用 |
+| Obsidian Export | ✅ | 导出 35 memories + 1 lesson → `~/.agentmemory/vault`(37 个 md + MOC) |
+| Zero External Deps | ✅ | 单 Node 进程 + SQLite,5.1MB |
+
+Skills:装了 10/17(有意跳过 7 个 `agentmemory-*` 自述文档,理由见 spec.md 决策 2)。
+
+### 7g. 终态
+
+重启后复验:`Health ✓ healthy`、Sessions 8、Observations 290、Memories 35、Graph 7/7、
+Provider ✓ llm、Embeddings ✓ embeddings,向量腿存活(重启后 36 次 embedding 调用),
+**R@1 69% / R@3 94%**。
+
 ## 教训:BM25 的失效是断崖式的
 
 中途验证犯过一个错:用「开机自动启动后台服务踩过什么坑」测出首位命中就断言"BM25 够好"。

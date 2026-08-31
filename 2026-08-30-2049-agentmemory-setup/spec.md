@@ -24,7 +24,8 @@ opencode 侧只有静态 `AGENTS.md`,无自动记忆。两边知识不互通。
 
 选中理由:唯一真正做到「跨 agent 共享同一份记忆」的,且对 Claude Code 和 opencode 都有原生适配。
 
-注意:GitHub 上有同名的 `jayzeng/agentmemory`(纯 markdown,域名 agent-memory.dev),查文档时极易拿错。
+注意:GitHub 上有同名的 `jayzeng/agentmemory`(纯 markdown,站点 jayzeng.github.io/agentmemory)。
+**`www.agent-memory.dev` 是本项目(rohitg00)的官方站,不是那个同名项目的。**
 
 ## 架构
 
