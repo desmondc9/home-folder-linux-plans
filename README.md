@@ -45,6 +45,7 @@
 | 2026-08-26 14:58 | [chrome-wayland-dark-mode](./2026-08-26-1458-chrome-wayland-dark-mode/) | Linux Wayland + Chrome light/dark 自动切换（三阶段合一）：① DR "Use system color scheme" 警告=Linux 硬编码文案，CDP 实证 KDE→portal→Chrome 链路健康；② Chrome 原生暗色调研：UI 跟随原生可用、内容变暗仅 #enable-force-dark、DR 仍最优、Stylus 为大站轻量替代；③ Chrome 历史+CDP 双遍实测筛 11 个原生跟随配色的站点加入 DR disabledFor，含 sync LevelDB 解析器 |
 | 2026-08-30 20:49 | [agentmemory-setup](./2026-08-30-2049-agentmemory-setup/) | agentmemory 跨 agent 记忆层（Claude Code + opencode 共用一个本地记忆服务器）：33 条原生 memory 迁入、systemd 自启、embedding/LLM 选型基准（qwen3-embedding:4b + Kimi k3）、定位并绕过向量索引重启失效的上游缺陷；含可复现的基准测试脚本 |
 | 2026-08-30 21:19 | [scalability-verify-gate](./2026-08-30-2119-scalability-verify-gate/) | 开发流程加装「性能验收门禁」：~/CLAUDE.md 新增 Step E（提 PR 前强制过关）+ Step A/B/C 三个前置触发点；~/docs/scalability-review-checklist.md 重构（139→382 行），新增 §0.1 先查监控再问人（GCP/Azure/Grafana 取数速查 + 七条取数坑）、§0.2 infra 家底盘点（含硬限制专表）、§12 verify 门禁，并补入 20+ 条来自真实生产事故的教训 |
+| 2026-09-01 21:11 | [opencode-slow-startup](./2026-09-01-2111-opencode-slow-startup/) | opencode 启动 8.2s 根因:Azure provider loader 每次启动同步阻塞跑 `az cognitiveservices account list`(本机 5.7s,GFW 后访问 Azure 管理端点);wrapper 注入 `AZURE_RESOURCE_NAME` 短路 → TTFD 2.5s。**`disabled_providers` 无效**(loader 先于过滤执行);已实测排除 526MB DB / models.dev 下载 / 插件 / 5 个 MCP |
 
 ## 关于本仓库
 
