@@ -78,9 +78,15 @@ code --user-data-dir /tmp/vsctest --disable-extensions --verbose --skip-release-
    `~/.local/state/kwallet-upstream-watch/state.json`(bugs 523878/510038 状态 +
    上游 tag + 本机 apt candidate),有变化 → notify-send 桌面提醒。
    bugs.kde.org / invent.kde.org 国内直连可达,已留 127.0.0.1:10809 代理兜底。
-2. **Claude 每日任务**(durable cron,10:23):读 state.json,无变化则一句话带过;
-   有变化则按下面 runbook 推进。注意 recurring 任务 7 天自动过期,到期让用户重建。
+2. **kimi 分析 agent**(每日 11:07±10m,`kwallet-upstream-agent.timer`,永久):
+   `~/.local/bin/kwallet-upstream-agent` 先刷新状态,与 `last-agent-state.json` 快照
+   比较——**无变化直接退出(零 token)**;有变化则经 `zsh -ic 'ccw --provider=kimi
+   -p ...'` 无头跑一次纯分析任务(只读文件、不执行命令),结论追加到
+   `agent-verdicts.log` 并 notify-send,kimi 的 stderr 留在 `last-kimi-stderr.log`。
+   (原 Claude 会话内 durable cron 已删,避免烧 Claude 额度;ccw 的密钥只在
+   ~/.zshrc,脚本不复制。)
 3. 基线(2026-09-01):两 bug UNCONFIRMED,上游 tag v6.29.0,本机 6.24.0-0ubuntu1。
+   E2E 已验证:跳过路径 + 伪造快照触发真实 kimi 分析,结论与通知均正常。
 
 ### 修复落地 runbook(上游出修复后)
 
