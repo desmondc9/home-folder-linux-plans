@@ -55,3 +55,23 @@ Chromium 系(VSCode/Electron、Chrome)在 KDE 桌面默认选 KWallet 后端 →
   Settings Sync 需**一次性重新登录**。
 - Chrome/Edge/Chromium 同受此 bug 影响(Chrome-beta 日志证实);浏览器侧同样可加
   `--password-store=gnome-libsecret`,但会引起 cookie/密码重加密,代价自担,本次未动。
+
+## 后续扩展(2026-09-01 下午,同根因的两个新症状)
+
+1. **浏览器每次重启掉登录态**:Chromium 系 os_crypt 密钥因 writePassword 失败而
+   每次启动重新生成 → cookie 无法跨重启解密 → 全站登出。
+2. **git over http 反复要密码**:全局无通用 credential helper,git 走
+   `SSH_ASKPASS=/usr/bin/ksshaskpass`(Plasma 注入),ksshaskpass 写 kwallet 失败 →
+   凭据存不下来。Ubuntu 未编译 git-credential-libsecret(git-core 仅有 cache/store)。
+
+上游 issue 调研(bugs.kde.org,均未解决,指派维护者 valir):
+- [Bug 523878](https://bugs.kde.org/show_bug.cgi?id=523878) Secret Service session missing
+  after login causes Chromium/Flatpak apps to lose stored logins(2026-08-05 报告,
+  Plasma 6.6.4/KF 6.26,与我们同款 "Can't find session" 日志)
+- [Bug 510038](https://bugs.kde.org/show_bug.cgi?id=510038) Chromium-based applications
+  sometimes unable to find keys(2025-12-21,重复 Chromium Keys 条目 + HMAC 校验失败)
+- 社区讨论:[KDE Discuss](https://discuss.kde.org/t/kwallet-problems-since-moving-to-ksecretd/40994)、
+  [Manjaro 论坛](https://forum.manjaro.org/t/kwallet-now-asks-for-password-on-login-since-latest-update/178041)
+  (ksecretd 迁移自 KF 6.14 起持续有回归,降级 6.13 是他们的 workaround)
+- 结论:ksecretd/KWallet-API 拆分的会话追踪缺陷,跨发行版(Arch/Fedora/Manjaro/Debian/Bazzite/Kubuntu)
+  均有报告,尚无修复版本。本文的 gnome-libsecret 绕过优于社区常见的降级/恢复备份方案。

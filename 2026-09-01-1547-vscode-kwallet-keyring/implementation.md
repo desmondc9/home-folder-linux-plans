@@ -43,6 +43,34 @@ code --user-data-dir /tmp/vsctest --disable-extensions --verbose --skip-release-
   --skip-welcome 2>&1 | rg 'EncryptionMainService|SecretStorageService'
 ```
 
+## 后续变更(2026-09-01 下午)
+
+### git http 凭据(替代坏掉的 ksshaskpass 持久化)
+
+- 新增 `~/.local/bin/git-credential-secretservice`(python3-gi + Secret Service,语义对齐
+  contrib/git-credential-libsecret,schema `org.git.Password`)
+- `git config --global credential.helper` 指向上述脚本(GitHub 仍走原有的
+  `credential.https://github.com.helper = !gh auth git-credential`,URL 条件配置不受影响)
+- 验证:approve→fill(仅 host 也能返回 username+password)→reject→fill 失败,全链路通过
+- 已知异常:写入 ~/.gitconfig 的 `[credential]` 段曾在约 30 秒内被外部进程移除一次
+  (16:03,mtime 悖论,未抓到元凶);重写后 md5 canary 观察 8+ 分钟无复发。若日后再现
+  凭据失忆,先 `rg -A1 '^\[credential\]$' ~/.gitconfig` 检查该段是否还在。
+
+### 浏览器(Chrome stable/beta、Edge、PWA 快捷方式)
+
+- 12 个 .desktop 文件(`~/.local/share/applications/` 下 5 个主快捷方式 + 7 个
+  `chrome-*-Default.desktop` PWA)的全部 Exec 行追加 `--password-store=gnome-libsecret`
+- `kbuildsycoca6` + `update-desktop-database` 重建缓存
+- A/B 验证(chrome-beta headless + 临时 profile):
+  - control:复现 `freedesktop_secret_key_provider.cc:777/809` 两条错误
+  - 加 flag:零错误
+- 注意:Chrome 日后新生成/改写 PWA .desktop 时不会带该 flag,需重新补;
+  snap 版 chromium 走 portal(ksecretd 持有 portal 后端),理论上不受影响
+- 用户需完全退出浏览器(含后台进程)后重启;现有登录态本就在每次重启时丢失,
+  切换后需最后再登录一轮,之后稳定
+
 ## 回退
 
-删除 argv.json 中该行并重启 VSCode 即恢复默认 detect 行为(kwallet bug 未修复前会复发)。
+删除 argv.json 中该行并重启 VSCode 即恢复默认 detect 行为(kwallet bug 未修复前会复发);
+git 侧删除 ~/.gitconfig 的 [credential] 段或 helper 行;浏览器侧从各 .desktop 的 Exec
+移除 `--password-store=gnome-libsecret`。
