@@ -69,6 +69,45 @@ code --user-data-dir /tmp/vsctest --disable-extensions --verbose --skip-release-
 - 用户需完全退出浏览器(含后台进程)后重启;现有登录态本就在每次重启时丢失,
   切换后需最后再登录一轮,之后稳定
 
+## 上游跟踪与修复落地 runbook(2026-09-01 建)
+
+三层机制:
+
+1. **systemd user timer**(永久):`kwallet-upstream-watch.timer` 每日 10:17±15m 跑
+   `~/.local/bin/kwallet-upstream-watch`,状态写
+   `~/.local/state/kwallet-upstream-watch/state.json`(bugs 523878/510038 状态 +
+   上游 tag + 本机 apt candidate),有变化 → notify-send 桌面提醒。
+   bugs.kde.org / invent.kde.org 国内直连可达,已留 127.0.0.1:10809 代理兜底。
+2. **Claude 每日任务**(durable cron,10:23):读 state.json,无变化则一句话带过;
+   有变化则按下面 runbook 推进。注意 recurring 任务 7 天自动过期,到期让用户重建。
+3. 基线(2026-09-01):两 bug UNCONFIRMED,上游 tag v6.29.0,本机 6.24.0-0ubuntu1。
+
+### 修复落地 runbook(上游出修复后)
+
+1. 用户终端执行(交互式 sudo 用 `!` 前缀):
+   `sudo apt update && sudo apt install kwallet6`,然后**注销重登**(ksecretd/kwalletd 由
+   PAM 拉起,换版本必须重启会话)。
+2. 本机复测(应返回 `i 0` 且 journal 无 "Can't find session"):
+   ```bash
+   H=$(busctl --user call org.kde.kwalletd6 /modules/kwalletd6 org.kde.KWallet open sxs kdewallet 0 fix-verify | awk '{print $2}')
+   busctl --user call org.kde.kwalletd6 /modules/kwalletd6 org.kde.KWallet writePassword issss "$H" "Chrome Keys" "fix-verify-probe" "x" fix-verify
+   journalctl --user -n 5 --no-pager | rg 'Can.t find session'
+   busctl --user call org.kde.kwalletd6 /modules/kwalletd6 org.kde.KWallet removeEntry issss "$H" "Chrome Keys" "fix-verify-probe" fix-verify
+   ```
+3. 通过后撤除绕过:
+   - 删 `~/.vscode/argv.json` 中 password-store 行(含注释块)
+   - `sd -- '--password-store=gnome-libsecret' ''` 清理 `~/.local/share/applications/`
+     下 5 个浏览器主 .desktop + chrome-*-Default.desktop PWA(注意 Chrome 可能新生成
+     不带 flag 的 PWA 文件,清理时以 rg 实际命中为准)
+   - `kbuildsycoca6` + `update-desktop-database`
+   - **git helper 建议保留**:Ubuntu 本就不编译 git-credential-libsecret,该 helper
+     独立于本 bug 有长期价值;如坚持还原,删 `~/.gitconfig` 的 [credential] 段即可
+     (GitHub 的 gh auth 条目从未动过)。
+4. 重启 VSCode/浏览器验证:Settings Sync 正常、浏览器重启后登录态保持
+   (撤 flag 后首轮可能又需重登一次——密钥换回 kwallet 后端)。
+5. 更新本档案 + memory(kwallet-624-writepassword-regression),可停用 timer:
+   `systemctl --user disable --now kwallet-upstream-watch.timer`。
+
 ## 回退
 
 删除 argv.json 中该行并重启 VSCode 即恢复默认 detect 行为(kwallet bug 未修复前会复发);
