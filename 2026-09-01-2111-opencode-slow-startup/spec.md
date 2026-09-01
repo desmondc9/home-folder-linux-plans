@@ -37,6 +37,32 @@ Q = (!process.env.AZURE_RESOURCE_NAME && !process.env.AZURE_RESOURCE_GROUP && Z)
 即:**只要 `~/.azure/azureProfile.json` 里有 ≥1 个订阅(登录过 Azure CLI),就会跑这次
 探测**,除非 `AZURE_RESOURCE_NAME` 或 `AZURE_RESOURCE_GROUP` 已设置。
 
+唯一的守卫就是「你有没有 `az login` 过」——**与 opencode 自己是否配了 azure 凭据无关**
+(已实测,见下表)。也就是说:任何为了别的工作用 Azure CLI 的人,都会在每次启动
+opencode 时付这笔钱。
+
+### 这次探测是干什么的
+
+azure provider 需要一个 **resource name** 才能拼出端点
+(`https://<resource>.openai.azure.com/...`)。打包源码里 `Ak` 显示,它还要靠
+`cognitiveservices account list` 的输出做 `resource name → resource group` 的反查
+(`.find(W => W.name.toLowerCase() === Z.toLowerCase())`)。所以这次 shell-out 的目的是
+**自动发现**:让用户不必手工填 resource name / resource group,直接从 az CLI 当前登录的
+订阅里枚举 Azure AI 资源。
+
+### 为什么是同步阻塞的
+
+该 `await` 直接写在 provider hook 函数体里,在 hook 返回它的描述符
+(`{autoload, getModel, options:{resourceName}}`)**之前**。provider hook 是在 opencode
+构建 provider/模型目录时被解析的,而这个目录在 bootstrap 的关键路径上(模型选择器、
+默认模型解析都要它)。没有超时,也没有惰性推迟。`.catch(() => [])` 说明作者处理了
+**失败**,但没有处理**慢**。
+
+讽刺之处:azure 这个 hook 返回的是 `autoload: false` —— 即它并不把 azure 模型自动加进
+目录;这 5.7s 的发现代价,是在 hook 尚未声明「我不 autoload」之前就已经付掉了。
+
+(以上是从发布的 bundle 里读出来的代码事实 + 我对设计意图的推断,不是维护者的说法。)
+
 ## 关键陷阱:`disabled_providers` 无效
 
 直觉上应该用 opencode 配置里的 `disabled_providers: ["azure", ...]` 关掉。**实测无效**:
@@ -60,6 +86,7 @@ Q = (!process.env.AZURE_RESOURCE_NAME && !process.env.AZURE_RESOURCE_GROUP && Z)
 | 外部插件(superpowers) | **否** | `--pure` 与完整启动 TTFD 差异在噪声内(2496 vs 2534 ms) |
 | 5 个 MCP server 拖慢首帧 | **否** | 删掉 `mcp` 段后 TTFD 2496ms,与保留时相同 — MCP 是异步 spawn,不阻塞首帧 |
 | 工作目录大小/仓库扫描 | **否** | 空目录启动与 `$HOME` 启动同为 ~8s |
+| opencode 里登出 azure(删 auth.json 条目)可绕过 | **否** | 用「保留 provider key、值全部置 dummy」的 auth.json 实测:含 azure 6.22s,删掉 `azure`+`azure-cognitive-services` 后 **6.83s,无改善**。探测**不由 opencode 侧凭据触发**,只看 `~/.azure/azureProfile.json` |
 
 ## 方案
 

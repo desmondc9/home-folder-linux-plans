@@ -84,6 +84,21 @@ grep -aoE '[0-9.]+ms' out.raw | head -1
 替代手段 = 上面的 TTFD 一行命令,可随时复测;wrapper 头部注释已记录基线数字,
 将来 opencode 升级后若 TTFD 回到 ~8s,说明上游改了短路条件,按注释重新诊断。
 
+## 补充实验(回答「为什么它是同步阻塞的」时追加)
+
+用「保留 provider key、把所有凭据值置成 dummy」的 auth.json 做差分,验证探测的触发源:
+
+| auth.json 内容 | server-ready |
+|---|---|
+| 真实 auth(含 azure) | 6.56 s |
+| stub,**保留** `azure` + `azure-cognitive-services` key | 6.22 s |
+| stub,**删掉**这两个 key | **6.83 s(无改善)** |
+
+结论:**「在 opencode 里登出 azure」不是绕过手段**。探测与 opencode 侧凭据无关,
+唯一守卫是 `~/.azure/azureProfile.json` 是否列出 ≥1 订阅。
+(注:测这个必须绕过 `~/.local/bin/opencode` wrapper 直呼 nvm 下的真二进制,
+否则 wrapper 已经把探测短路了,三组都会是 ~1.1s —— 已踩一次。)
+
 ## 后续可选项(未做,收益小)
 
 - 剩余 2.5s 全在 opencode 自身 bun 启动 + instance bootstrap,本地配置已榨干。
