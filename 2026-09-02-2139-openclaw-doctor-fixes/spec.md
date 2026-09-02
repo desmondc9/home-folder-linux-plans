@@ -2,7 +2,8 @@
 
 - 日期: 2026-09-02
 - 状态: **已完成并验证**(doctor 仅余预期内提示;follow-ups 见文末)
-- 追加: 当日晚间完成 nvm/npm-global 迁移善后 + kimi-k3 备用模型配置(见 implementation.md 追加记录)
+- 追加1: 当日晚间完成 nvm/npm-global 迁移善后 + kimi-k3 备用模型配置(见 implementation.md 追加记录)
+- 追加2: 当日深夜修复 kimi-claw 官方桥接脚本安装失败(三处与 openclaw 2026.8.2 的不兼容,补丁方案见 implementation.md)
 
 ## 背景与目标
 
@@ -75,6 +76,10 @@ SecretRef 被拒(dry-run 误导性通过,实写失败),故 Authorization Bearer 
 - secrets store 中 `secret` 类条目 write-only,CLI 不可读回;sqlite 直查可读(应急)。
 - Moonshot/Kimi 三套端点:`api.moonshot.ai|cn/v1`(平台 key)与 `api.kimi.com/coding`(coding plan key)
   互不认账,401 = 用错端点而非 key 无效。
+- kimi-claw 官方安装脚本(claw-install.sh)与 2026.8.2 三处不兼容:注入非法 `plugins.installs` 键、
+  `--dangerously-force-unsafe-install` 已退化 no-op(需 `--force`)、缺 `--accept-capabilities`;
+  且脚本吞掉 install 输出,须手动重放 `openclaw plugins install <staged>` 才能看到真实报错。
+  升级重跑前需重打补丁(三处改动见 implementation.md 追加记录2)。
 
 ## 验收标准(均已满足)
 

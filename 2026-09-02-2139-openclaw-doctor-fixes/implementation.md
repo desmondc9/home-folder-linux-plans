@@ -141,3 +141,68 @@ openclaw 配置 kimi-k3 备用模型。
 - `openclaw models status`:moonshot profile `moonshot:manual=sk-kimi-...(已脱敏显示)`;无 secrets 警告
 - gateway 日志:`[model-fetch] response provider=moonshot ... model=kimi-k3 status=200` 多条
 - systemd unit:ExecStart = `~/.nvm/versions/node/v26.8.1/lib/node_modules/openclaw/dist/index.js`,PATH 无 npm-global
+
+---
+
+# 追加记录(2026-09-02 深夜)— kimi-claw 官方桥接脚本安装失败根因与补丁方案
+
+## 背景
+
+用 Kimi 官方命令连接本机 openclaw:
+`bash <(curl -fsSL https://cdn.kimi.com/kimi-claw/claw-install.sh) --bot-token <KIMI_BOT_TOKEN>`
+报 `Installation failed! - Second script exited with code 1`,除此之外无任何有效信息。
+
+脚本结构:`claw-install.sh` 并行跑两个子脚本——① kimiim-cli 二进制 + 3 个 skills
+(kimiim/worker-safety/time-awareness,**这条路一次成功**);② kimi-claw 桥接插件
+(下载 tgz → 装依赖 → `openclaw plugins install` → 写 bridge 配置 → 重启 gateway,**失败的是这条路**)。
+
+## 任务
+
+- [x] 拉取并通读两个子脚本,确认行为无害后复现失败
+- [x] 定位真实根因(失败日志被脚本吞进 /dev/null,需手动重放)
+- [x] 打补丁跑通安装,验证桥接上线
+
+## 根因:官方脚本与 openclaw 2026.8.2 的三处叠加不兼容
+
+全卡在 `plugins install` 一步,且脚本把该步输出重定向到 /dev/null → 表面只有一句 failed。
+
+1. **`cleanup_legacy_plugin_config` 注入非法键**:该函数在**没有** legacy 插件时也会强行创建空的
+   `plugins.installs = {}` 和 `plugins.load.paths` 并直接 `fs.writeFileSync` 写 openclaw.json;
+   2026.8.2 不认 `plugins.installs`(同日上午归档的非法键,换了个注入源)→ 配置非法 →
+   紧接着的 `openclaw plugins install` 被配置校验拒绝。
+   时间线佐证:`.last-good`(22:34)只有 `plugins.entries`;失败 run(23:02)多出 installs+load。
+2. **`--dangerously-force-unsafe-install` 已是 deprecated no-op**:非 ClawHub 本地路径安装需要
+   确认,脚本的 fallback flag 在本版本不生效,正确 flag 是 `--force`。
+3. **插件需要 capability consent**:还要 `--accept-capabilities`(同装 llama-cpp 时的已知模式)。
+
+## 修复(本地补丁副本,三处改动)
+
+- 跳过 `cleanup_legacy_plugin_config` 调用(本机无 legacy 插件,语义上本就是 no-op);
+- 4 处 install fallback:`--dangerously-force-unsafe-install` → `--force --accept-capabilities`;
+- **教训**:`sd` 纯文本替换 `--force` 时误伤了 `--force-cron-migration`(子串匹配),
+  两处被改成 `--force --accept-capabilities-cron-migration` 后人工修回——批量替换带前缀的
+  flag 名要用更长的唯一串。
+- 补丁脚本为一次性产物未保留;重打方式 = 重新下载 + 上述三处改动。
+
+跑通后脚本自动:装插件到 `~/.openclaw/extensions/kimi-claw` → enable → 写入
+`plugins.entries.kimi-claw.config.bridge`(url=`wss://www.kimi.com/api-claw/bots/agent-ws`,
+kimiapiHost,token)→ promptTimeoutMs=1800000 → 重启 gateway。
+
+## 验证
+
+- `openclaw config validate` 通过;`plugins` 键重新只剩 `entries`(安装前手工清了被注入的两个键);
+- gateway active,17 个插件含 kimi-claw;
+- 日志:`[kimi-bridge] [im] subscribe connected default_chat_id=...` +
+  `UpdateBotMeta reported openclaw_version=2026.8.2 platform=linux` —— 桥接已上线。
+
+## 安全注记
+
+- bot token 以明文存于 `~/.openclaw/openclaw.json`(0600;与既有 MCP Bearer token 处置一致,
+  见 spec.md 决策)。真实值位置仅此文件 + Kimi 侧后台,**本档案不记录该值**。
+- 该 token 曾在排障对话中出现;若有外传风险,建议在 Kimi 侧轮换后用
+  `openclaw config set plugins.entries.kimi-claw.config.bridge.token <新值>` 更新。
+
+## 后续注意
+
+- 官方脚本未修前,**kimi-claw 升级重跑原命令会再次失败**,需同样三处补丁;
+  若官方修了 `plugins.installs` 注入与 flag 名,则只需视情况补 `--accept-capabilities`。
