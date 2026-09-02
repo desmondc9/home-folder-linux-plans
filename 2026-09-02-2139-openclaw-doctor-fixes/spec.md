@@ -26,6 +26,7 @@
 | NODE_COMPILE_CACHE 经 systemd drop-in + `~/.zshenv` | doctor 建议;`OPENCLAW_NO_RESPAWN` 有 systemd 托管故不设 |
 | Kimi webSearch baseUrl 覆盖为 `https://api.kimi.com/coding/v1` | kimi.com coding plan key 对 moonshot.ai/.cn 全部 401,仅认 coding 端点(Anthropic 与 OpenAI 兼容路径均 200)——文档默认值在此 key 下不可用 |
 | (晚)moonshot LLM provider 的 baseUrl 同样覆盖到 coding 端点 | 与 webSearch 同一结论的延伸;`models.mode=merge` 下只覆盖 baseUrl,kimi-k3 模型定义复用插件 catalog,无需重列 |
+| (深夜)`/etc/sudoers.d/90-openclaw` 授予 desmond `NOPASSWD: ALL` | 用户明确要求 agent 具备全权系统管理能力;exec 无 TTY,sudo 要密码必失败,免密是唯一通路。风险已告知:weixin/kimi 渠道消息(含提示词注入)可间接触发 root 命令——接受该风险,靠 openclaw exec 审批链(不批 allow-always)作最后闸门;workspace AGENTS.md 写入守则:一律 `sudo -n`、失败报回不重试、破坏性 root 操作先向用户确认 |
 
 ## 最终配置快照
 
