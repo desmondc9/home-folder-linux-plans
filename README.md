@@ -51,6 +51,7 @@
 | 2026-09-03 20:47 | [futu-domain-audit](./2026-09-03-2047-futu-domain-audit/) | 富途牛牛 Linux 版端点清单采集与 sing-box 全量代理分流:域名运行时下发+裸 IP(腾讯云国际×3+江苏电信行情线),tcpdump/mitmproxy/二进制静态扫描多管齐下;37/37 验收+实机含交易全量 proxy 通过,规则可供手机端复用 |
 | 2026-09-04 16:32 | [nvim-icon-nerd-font-fix](./2026-09-04-1632-nvim-icon-nerd-font-fix/) | nvim tabline/dashboard 图标豆腐块:Konsole 默认字体 Noto Mono 无 Nerd Font PUA 字形(fc-list 证据链确认,与 nvim 配置无关)→ 安装 Nerd Font 版字体并改 Konsole profile,重启生效 |
 | 2026-09-05 00:40 | [lazyvim-learning-workspace](./2026-09-05-0040-lazyvim-learning-workspace/) | LazyVim 替代 IDE 学习工作区（teach 流程,~/learning/lazyvim,4 课 3 验证+五语言练习仓）+ LSP 全家桶体检：nvim 0.11.6→0.12.5（~/.local,可回滚）、Go 1.27.1+gopls（Mason golang 包=本地编译,无工具链静默失败;LazyVim 对 Mason 认识的服务器交 mason-lspconfig automatic_enable 只启用已装包）、rust-analyzer 组件修复（rustaceanvim 硬门禁 nvim≥0.12）、13 extras、autoformat 关闭;11 门语言 attach 实测全绿 |
+| 2026-09-05 10:43 | [jdtls-preparerename-fix](./2026-09-05-1043-jdtls-preparerename-fix/) | jdtls 1.60 prepareRename 在 ups-hms-backend 全项目失效（"Renaming this element is not supported"）而 hover/跳转/完整 rename 全正常：八轮嫌疑逐一排除（含 Lombok 冤案——复现坐标打错,自纠平反）,定位到服务器侧 OccurrencesFinder 通路 + nvim 0.12 动态能力注册机制（registerCapability 改写 prepareProvider 为唯一有效注入点,三条常规能力覆盖路径均被 legacy start_or_attach 绕过）;无头端到端验证 2 文件 rename 落位 |
 
 ## 关于本仓库
 
