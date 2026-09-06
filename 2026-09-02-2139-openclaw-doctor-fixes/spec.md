@@ -4,6 +4,10 @@
 - 状态: **已完成并验证**(doctor 仅余预期内提示;follow-ups 见文末)
 - 追加1: 当日晚间完成 nvm/npm-global 迁移善后 + kimi-k3 备用模型配置(见 implementation.md 追加记录)
 - 追加2: 当日深夜修复 kimi-claw 官方桥接脚本安装失败(三处与 openclaw 2026.8.2 的不兼容,补丁方案见 implementation.md)
+- 追加3: 2026-09-03 白天修通 ACP 三 agent 派发与认证(runtime spawn 死路→直接 acpx 线路;kimi 升级 0.9.0→0.40.1 + coding plan api key;pi 接 z.ai glm-5.3),并沉淀 acpx-agent-dispatch skill;同日上午定位 kimi-claw /new 后 roster 故障与 /status 幽灵模型根因(见 implementation.md 追加记录)
+- 追加4: 2026-09-03 上午·二 opencode 代跑 doctor 体检:即修 openclaw.json 权限 664→600 与两个 workspace skill 的 frontmatter;owner 配置/qwen·trae 遗留目录/AGENTS.md symlink 待用户拍板(见 implementation.md 追加记录)
+- 追加5: 2026-09-03 上午·三 执行 doctor 三项拍板:ownerAllowFrom 双渠道配置(重启生效)、qwen/trae 遗留目录清理(牵出 sqlite 句柄 fatal 教训)、AGENTS.md 实体化(bootloader 可读,20000 字符截断注入)(见 implementation.md 追加记录)
+- 追加6: 2026-09-03 上午·四 创建定时任务「每日全球机构研究报告扫描」(automations 72bbfb86,0 6 * * * Asia/Shanghai,isolated,announce→kimi-claw 私聊;产出 /mnt/agents/output/研究报告库/;提示词存档于本目录,见 implementation.md 追加记录)
 
 ## 背景与目标
 
