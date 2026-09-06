@@ -52,6 +52,7 @@
 | 2026-09-04 16:32 | [nvim-icon-nerd-font-fix](./2026-09-04-1632-nvim-icon-nerd-font-fix/) | nvim tabline/dashboard 图标豆腐块:Konsole 默认字体 Noto Mono 无 Nerd Font PUA 字形(fc-list 证据链确认,与 nvim 配置无关)→ 安装 Nerd Font 版字体并改 Konsole profile,重启生效 |
 | 2026-09-05 00:40 | [lazyvim-learning-workspace](./2026-09-05-0040-lazyvim-learning-workspace/) | LazyVim 替代 IDE 学习工作区（teach 流程,~/learning/lazyvim,4 课 3 验证+五语言练习仓）+ LSP 全家桶体检：nvim 0.11.6→0.12.5（~/.local,可回滚）、Go 1.27.1+gopls（Mason golang 包=本地编译,无工具链静默失败;LazyVim 对 Mason 认识的服务器交 mason-lspconfig automatic_enable 只启用已装包）、rust-analyzer 组件修复（rustaceanvim 硬门禁 nvim≥0.12）、13 extras、autoformat 关闭;11 门语言 attach 实测全绿 |
 | 2026-09-05 10:43 | [jdtls-preparerename-fix](./2026-09-05-1043-jdtls-preparerename-fix/) | jdtls 1.60 prepareRename 在 ups-hms-backend 全项目失效（"Renaming this element is not supported"）而 hover/跳转/完整 rename 全正常：八轮嫌疑逐一排除（含 Lombok 冤案——复现坐标打错,自纠平反）,定位到服务器侧 OccurrencesFinder 通路 + nvim 0.12 动态能力注册机制（registerCapability 改写 prepareProvider 为唯一有效注入点,三条常规能力覆盖路径均被 legacy start_or_attach 绕过）;无头端到端验证 2 文件 rename 落位 |
+| 2026-09-06 18:47 | [opencode-serve-systemd](./2026-09-06-1847-opencode-serve-systemd/) | opencode 以 systemd user service 常驻暴露（0.0.0.0:4096 + Basic Auth,供 Android opencode-mobile 经 Tailscale 远程连入）：密码 0600 env 文件注入不入库、ExecStart 直指真实二进制避开 wrapper 的 PATH 自解析但保留 AZURE 探针短路、enable-linger 免登录自启、curl 鉴权矩阵 401/200/401 验证 |
 
 ## 关于本仓库
 
