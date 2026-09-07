@@ -17,3 +17,10 @@
 ## 坑
 - SearXNG 容器启动后以 uid 977 接管 `./searxng/settings.yml`(宿主属主变化,属正常)
 - compose `restart api` 即重读挂载的 .env/librechat.yaml;`up -d` 不重建 bind 挂载变更
+
+## 增补:Z.ai Web Search MCP(同日)
+
+LibreChat 直连 z.ai 远程 MCP(`web_search_prime` 工具),作为比 SearXNG 更富的搜索路径(标题/URL/摘要/站点图标,Coding Plan 配额)。实施要点:
+- v0.8.7 `mcpServers.headers` 不做 `${ENV}` 插值、`url` 做 → 用 SSE 形态把 key 放 url query(`ZAI_MCP_KEY` 在 .env)
+- 坑:`title` 字段正则仅允许字母/数字/空格;一个坏块 = 整个 librechat.yaml 校验失败、api 退出
+- 验收:启动日志 `Tools: web_search_prime`,api 200
