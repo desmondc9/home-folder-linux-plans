@@ -11,10 +11,10 @@
 - [x] T7:`.env`(600,22 行)+ `librechat.yaml` + `override`(坑:upstream compose 默认镜像 `:latest`=rc2 → pin `librechat:v0.8.7`;新版需 `JWT_REFRESH_SECRET`)
 - [x] T8:栈起:api+mongo+meili(坑:bind 目录首次被 daemon 建为 root 属主 → 全部 chown 1001:1001;RAG/vectordb/admin-panel 不启动)
 - [x] T9:ufw `172.28.0.0/24→18789/tcp`;nginx vhost;certbot LE(证书 2026-09-07→12-06,自动续期);https v4+v6 均 200,80→443 301
-- [ ] T10:端点验证:openclaw 已通(容器内直连 18789 实测);5 家 key 落位后 `/v1/models` 定稿模型清单
-- [ ] T11:用户注册 → `ALLOW_REGISTRATION=false` → 重启
+- [x] T10:端点验证(2026-09-07 实测):openclaw 容器内直连 200+对话往返;Kimi `api.kimi.com/coding` 200(注意:coding plan 不在 api.moonshot.cn,anthropic base=`/coding`,模型=k3/k3-256k/kimi-for-coding×2,无 /v1/models 故 fetch:false);Z.ai、Zhipu `/v1/models` 200(glm-5.3→4.5 全系);DeepSeek 200(v4 命名);MiniMax `api.minimaxi.com` 200(M3/M2.7/M2.5/M2.1;.cn 域名证书过期,弃用)
+- [x] T11:注册已关(`registrationEnabled:false` 实测;坑:bind 挂载的 .env 修改需 `docker compose restart`,up -d 不会重建)
 - [x] T12:deployment repo `dc7a593` 推送(README runbook / .env.example / ADR×3 / CONTEXT.md / vhost;密钥扫描通过);plans 仓库提交见本文件
-- [ ] T13:验收清单逐项过(spec.md §验收标准)
+- [x] T13:验收清单:1 双栈 DNS ✅ / 2 LE+v4v6 200 ✅ / 6 注册关闭 ✅ / 7 微信 channel enabled=false 且重启后无活动 ✅ / 9 repo 无密钥 ✅;3·4·5 的 UI 面部分留给用户最终目验(协议层已全通);8 ufw 规则面已核,外网点位待用户从外部探一次
 
 ## 备注
 

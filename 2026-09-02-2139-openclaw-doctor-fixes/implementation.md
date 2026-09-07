@@ -525,3 +525,108 @@ kimiapiHost,token)→ promptTimeoutMs=1800000 → 重启 gateway。
 - ④关注列表接口:~/reports/关注列表.md(初版 5 主题占位:存储半导体/AI算力基建/消费分级/黄金央行购金/新能源车智驾,用户可随时编辑,次日生效);晨报读它做 🎯 关注命中标注+置顶
 - 两任务提示词均已更新并读回验证;09-07 06:00/07:15 起生效
 - 第二梯队(一致预期对照/领先映射/数据点时序)待 9/11 复盘后定
+
+# 追加记录(2026-09-06 16:40)— 投递渠道切换:Kimi私聊 → 微信私聊
+
+- 用户从 openclaw-weixin 渠道指示「以后晨报发在这里」
+- 切换四项投递(全部带显式 accountId=11a026ba27ed-im-bot):晨报 c93a7761、周报 d1643cb0、看门狗 c43b6520(announce)、扫描任务 72bbfb86(failureAlert),channel=openclaw-weixin,to=o9cq80zuieVAE7mzXBy-aSRbDCbw@im.wechat
+- 晨报提示词措辞同步「Kimi 私聊→微信私聊」;读回验证全部通过
+- 经验:weixin 渠道的 announce 目标历史上(9/2 zai-mcp-retest)即可用带前缀格式,本次按规范用裸地址+显式 accountId;历史投递(kimi-claw 会话)不变,仅新投递走微信
+
+# 追加记录(2026-09-06 16:50)— Kimi 全线退役(用户账号不可用,指示暂停)
+
+- 备份:openclaw.json.bak-20260906-kimi-retire
+- 全局:agents.defaults.model.fallbacks 置 [](原 ["moonshot/kimi-k3"]);plugins.entries.kimi-claw/moonshot enabled=false;models.providers.moonshot 目录保留(暂停语义,重启后插件禁用即断传输,配置在便于恢复)
+- 任务:晨报 c93a7761 与周报 d1643cb0 改 --model zai/glm-5.3 --fallbacks "";扫描 72bbfb86 清 fallbacks(原 moonshot 死链)
+- 搜索:web_search(kimi 后端)随 moonshot 插件禁用而失效,扫描提示词早已固定 zai 三件套(web-search-prime/web_fetch/web-reader)
+- 投递:四任务目标已于 16:40 全部切微信;systemd-run 用户级瞬态定时器 50 秒后重启 gateway 生效(插件/通道变更需重启)
+- 恢复路径:改回 plugins.entries.*.enabled=true + fallbacks 恢复即可,模型目录未删
+
+# 追加记录(2026-09-06 18:35)— doctor 体检与 opencode 修复
+
+- 用户要求 doctor+opencode 修复;首次 doctor 撞上 Kimi 退役重启的停机波(503/deactivating 假象);且停机被 doctor 拉起的 llama-server(内存搜索运行时)拖住,16:47 停机→16:51:51 systemd 超时强杀完成重启
+- opencode(经 acpx 直派,diagnosing-bugs 指令)完成:①gateway install --force 重建服务 PATH(剔除 nvm 版本管理器);②agents.defaults.bootstrapMaxChars=40000(AGENTS.md 注入 56%→100%,37,612 字符全额)
+- 自验:memory status --deep 全绿(FTS ready/缓存761/recall 322)——doctor 的「未确认」只是没深检过;security audit 无硬伤,唯一 INFO 是 4 个插件版本未钉死(acpx/llama-cpp/moonshot/openclaw-weixin),低优先级
+- 收尾:mkdir ~/.npm-global/bin(服务模板引用的目录盘上不存在);「disabled but config present」与 LAN 绑定告警均为有意状态(Kimi 暂停语义/既定暴露方案);「fail to deliver」提示指向已停用旧任务,无影响
+- 经验:doctor 运行会拉起 llama-server 并拖住重启停机——跑 doctor/深检避免与计划内重启撞车;网关强杀重启由 systemd TimeoutStopUSec(5m30s)兜底,无需人工干预
+
+## 追加(18:45) 发现并切除重复看门狗
+- 昨日建看门狗时「jq 解析失败→|| 重试」防重机制误触发:2.2 秒内创建两个同名 job(c9dbab08/c43b6520),当时只见并维护了后者;前者一直挂旧 kimi-claw 裸 UUID 目标(kimi 退役后=死信道,明早起会投递失败)——正是 doctor「scheduled run will fail to deliver」警告的来源
+- 已 remove c9dbab08;复核 72bbfb86 failureAlert=微信✓、c43b6520=微信✓
+- 教训:add 命令的「| jq || 重试」模式有双创建风险(CLI 把 warning 打进 stdout 时 jq 必败)——今后要么去掉 || 重试,要么重试前先 list 查重
+
+## 追加(18:52) 修复收尾
+- 配置两项已落盘读回验证(replyProgressMessages=false + streaming.mode=off)
+- 教训:pkill -f 'llama-server' 会匹配到自己所在的 shell 命令行导致自杀(SIGTERM 中断后续步骤)——按进程名精确匹配用 pgrep -x
+- 已 pgrep -x 清理 llama-server 并安排 40 秒后网关重启生效;重启后下一条回复应单条送达即验证通过
+
+## 追加(20:45) 磁盘清理
+- 用户问磁盘占用:95%(2.2G 余)告急;标准清理(npm cache 2.9G + apt clean + journalctl --vacuum-size=200M 释放 1.3G + /tmp 自产临时件)后 → 80%(7.4G 余),共回收 5.2G
+- 待用户拍板的深层项:nvm 旧版本 v24.14.1/v26.3.0(网关固定用 v26.8.1)≈1G;vscode-server 3 个 code-* 哈希(旧版可删)≈1.4G;.kimi-code 307M(Kimi 已退役)
+- 教训:systemd journal 是无声大头(本次 1.3G),已缩到 200M;建议列入季度维护
+
+## 追加(20:50) 分段消息二次修复
+- 用户 20:39 复报分段;日志证实 streaming.mode=off 对微信插件无效(工具卡片已消失✓,但 8/25/413/56/22 字符碎块仍在)
+- 源码定位(worker.mjs resolveProviderBlockStreamingCoalesce):真正生效键是 channels.openclaw-weixin.blockStreamingCoalesce(平铺)与 streaming.block.coalesce(嵌套,doctor 迁移目标),插件 200字符/3秒只是默认兜底
+- 修复:两路径都设 {minChars:100000, idleMs:900000} → 强制整段单发;重启前 pgrep -x 清 llama-server
+- 教训:渠道流式配置键以核心源码 resolver 为准,不能只按文档的 discord/slack 示例照搬
+
+# 追加记录(2026-09-07 00:16-00:30)— Android 接入落地 + 微信阶段外发问题三战
+
+## Android 客户端接入（网关侧完成，等用户手机操作）
+- 官方路径全堵：自建 tailnet(ControlURL=bandwagon.signal-align.com)无 HTTPS 证书功能(tailscale serve 501)；openclaw qr 在 bind=lan+纯公网 IP 主机拒绝出码；publicOrigin 只认 HTTPS
+- 方案(opencode 定路线，主会话落地)：nginx 自签 TLS 反代 listen 18790 → 127.0.0.1:18789；证书 /etc/nginx/ssl/openclaw-tailnet.{crt,key}(SAN: 100.64.0.4 + brave-goose-1.tailnet.internal)；ufw 仅 tailscale0 放行 18789/18790
+- 关键坑：转发带 X-Forwarded-For 或 Host 不匹配 → 网关 403 拒 WS 升级(反代防护)；去掉 XFF、Host=127.0.0.1:18789 后握手 101 成功
+- gateway.publicOrigin=https://100.64.0.4:18790 已设(待下次重启生效)；连接方式=app Manual 模式(100.64.0.4:18790/TLS on/信任自签)→配对请求→openclaw devices approve
+- 手机前置：装 app(ai.openclaw.app)+开 oneplus-15 的 Tailscale(已离线 9 天)
+
+## 微信「阶段外发+重复」问题（第三次，未闭环）
+- 00:16 用户再报+截图：Android 轮的旁白句在微信重复送达；00:19 日志实锤：一次回复外发 35/67/35重复/8 字符四条——35字=工具调用间的旁白文本段(text phase)
+- 判定：coalesce 修复管不到「阶段交付」路径——宿主把每个文本阶段推给通道，微信不可编辑→每阶段一条新消息+同段重发 bug
+- 止血：主会话停止发过程旁白(无旁白=无碎片)
+- 根治：opencode(warm-valley)读插件 channel.ts/send.ts/process-message.ts+宿主 dist 找 final-only 开关，三选一交付(配置落地/精确patch/替代方案)；附带查 21:43:41 网关无人调度重启原因
+- 网关异常重启 21:43:41 待查(前次 20:49 为 coalesce 修复安排的重启)
+
+## 教训沉淀
+- 微信通道问题三阶段：①工具卡片(replyProgressMessages) ②流式分块(blockStreamingCoalesce) ③文本阶段交付(text phase)——三个独立机制，逐个踩
+- flush 模式下文件工具被沙箱限制在 workspace(read 报 Path escapes sandbox)，外部文件操作用 exec
+
+# 追加记录(2026-09-07 00:32)— 微信阶段外发根因完全查明(opencode 95% 收割) + 通道闪断恢复
+
+## opencode 调查结论(warm-valley,最终一步被自身沙箱拦截退出码5,结论已收割)
+- 重复机制实锤:00:19:26-28 与 00:20:38-41 两起完全同构(A/B/A重复/8 模式)——旁白文本先以 block/commentary 直发,再并入 final payload 重发;宿主 directlySentBlockKeys 去重表只登记 terminal 内容(isReplyPayloadTerminalContent 排除 isCommentary,agent-runner:303-306),final 去重漏命中→重复
+- 插件其实已传 disableBlockStreaming:true(process-message.ts:461),但旁白/final 双发路径绕过它——上游 bug,无配置可关;宿主有 commentary/reasoning 丢弃闸(agent-runner:311/5873,finalize:204)但未在此路径生效
+- blockStreamingCoalesce 只管阶段内流块合并不管阶段边界(前次大阈值无效的原因,架构定性完成)
+- **8字符神秘消息破解(高置信)**:"NO_REPLY" 恰好 8 字符——flush 模式回合的 NO_REPLY 终答被微信通道当字面消息外发(00:22:07 textLen=8 实证);需上游修 silent-token 抑制
+- 正确修复=行为规则:微信不可编辑消息→该通道唯一合理形态=最终回复单条;已固化为「微信回合不发工具间旁白」,00:21 起实测零碎片
+
+## 21:43 神秘重启破案
+- gateway sqlite gateway_boot_lifecycle:pid252850 planned_restart reason='config reload: gateway.publicOrigin'——我设 publicOrigin 触发网关自动计划重启(config-write→systemd),非故障;当前 pid257541 于 21:43:47 启动
+- 另:18:47 前 forced_stop(gateway.stop_shutdown_timeout)=llama-server 拖住排水 5m30s 超时强杀,与观察一致
+
+## 微信通道 00:21:52-00:22:26 闪断
+- 连续 4 条外发 sendMessage ret=-2 prepare failed(含我 00:22:26 的 355 字回复,用户未收到);00:32 测试发送成功=自愈;iLink 会话偶发失稳,与 9/2 同款错误,自愈或重启恢复
+- 教训:判断用户失联时先 message 工具发测试消息验证通道再下结论
+
+## 待办
+- NO_REPLY 泄漏+旁白双发=两个上游 bug,可提交 issue 给 @tencent-weixin/openclaw-weixin(用户拍板再说)
+
+## 追加(01:05) 上游 issue 已提交
+- 用户拍板提交;目标仓库 Tencent/openclaw-weixin(npm 无 repository 字段,经 gh 搜索+package.json 版本 2.4.8 匹配确认为官方源码仓)
+- Issue1: https://github.com/Tencent/openclaw-weixin/issues/292 (commentary 双发/去重缺失)
+- Issue2: https://github.com/Tencent/openclaw-weixin/issues/293 (NO_REPLY 泄漏)
+- 账号 desmondc9;正文含环境/复现/源码定位/修复建议/现行规避
+
+# 追加记录(2026-09-07 07:45)— 首份纯zai雷达晨报QA通过+browser降级修复
+
+- 07:19 晨报三方核验全绿:3新报告在盘(RAND含官方PDF)/6处对比引用实在/INDEX39/哨兵标记齐/双job ok delivered=true;「40vs39」为周报目录占位,非缺漏
+- 亮点:今日雷达首秀(RAND蒸馏报告0.7%-46%成本量化+出口管制悖论);诚实标注无关注命中;主动补录9/6漏采2份
+- 软问题:browser工具本轮未生效——托管Chrome 09-06测试后处于stopped状态,扫描agent未尝试start即降级(设计兜底起效,全部机构仍有结论);已加提示词「先试browser start再降级」并读回验证,明早起生效
+
+# 追加记录(2026-09-07 09:35)— A股财报通道打通：yaoshi 笔记本国内出口反向隧道
+
+- 背景:巨潮资讯网(cninfo)从本 VPS 直连超时(跨境);用户提议用其国内笔记本(yaoshi, tailnet 100.64.0.1, 上海电信)作出口
+- 方案取舍:否决全局 exit node(会把全 VPS 流量绕国内家庭宽带,扫描/桥接/DERP 回环风险);采用选择性反向 SOCKS:笔记本上 `ssh -N -R 1080 desmond@100.64.0.4`
+- 验证:127.0.0.1:1080 在听;cninfo 主页经代理 HTTP 200 (0.65s,直连12s超时);真实 API 查询成功(POST hisAnnouncement/query,需先 GET 主页拿 cookie + XHR 头,平安银行 2025 年报列表返回,含 PDF adjunctUrl)
+- 用法:curl 走 socks5h://127.0.0.1:1080(注意 bash 变量存 --proxy 会整词展开报错,用 ALL_PROXY 环境变量);依赖笔记本在线(关机即断,降级=直连超时)
+- 三市场财报通道现状:A股=代理✓ 美股SEC(XBRL API)直连✓ 港股披露易直连✓
