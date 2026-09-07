@@ -24,3 +24,7 @@ LibreChat 直连 z.ai 远程 MCP(`web_search_prime` 工具),作为比 SearXNG �
 - v0.8.7 `mcpServers.headers` 不做 `${ENV}` 插值、`url` 做 → 用 SSE 形态把 key 放 url query(`ZAI_MCP_KEY` 在 .env)
 - 坑:`title` 字段正则仅允许字母/数字/空格;一个坏块 = 整个 librechat.yaml 校验失败、api 退出
 - 验收:启动日志 `Tools: web_search_prime`,api 200
+
+## 增补二:Z.ai MCP 全家桶(同日)
+
+补齐 web-reader / zread(SSE 形态,同 query-key 鉴权,实测 endpoint 事件返回)+ zai-mcp-server(stdio,npx 于 api 容器内,ZAI mode = 8 个视觉工具)。最终 4 server / 13 tool。坑:容器 /.npm root 属主,stdio env 需 `npm_config_cache=/tmp/npm-cache`。
