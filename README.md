@@ -57,6 +57,7 @@
 | 2026-09-06 21:45 | [openclaw-glm-mcp-hardening](./2026-09-06-2145-openclaw-glm-mcp-hardening/) | OpenClaw 默认模型切 zhipu glm-5.3（zshrc 槽位映射,glm-5.3[1m] 已下线实测）+ 4 个智谱 MCP + doctor 加固：8 处明文密钥迁 SQLite store、feishu/whatsapp 渠道关闭,infer/mcp probe/doctor findings 4→1 验证 |
 | 2026-09-06 22:20 | [openclaw-tailnet-tls-exposure](./2026-09-06-2220-openclaw-tailnet-tls-exposure/) | OpenClaw 经 tailnet 暴露给手机（Android 配对硬性要求 real TLS）：自建 headscale 下 tailscale serve/funnel 501 不可用（LE 仅官方 ts.net）→ acme.sh DNS-01 真证书 + bind=custom 100.64.0.1 tailnet-only + publicOrigin,ACME 续期 cron 自动重启网关;含 Android 配对步骤与完整回滚 |
 | 2026-09-06 23:25 | [openclaw-local-hardening](./2026-09-06-2325-openclaw-local-hardening/) | OpenClaw 本机查漏补缺（对照服务器 playbook,grilling 两轮定位）：systemAgent=main 消 AGENT_SELECTION 报错风暴、weixin 渠道停用留服务器、memory 切本地 llama-cpp embedding（Azure 退场,163 文件重建索引）、GitHub token 走 gh keyring→store、备份体系上线（清死链技能与旧 .venv 后 verify 通过 + 24h）;坑:memory index 无 TTY 挂死=成本确认等 stdin |
+| 2026-09-07 14:05 | [printer-mdns-to-static-ip](./2026-09-07-1405-printer-mdns-to-static-ip/) | 打印机任务卡死 "Unable to locate printer":队列 device-uri 是 mDNS 服务名而非固定 IP(WiFi+家用路由组播时好时坏),固定了 IP 但队列没用它 → `lpadmin` 切 `ipp://192.168.31.199/ipp/print` 直连去 mDNS 化,测试页 35s 完成验证;经验:ipps 自签证书信任坑用明文 ipp 规避、mDNS 主机名尾段=MAC 可反查 IP、zsh 无 /dev/tcp 探端口要用 nc |
 
 ## 关于本仓库
 
