@@ -59,6 +59,8 @@
 | 2026-09-06 23:25 | [openclaw-local-hardening](./2026-09-06-2325-openclaw-local-hardening/) | OpenClaw 本机查漏补缺（对照服务器 playbook,grilling 两轮定位）：systemAgent=main 消 AGENT_SELECTION 报错风暴、weixin 渠道停用留服务器、memory 切本地 llama-cpp embedding（Azure 退场,163 文件重建索引）、GitHub token 走 gh keyring→store、备份体系上线（清死链技能与旧 .venv 后 verify 通过 + 24h）;坑:memory index 无 TTY 挂死=成本确认等 stdin |
 | 2026-09-07 14:05 | [printer-mdns-to-static-ip](./2026-09-07-1405-printer-mdns-to-static-ip/) | 打印机任务卡死 "Unable to locate printer":队列 device-uri 是 mDNS 服务名而非固定 IP(WiFi+家用路由组播时好时坏),固定了 IP 但队列没用它 → `lpadmin` 切 `ipp://192.168.31.199/ipp/print` 直连去 mDNS 化,测试页 35s 完成验证;经验:ipps 自签证书信任坑用明文 ipp 规避、mDNS 主机名尾段=MAC 可反查 IP、zsh 无 /dev/tcp 探端口要用 nc |
 
+| 2026-09-07 15:22 | [lazyvim-vps-replay](./2026-09-07-1522-lazyvim-vps-replay/) | 按 2026-09-05-0040 清单在 Bandwagon VPS 重放 LazyVim 全套(nvim 0.12.5/Go 1.27.1/rustup/JDK21/Mason×20/extras×13),去国内镜像直连;新坑:json-ls 更名 json-lsp、headless 需 vim.wait 等 Mason 队列清空;六语言 LSP 稳定等待法验证全过 |
+
 ## 关于本仓库
 
 这些记录主要面向"以后回顾自己做过什么、为什么这么做"以及"迁移到新机器时按顺序重放"，不是面向他人协作的项目文档，因此不遵循常规开源项目的 `CONTRIBUTING`/`CODE_OF_CONDUCT` 等惯例。

@@ -46,3 +46,4 @@
 - 运行环境:Bandwagon VPS(`brave-goose-1`),Ubuntu Server 24.04,4C/3.9G/78G
 - ufw:18789 仅 loopback(默认)+ tailscale0 + `172.28.0.0/24`(override ipam 固定网段——网段固定了防火墙规则才是确定性的);在宿主机 curl 公网 IP:18789 得到响应是 **loopback 路径**,不代表公网可达
 - 证书:certbot timer 自动续期;openclaw `Linger=yes` 保证 user service 开机自启
+| 19 | OpenClaw 端点对话开 web search 开关报 `invalid tool configuration` | openclaw gateway 内置同名 `web_search` 工具,LibreChat 传入的客户端工具定义与之**同名冲突**(`client tool name conflict: web_search`),整轮请求被拒 | OpenClaw 端点**不开**该开关(agent 自带搜索);开关仅用于云端端点(Kimi/Z.ai/Zhipu/DeepSeek/MiniMax),Tavily 抓取在那些端点生效 |
