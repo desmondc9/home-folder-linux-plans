@@ -42,5 +42,5 @@ py -> pyright / ts -> vtsls / go -> gopls / java -> jdtls / vue -> vue_ls,vtsls 
 
 ## 遗留
 
-- `~/.config/nvim` 仍非 git 仓库(母本同款遗留,lazy-lock.json 无版本化)——两台机器一起补是后续任务
+- ~~`~/.config/nvim` 非 git 仓库~~ → **已补**(同日):配置入 `desmondc9/home-folder`(repo 根映射 `$HOME`,白名单 gitignore 加 `!.config/nvim/**`,提交 `3797f36`),VPS 与 notebook 共用;中间产物独立 repo `nvim-config` 已弃用待删(token 无 delete_repo 权,手动删)
 - 教学工作区 `~/learning/lazyvim/`(lessons/practice)未迁移,属 notebook 侧资产;VPS 上按需 rsync
