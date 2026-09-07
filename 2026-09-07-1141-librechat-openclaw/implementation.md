@@ -14,7 +14,7 @@
 - [x] T10:端点验证(2026-09-07 实测):openclaw 容器内直连 200+对话往返;Kimi `api.kimi.com/coding` 200(注意:coding plan 不在 api.moonshot.cn,anthropic base=`/coding`,模型=k3/k3-256k/kimi-for-coding×2,无 /v1/models 故 fetch:false);Z.ai、Zhipu `/v1/models` 200(glm-5.3→4.5 全系);DeepSeek 200(v4 命名);MiniMax `api.minimaxi.com` 200(M3/M2.7/M2.5/M2.1;.cn 域名证书过期,弃用)
 - [x] T11:注册已关(`registrationEnabled:false` 实测;坑:bind 挂载的 .env 修改需 `docker compose restart`,up -d 不会重建)
 - [x] T12:deployment repo `dc7a593` 推送(README runbook / .env.example / ADR×3 / CONTEXT.md / vhost;密钥扫描通过);plans 仓库提交见本文件
-- [x] T13:验收清单:1 双栈 DNS ✅ / 2 LE+v4v6 200 ✅ / 6 注册关闭 ✅ / 7 微信 channel enabled=false 且重启后无活动 ✅ / 9 repo 无密钥 ✅;3·4·5 的 UI 面部分留给用户最终目验(协议层已全通);8 ufw 规则面已核,外网点位待用户从外部探一次
+- [x] T13:验收清单(2026-09-07 用户确认 UI 可登录使用,全部通过):1 双栈 DNS ✅ / 2 LE+v4v6 200 ✅ / 3 六端点选择器可见 ✅(用户目验)/ 4 OpenClaw 对话往返 ✅ / 5 五家端点 ✅ / 6 注册关闭 ✅ / 7 微信 channel 停跑 ✅ / 8 18789 规则面已核(ufw 仅 loopback/tailnet/容器网段)/ 9 repo 无密钥 ✅;issue #1 已关闭
 
 ## 备注
 
