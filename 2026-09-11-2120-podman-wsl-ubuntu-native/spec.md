@@ -62,9 +62,18 @@ wsl --unregister podman-machine-default   # machine rm 通常已注销，此为�
 
 ### 备用实验（可选，实施末尾尝试，失败不影响主方案）
 
-rootless `podman system service --time=0 tcp:127.0.0.1:2375`（systemd user unit）→
-mirrored 网络 → Windows 侧 `localhost:2375` 可达 → Podman Desktop
-Resources → Docker → 添加环境 `http://localhost:2375`。验证容器列表可见性。
+目标：让保留的 Podman Desktop（Windows）显示 Ubuntu 原生 podman 的容器。
+
+1. Ubuntu 侧：systemd user unit 跑 `podman system service --time=0 tcp://127.0.0.1:2375`
+   （只绑 loopback；mirrored 网络下 Windows `localhost:2375` 可达，不暴露 LAN）。
+2. Windows 侧：写入 docker context 文件（`%USERPROFILE%\.docker\contexts\meta\<sha256(name)>\meta.json`，
+   endpoint `tcp://127.0.0.1:2375`、SkipTLSVerify=true，无需安装 docker CLI），
+   然后 Podman Desktop → Settings → Docker Compatibility → Docker CLI Context 选中该 context。
+3. 验证 Containers 列表出现 Ubuntu 容器。
+
+已知风险：官方 Docker Compatibility 功能以「运行中的 podman machine」为前提；
+machine 删除后 UI 能否由自定义 docker context 驱动需实测。失败则 Desktop 仅作备用，
+不追其他方案（或以后评估 lazydocker/Pods 类 TUI）。
 
 ## 验收标准
 

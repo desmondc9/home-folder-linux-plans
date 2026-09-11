@@ -69,6 +69,8 @@
 
 | 2026-09-11 21:42 | [sdkman-jdk21](./2026-09-11-2142-sdkman-jdk21/) | 官方脚本装 sdkman 5.23.0 + Temurin JDK 21.0.12+1.1-tem 设默认(JAVA_HOME 由 sdkman 托管);坑:安装脚本硬依赖 unzip+zip 但 sudo 无免密 → 用户手装、轮询等待(两轮);zip 仅存在性检查、安装只用 unzip(脚本源码核对);安装器自动补 ~/.bashrc 与 ~/.zshrc 片段,zsh 零手工配置 |
 
+| 2026-09-11 21:20 | [podman-wsl-ubuntu-native](./2026-09-11-2120-podman-wsl-ubuntu-native/) | WSL 弃用 Windows 共享 machine 改 Ubuntu 原生 rootless podman(根因:跨发行版 bind-mount 不支持,podman#21813);Ubuntu/Debian 默认不配短名解析致 `podman pull nginx` 报错 → 用户级 registries.conf + daocloud/1ms 双 mirror;docker-compose-v2 symlink 成 podman compose provider + user socket + linger;坑:恢复的 .git/config 残留 10809 代理致 git 全卡(unset + ssh.github.com:443 推送)、gitleaks 直连 GitHub 可用;Windows 侧清理与 Podman Desktop docker-context 桥接实验待用户手动 |
+
 ## 关于本仓库
 
 这些记录主要面向"以后回顾自己做过什么、为什么这么做"以及"迁移到新机器时按顺序重放"，不是面向他人协作的项目文档，因此不遵循常规开源项目的 `CONTRIBUTING`/`CODE_OF_CONDUCT` 等惯例。
