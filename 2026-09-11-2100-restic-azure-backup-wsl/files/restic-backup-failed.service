@@ -1,0 +1,6 @@
+[Unit]
+Description=mark restic backup/maintenance failure
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'echo "FAIL $(date -Is)" >> /home/desmond/Backups/last-backup.txt'

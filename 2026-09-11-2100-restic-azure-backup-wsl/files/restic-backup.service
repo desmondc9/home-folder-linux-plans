@@ -1,0 +1,15 @@
+[Unit]
+Description=restic daily backup to Azure Blob
+Wants=network-online.target
+After=network-online.target
+OnFailure=restic-backup-failed.service
+
+[Service]
+Type=oneshot
+Environment=HOME=/root
+Nice=19
+IOSchedulingClass=idle
+ExecStartPre=/usr/local/bin/restic-pre-backup.sh
+ExecStart=/bin/bash -c 'source /root/restic-env && exec /usr/local/bin/restic backup --tag daily --one-file-system --exclude-file=/etc/restic/excludes.txt /home/desmond /etc /usr/local'
+ExecStartPost=/bin/bash -c 'source /root/restic-env && exec /usr/local/bin/restic forget --keep-daily 14 --keep-weekly 8 --keep-monthly 6'
+ExecStartPost=/bin/sh -c 'echo "OK $(date -Is)" >> /home/desmond/Backups/last-backup.txt'

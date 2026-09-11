@@ -61,6 +61,10 @@
 
 | 2026-09-07 15:22 | [lazyvim-vps-replay](./2026-09-07-1522-lazyvim-vps-replay/) | 按 2026-09-05-0040 清单在 Bandwagon VPS 重放 LazyVim 全套(nvim 0.12.5/Go 1.27.1/rustup/JDK21/Mason×20/extras×13),去国内镜像直连;新坑:json-ls 更名 json-lsp、headless 需 vim.wait 等 Mason 队列清空;六语言 LSP 稳定等待法验证全过 |
 
+| 2026-09-11 10:12 | [restic-azure-backup](./2026-09-11-1012-restic-azure-backup/) | restic → Azure Blob(East Asia)每日备份体系(原实体机 yaoshi15pro):单仓库单快照、root systemd 双 timer(03:00 备份/周日 prune+check)、manifests+dotfiles 打捞钩子、14d/8w/6m 保留;事故:apt restic 无 azure 后端→官方二进制、systemd EnvironmentFile 不认 export→bash -c source 模式;首备 73.2 GiB 实存/33 分钟 |
+
+| 2026-09-11 21:00 | [restic-azure-backup-wsl](./2026-09-11-2100-restic-azure-backup-wsl/) | WSL 机(DESKTOP-J7NBNU4)按母方案重建备份,同仓库 host 区分(用户确认;恢复的 45G 块已在库,首备仅 4.5 分钟);wsl.exe -u root 替代 sudo 保住 root timer 架构;include 裁剪去 tailscale/crontabs;事故:超时 restore 留陈旧锁→forget exit 11→unlock 修复;forget 按 host 分组作用于全部机器快照属预期语义 |
+
 ## 关于本仓库
 
 这些记录主要面向"以后回顾自己做过什么、为什么这么做"以及"迁移到新机器时按顺序重放"，不是面向他人协作的项目文档，因此不遵循常规开源项目的 `CONTRIBUTING`/`CODE_OF_CONDUCT` 等惯例。
