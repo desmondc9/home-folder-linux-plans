@@ -65,6 +65,8 @@
 
 | 2026-09-11 21:00 | [restic-azure-backup-wsl](./2026-09-11-2100-restic-azure-backup-wsl/) | WSL 机(DESKTOP-J7NBNU4)按母方案重建备份,同仓库 host 区分(用户确认;恢复的 45G 块已在库,首备仅 4.5 分钟);wsl.exe -u root 替代 sudo 保住 root timer 架构;include 裁剪去 tailscale/crontabs;事故:超时 restore 留陈旧锁→forget exit 11→unlock 修复;forget 按 host 分组作用于全部机器快照属预期语义 |
 
+| 2026-09-11 21:36 | [opencode-tui-keybinds-wsl](./2026-09-11-2136-opencode-tui-keybinds-wsl/) | 取消 opencode 中 ctrl+c / ctrl+shift+c 退出:默认 app_exit 绑 ctrl+c,且 Windows Terminal 无选中时两键同发 0x03,故改 tui.json 一个键名即双解;键绑定不在 opencode.json(schema 拒未知键)而在独立 ~/.config/opencode/tui.json(两套 schema);配置由灾备恢复落位,本机零修改仅验证;TUI 配置不热更新,重启生效 |
+
 ## 关于本仓库
 
 这些记录主要面向"以后回顾自己做过什么、为什么这么做"以及"迁移到新机器时按顺序重放"，不是面向他人协作的项目文档，因此不遵循常规开源项目的 `CONTRIBUTING`/`CODE_OF_CONDUCT` 等惯例。
