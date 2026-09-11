@@ -67,6 +67,8 @@
 
 | 2026-09-11 21:36 | [opencode-tui-keybinds-wsl](./2026-09-11-2136-opencode-tui-keybinds-wsl/) | 取消 opencode 中 ctrl+c / ctrl+shift+c 退出:默认 app_exit 绑 ctrl+c,且 Windows Terminal 无选中时两键同发 0x03,故改 tui.json 一个键名即双解;键绑定不在 opencode.json(schema 拒未知键)而在独立 ~/.config/opencode/tui.json(两套 schema);配置由灾备恢复落位,本机零修改仅验证;TUI 配置不热更新,重启生效 |
 
+| 2026-09-11 21:42 | [sdkman-jdk21](./2026-09-11-2142-sdkman-jdk21/) | 官方脚本装 sdkman 5.23.0 + Temurin JDK 21.0.12+1.1-tem 设默认(JAVA_HOME 由 sdkman 托管);坑:安装脚本硬依赖 unzip+zip 但 sudo 无免密 → 用户手装、轮询等待(两轮);zip 仅存在性检查、安装只用 unzip(脚本源码核对);安装器自动补 ~/.bashrc 与 ~/.zshrc 片段,zsh 零手工配置 |
+
 ## 关于本仓库
 
 这些记录主要面向"以后回顾自己做过什么、为什么这么做"以及"迁移到新机器时按顺序重放"，不是面向他人协作的项目文档，因此不遵循常规开源项目的 `CONTRIBUTING`/`CODE_OF_CONDUCT` 等惯例。
