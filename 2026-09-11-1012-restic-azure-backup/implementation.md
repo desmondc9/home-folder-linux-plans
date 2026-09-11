@@ -44,7 +44,7 @@
 **Interfaces:**
 - Produces: git 仓库路径(后续所有 task 在此 commit);`restic` 可执行文件路径(Task 6 unit 引用)
 
-- [ ] **Step 1: 建仓并初始化**
+- [x] **Step 1: 建仓并初始化**
 
 ```bash
 mkdir -p ~/Repos/desmondc9-restic-azure-backup && cd ~/Repos/desmondc9-restic-azure-backup
@@ -59,7 +59,7 @@ EOF
 git add -A && git commit -m 'scaffold repo'
 ```
 
-- [ ] **Step 2: 安装 restic(apt 优先)**
+- [x] **Step 2: 安装 restic(apt 优先)**
 
 ```bash
 sudo -v && sudo apt-get update && sudo apt-get install -y restic
@@ -68,7 +68,7 @@ restic version
 
 Expected: 版本 ≥ 0.16(记下确切版本号,写进本文件末尾实施记录)。
 
-- [ ] **Step 3: 若 apt 版本 < 0.16,改用官方二进制**
+- [x] **Step 3: 若 apt 版本 < 0.16,改用官方二进制**
 
 ```bash
 # 仅在 Step 2 版本 < 0.16 时执行(GitHub 需代理则先 export,见 Global Constraints)
@@ -77,7 +77,9 @@ bunzip2 restic_0.17.3_linux_amd64.bz2 && sudo install -m 755 restic_0.17.3_linux
 restic version   # 确认 /usr/local/bin/restic 优先命中
 ```
 
-- [ ] **Step 4: `**` 通配验证(决定 Task 4 的排除模式可用性)**
+> **实际执行**:apt 装到的是 0.18.1(≥0.16,当时判断可跳过本步),但其构建**不含 azure 后端**,Task 3 的 `restic init` 报 unknown backend——于是仍走了本步路径(Task 3 修复时执行):安装官方 **0.19.1** 到 `/usr/local/bin/restic`。Task 6 的 systemd 单元因此全部使用 `/usr/local/bin/restic`。
+
+- [x] **Step 4: `**` 通配验证(决定 Task 4 的排除模式可用性)**
 
 ```bash
 cd "$(mktemp -d)" && export RESTIC_REPOSITORY="$PWD/testrepo" RESTIC_PASSWORD_FILE=/dev/null
@@ -92,7 +94,7 @@ unset RESTIC_REPOSITORY RESTIC_PASSWORD_FILE
 
 Expected: 两次计数均为 0(第二次证明 `**` 生效)。
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd ~/Repos/desmondc9-restic-azure-backup && git add -A && git commit -m 'verify restic install and ** glob support' --allow-empty
@@ -108,7 +110,7 @@ cd ~/Repos/desmondc9-restic-azure-backup && git add -A && git commit -m 'verify 
 **Interfaces:**
 - Produces: RG `rg-desmond-backup`、账号 `desmondlinbak26`、容器 `restic-desktop`(Task 3 生成 SAS 时消费账号/容器名)
 
-- [ ] **Step 1: 创建资源组与存储账号**
+- [x] **Step 1: 创建资源组与存储账号**
 
 ```bash
 az group create --name rg-desmond-backup --location eastasia
@@ -119,7 +121,7 @@ az storage account create --name desmondlinbak26 --resource-group rg-desmond-bac
 
 Expected: `id` JSON 返回;若重名(StorageAccountAlreadyTaken),改 `desmondlinbak26<两位随机>` 重试,并把最终名回填 spec §4.1 与本计划 Global Constraints。
 
-- [ ] **Step 2: 创建容器(用 account key——auth-mode login 需要数据面 RBAC 角色,Owner 不够,别走)**
+- [x] **Step 2: 创建容器(用 account key——auth-mode login 需要数据面 RBAC 角色,Owner 不够,别走)**
 
 ```bash
 KEY=$(az storage account keys list -n desmondlinbak26 -g rg-desmond-backup --query '[0].value' -o tsv)
@@ -129,7 +131,7 @@ az storage container create --account-name desmondlinbak26 --name restic-desktop
 
 Expected: `"created": true`。
 
-- [ ] **Step 3: 验证 + 记录**
+- [x] **Step 3: 验证 + 记录**
 
 ```bash
 az storage account show --name desmondlinbak26 --resource-group rg-desmond-backup \
@@ -137,7 +139,7 @@ az storage account show --name desmondlinbak26 --resource-group rg-desmond-backu
 { echo "# azure resources ($(date -Is))"; az storage account show -n desmondlinbak26 -g rg-desmond-backup --query id -o tsv; } > ~/Repos/desmondc9-restic-azure-backup/azure-refs.txt
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cd ~/Repos/desmondc9-restic-azure-backup && git add azure-refs.txt && git commit -m 'provision rg/storage/container (eastasia LRS hot)'
@@ -155,7 +157,7 @@ cd ~/Repos/desmondc9-restic-azure-backup && git add azure-refs.txt && git commit
 **Interfaces:**
 - Produces: `/root/restic-env` 内容为 4 行 export(Task 3/4/7/8 的每个 root restic 命令前 `source` 它)
 
-- [ ] **Step 1: 生成容器级 SAS(2 年)**
+- [x] **Step 1: 生成容器级 SAS(2 年)**
 
 ```bash
 KEY=$(az storage account keys list -n desmondlinbak26 -g rg-desmond-backup --query '[0].value' -o tsv)
@@ -167,7 +169,7 @@ echo "SAS expires: $END  (length ${#SAS})"
 
 Expected: SAS 长度 > 100,以 `?sv=` 开头。**不回显完整 SAS 到终端日志之外**。
 
-- [ ] **Step 2: 生成密码与 /root 文件**
+- [x] **Step 2: 生成密码与 /root 文件**
 
 ```bash
 sudo -v
@@ -184,7 +186,7 @@ sudo chmod 600 /root/restic-env
 sudo ls -l /root/restic-env /root/restic.pw   # 期望两行均 -rw------- root root
 ```
 
-- [ ] **Step 3: 初始化远端仓库(连通性验证)**
+- [x] **Step 3: 初始化远端仓库(连通性验证)**
 
 ```bash
 sudo -E bash -c 'source /root/restic-env && restic init && restic snapshots'
@@ -192,7 +194,7 @@ sudo -E bash -c 'source /root/restic-env && restic init && restic snapshots'
 
 Expected: `created restic repository` 且 snapshots 列表为空报错(`restic snapshots` 空仓库时 exit 1 并提示 no snapshot data,属正常——连通即成功)。若网络失败重试一次,仍失败则按 Global Constraints 检查代理。
 
-- [ ] **Step 4: recovery.md(三要素文档,不含密钥值)**
+- [x] **Step 4: recovery.md(三要素文档,不含密钥值)**
 
 ```bash
 mkdir -p ~/Repos/desmondc9-restic-azure-backup/docs
@@ -212,11 +214,11 @@ az storage container generate-sas --account-name desmondlinbak26 --name restic-d
 EOF
 ```
 
-- [ ] **Step 5: 用户手动动作(提醒,不代做)**
+- [x] **Step 5: 用户手动动作(提醒,不代做)**
 
 提示用户:① 打开 1Password 新建条目 `restic desmondlinbak26`,存入 `/root/restic.pw` 内容与 SAS 字符串;② 打印密码纸质件。未完成前**不要**删除任何本机旧备份渠道。
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd ~/Repos/desmondc9-restic-azure-backup && git add docs/recovery.md && git commit -m 'credentials setup + recovery doc (values in 1Password only)'
@@ -233,7 +235,7 @@ cd ~/Repos/desmondc9-restic-azure-backup && git add docs/recovery.md && git comm
 **Interfaces:**
 - Produces: `/etc/restic/excludes.txt`(Task 6 unit 的 `--exclude-file` 消费;Task 7 首备消费)
 
-- [ ] **Step 1: 写源文件(内容 = spec §4.3 全文)**
+- [x] **Step 1: 写源文件(内容 = spec §4.3 全文)**
 
 ```bash
 cd ~/Repos/desmondc9-restic-azure-backup
@@ -320,13 +322,13 @@ cat > excludes.txt <<'EOF'
 EOF
 ```
 
-- [ ] **Step 2: 落盘到 /etc/restic/**
+- [x] **Step 2: 落盘到 /etc/restic/**
 
 ```bash
 sudo -v && sudo mkdir -p /etc/restic && sudo install -m 644 excludes.txt /etc/restic/excludes.txt
 ```
 
-- [ ] **Step 3: dry-run 断言一:排除项零命中**
+- [x] **Step 3: dry-run 断言一:排除项零命中**
 
 ```bash
 sudo -E bash -c 'source /root/restic-env && restic backup --dry-run -vv --one-file-system \
@@ -337,7 +339,7 @@ sudo -E bash -c 'source /root/restic-env && restic backup --dry-run -vv --one-fi
 
 Expected: `0`。若非 0:检查对应行拼写;若 `**` 系失效(Task 1 Step 4 已有先兆),把 `**/X` 改写为 `/home/desmond/Repos/*/X` + `/home/desmond/Repos/*/*/X` 两层并重跑。
 
-- [ ] **Step 4: dry-run 断言二:必含项在场**
+- [x] **Step 4: dry-run 断言二:必含项在场**
 
 ```bash
 grep -cE '/\.ssh/|/\.claude/|/\.config/opencode|sing-box|/Documents/' /tmp/dryrun.log
@@ -345,7 +347,7 @@ grep -cE '/\.ssh/|/\.claude/|/\.config/opencode|sing-box|/Documents/' /tmp/dryru
 
 Expected: > 0(每类至少一行;`/etc/sing-box`、`~/.ssh`、AI 工具目录、Documents 必须出现)。同时记录 `grep -c '^' /tmp/dryrun.log` 总行数到实施记录。
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 cd ~/Repos/desmondc9-restic-azure-backup && git add excludes.txt && git commit -m 'exclude list from spec 4.3, dry-run verified'
@@ -363,7 +365,7 @@ cd ~/Repos/desmondc9-restic-azure-backup && git add excludes.txt && git commit -
 **Interfaces:**
 - Produces: `~/Backups/manifests/*.txt`(10 类清单)、`~/Backups/dotfiles/**`(打捞件)——随备份带走;`~/Backups/last-backup.txt` 由 systemd 写(Task 6)
 
-- [ ] **Step 1: 写脚本**
+- [x] **Step 1: 写脚本**
 
 ```bash
 cd ~/Repos/desmondc9-restic-azure-backup
@@ -410,7 +412,7 @@ exit 0
 EOF
 ```
 
-- [ ] **Step 2: shellcheck + 安装 + 试跑**
+- [x] **Step 2: shellcheck + 安装 + 试跑**
 
 ```bash
 shellcheck restic-pre-backup.sh    # 无输出 = 通过(shellcheck 未装则 sudo apt-get install -y shellcheck)
@@ -418,7 +420,7 @@ sudo -v && sudo install -m 755 restic-pre-backup.sh /usr/local/bin/restic-pre-ba
 sudo /usr/local/bin/restic-pre-backup.sh
 ```
 
-- [ ] **Step 3: 断言**
+- [x] **Step 3: 断言**
 
 ```bash
 wc -l ~/Backups/manifests/*.txt        # 各文件行数 > 0(code-extensions 允许为空——code CLI 可能不在 PATH)
@@ -428,7 +430,7 @@ stat -c '%U' ~/Backups/manifests/system-info.txt   # desmond
 
 Expected: 清单非空;至少 `.m2/settings.xml`、`.sdkman/etc/config` 两个打捞件存在(勘探确认过这两个存在);manifests 属主 desmond。
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cd ~/Repos/desmondc9-restic-azure-backup && git add restic-pre-backup.sh && git commit -m 'pre-backup hook: manifests + dotfile salvage'
@@ -450,7 +452,7 @@ cd ~/Repos/desmondc9-restic-azure-backup && git add restic-pre-backup.sh && git 
 - Consumes: `/root/restic-env`(Task 3)、`/etc/restic/excludes.txt`(Task 4)、`/usr/local/bin/restic-pre-backup.sh`(Task 5)
 - Produces: `restic-backup.service` 等单元名(Task 7 的 backup-now.sh 消费)
 
-- [ ] **Step 1: 写 5 个单元文件**
+- [x] **Step 1: 写 5 个单元文件**
 
 ```bash
 mkdir -p ~/Repos/desmondc9-restic-azure-backup/systemd && cd ~/Repos/desmondc9-restic-azure-backup/systemd
@@ -528,7 +530,13 @@ EOF
 
 (若 Task 1 走了官方二进制:把两个 service 里的 `/usr/bin/restic` 全部替换为 `/usr/local/bin/restic`。)
 
-- [ ] **Step 2: 安装 + 生效**
+> **实际落地与上述草稿的差异**(执行时修正,已体现在安装的单元里):
+> - `OnFailure=` 是 `[Unit]` 段指令,不能放 `[Service]`(放错段会被 systemd 静默忽略)——已修正落在 `[Unit]`。
+> - 增加 `Environment=HOME=/root`:systemd 服务默认无 `HOME`,restic 找不到 cache 目录会出问题。
+> - 移除 `EnvironmentFile=/root/restic-env`:systemd 的 EnvironmentFile 不解析 shell 的 `export KEY=value` 行;改为 `ExecStart=/bin/bash -c 'source /root/restic-env && exec /usr/local/bin/restic …'` 模式。
+> - restic 路径按官方二进制落地:全部 `/usr/local/bin/restic`(见 Task 1 Step 3 实际执行注)。
+
+- [x] **Step 2: 安装 + 生效**
 
 ```bash
 sudo -v
@@ -541,7 +549,7 @@ systemctl list-timers | grep restic
 
 Expected: 两行 timer,`restic-backup.timer` 下次触发明天 03:00,`restic-maintenance.timer` 下个周日 04:00。
 
-- [ ] **Step 3: 单元文件静态校验**
+- [x] **Step 3: 单元文件静态校验**
 
 ```bash
 systemd-analyze verify /etc/systemd/system/restic-backup.service /etc/systemd/system/restic-maintenance.service
@@ -549,7 +557,7 @@ systemd-analyze verify /etc/systemd/system/restic-backup.service /etc/systemd/sy
 
 Expected: 无输出(无错误)。
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cd ~/Repos/desmondc9-restic-azure-backup && git add systemd/ && git commit -m 'systemd units: daily backup + weekly maintenance timers'
@@ -567,7 +575,7 @@ cd ~/Repos/desmondc9-restic-azure-backup && git add systemd/ && git commit -m 's
 - Consumes: `restic-backup.service`(Task 6)
 - Produces: 远端首个 `daily` tag 快照;`~/Backups/last-backup.txt` 首行 OK
 
-- [ ] **Step 1: 写手动入口**
+- [x] **Step 1: 写手动入口**
 
 ```bash
 cd ~/Repos/desmondc9-restic-azure-backup
@@ -582,7 +590,7 @@ EOF
 chmod +x backup-now.sh && sudo install -m 755 backup-now.sh /usr/local/bin/backup-now.sh
 ```
 
-- [ ] **Step 2: 首备 seeding(手动,长任务)**
+- [x] **Step 2: 首备 seeding(手动,长任务)**
 
 ```bash
 backup-now.sh
@@ -591,7 +599,7 @@ journalctl -u restic-backup.service -f    # 盯到 "snapshot <id> saved";中断�
 
 Expected: 首备 ~80G 原始数据,上传(压缩后估 60-70G)随大陆→东亚带宽数十分钟到数小时;结束出现 `snapshot ... saved` 与 forget 输出。
 
-- [ ] **Step 3: 结果断言 + 记录**
+- [x] **Step 3: 结果断言 + 记录**
 
 ```bash
 sudo -E bash -c 'source /root/restic-env && restic snapshots && restic stats --mode raw-data'
@@ -600,7 +608,7 @@ cat ~/Backups/last-backup.txt    # 末行 "OK <时间>"
 
 把 `restic stats` 的 Total Size(压缩后)与 Total Restore Size 写进本文件末尾实施记录。
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cd ~/Repos/desmondc9-restic-azure-backup && git add backup-now.sh && git commit -m 'manual entry + seeding done'
@@ -615,28 +623,32 @@ cd ~/Repos/desmondc9-restic-azure-backup && git add backup-now.sh && git commit 
 **Interfaces:**
 - Consumes: Task 7 的首个快照
 
-- [ ] **Step 1: 还原 /etc/sing-box 到临时目录并比对**
+> **还原语义(关键)**:`restic restore latest:<subpath> --target <dir>` 把 subpath 的**内容**直接放到 `<dir>` 下,**不会**自建同名子目录——所以比对对象是 `--target` 本身,不是 `--target/<subpath 名>`。
+> **人工粘贴块禁用 `set -e`**:zsh 交互 shell 里粘贴含 `set -e` 的块,遇非零返回码(如 diff 的 1/2)会触发 errexit 退出并**关闭整个终端**。
+
+- [x] **Step 1: 还原 /etc/sing-box 到临时目录并比对**
 
 ```bash
 sudo -v
 sudo rm -rf /tmp/restore-test && mkdir -p /tmp/restore-test
 sudo -E bash -c 'source /root/restic-env && restic restore latest:/etc/sing-box --target /tmp/restore-test'
-sudo diff -r /etc/sing-box /tmp/restore-test/sing-box && echo IDENTICAL
+sudo diff -r /etc/sing-box /tmp/restore-test && echo IDENTICAL
 sudo rm -rf /tmp/restore-test
 ```
 
 Expected: `IDENTICAL`(diff 无输出)。若 diff 报权限导致读取失败,先 `sudo` 已覆盖——不应出现。
 
-- [ ] **Step 2: 顺带验证一个 home 路径(AI 工具记忆)**
+- [x] **Step 2: 顺带验证一个 home 路径(AI 工具记忆)**
 
 ```bash
 sudo rm -rf /tmp/restore-test && mkdir -p /tmp/restore-test
 sudo -E bash -c 'source /root/restic-env && restic restore latest:/home/desmond/.config/opencode --target /tmp/restore-test'
-diff -r ~/.config/opencode /tmp/restore-test/opencode >/dev/null 2>&1; echo "exit=$? (0=identical, 1=有 churn 属正常,2=结构异常需查)"
+diff -r ~/.config/opencode /tmp/restore-test | head -20                # 差异摘要(前 20 行)
+diff -r ~/.config/opencode /tmp/restore-test | grep -c '^Only in' || true   # "Only in" 条数 = 缺失/多余文件数
 sudo rm -rf /tmp/restore-test
 ```
 
-Expected: exit 0 或 1(备份后配置仍在变化属正常);exit 2 需排查。
+Expected: diff 退出码 0 或 1;**exit 1 不只覆盖内容差异,也覆盖 `Only in …`(一侧缺失/多余文件,即 churn,属正常)**;exit 2 = 读取文件出问题(权限/IO),需排查。看 `head -20` 摘要与 "Only in" 计数即可判断 churn 面大小,不必全量刷屏。
 
 ---
 
@@ -651,7 +663,7 @@ Expected: exit 0 或 1(备份后配置仍在变化属正常);exit 2 需排查。
 - Consumes: 前面所有 task 的产物(安装源清单)
 - Produces: `install.sh`(重建机器时一键重装本地件;凭据仍按 recovery.md 手工恢复)
 
-- [ ] **Step 1: RUNBOOK.md(WSL 还原手册,命令可复制)**
+- [x] **Step 1: RUNBOOK.md(WSL 还原手册,命令可复制)**
 
 ```bash
 cd ~/Repos/desmondc9-restic-azure-backup
@@ -699,7 +711,7 @@ sudo systemctl enable --now tailscaled   # 节点身份已随 /var/lib/tailscale
 EOF
 ```
 
-- [ ] **Step 2: install.sh(源→系统路径,幂等)**
+- [x] **Step 2: install.sh(源→系统路径,幂等)**
 
 ```bash
 cat > install.sh <<'EOF'
@@ -723,7 +735,7 @@ chmod +x install.sh
 
 Expected: 安装输出 + 两行 timer(与 Task 6 一致,幂等重装无害)。
 
-- [ ] **Step 3: README 完整化**
+- [x] **Step 3: README 完整化**
 
 ```bash
 cat > README.md <<'EOF'
@@ -750,7 +762,7 @@ sudo -E bash -c 'source /root/restic-env && restic snapshots'
 EOF
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 cd ~/Repos/desmondc9-restic-azure-backup && git add -A && git commit -m 'runbook + installer + readme'
@@ -764,24 +776,34 @@ cd ~/Repos/desmondc9-restic-azure-backup && git add -A && git commit -m 'runbook
 - Modify: `~/plans/2026-09-11-1012-restic-azure-backup/spec.md`(实施记录节)
 - Modify: `~/plans/2026-09-11-1012-restic-azure-backup/implementation.md`(本文件勾选 + 实施记录)
 
-- [ ] **Step 1: 回填实施记录**(restic 版本、dry-run 文件数、`restic stats` 两个体积、seeding 耗时、Task 8 比对结果)到 spec 末尾「实施记录」节与本文件末尾。
+- [x] **Step 1: 回填实施记录**(restic 版本、dry-run 文件数、`restic stats` 两个体积、seeding 耗时、Task 8 比对结果)到 spec 末尾「实施记录」节与本文件末尾。
 
-- [ ] **Step 2: 提醒用户完成 1Password + 纸质件**(若 Task 3 Step 5 未做)。
+- [x] **Step 2: 提醒用户完成 1Password + 纸质件**(若 Task 3 Step 5 未做)。
 
-- [ ] **Step 3: plans 仓提交**
+- [x] **Step 3: plans 仓提交**
 
 ```bash
 cd ~/plans && git add 2026-09-11-1012-restic-azure-backup/ && git commit -m 'restic-azure-backup: implementation plan + backfilled results'
 ```
 
-- [ ] **Step 4: 可选演练(建议,一次性)**:`wsl --import` 临时发行版走 RUNBOOK.md 全流程;完成后删除临时发行版,结果记入实施记录。
+- [ ] **Step 4: 可选演练(建议,一次性)**:`wsl --import` 临时发行版走 RUNBOOK.md 全流程;完成后删除临时发行版,结果记入实施记录。(未执行——可选项,建议日后做一次,见 spec §4.9.5)
 
 ---
 
-## 实施记录(执行时回填)
+## 实施记录(2026-09-11 回填)
 
-- restic 版本:
-- dry-run 文件总数 / 排除断言:
-- 首备:原始 __ G / 压缩上传 __ G / 耗时 __
-- Task 8 比对:sing-box __ / opencode exit=__
-- WSL 演练(可选):__
+- **执行方式**:superpowers:subagent-driven-development,10 task 全部完成(Task 10 Step 4 可选 WSL 演练未做,见下)
+- **restic 版本**:apt 0.18.1(无 azure 后端,不可用)→ 官方 **0.19.1**(`/usr/local/bin/restic`,Task 3 修复时装入)
+- **dry-run(Task 4)**:675205 文件 / 原始 118.458 GiB / would-add 95.226 GiB(73.365 GiB stored)/ 耗时 3:22;两条断言(排除零命中、必含项在场)均通过
+- **首备(Task 7)**:快照 `d860c693`(tag daily),12:25→12:58(约 33 分钟);`restic stats --mode raw-data`:614735 blobs / 未压缩 94.983 GiB / 实存 73.246 GiB / 压缩比 1.30x(省 22.89%);restore-size 819014 文件 / 118.001 GiB;`~/Backups/last-backup.txt` 首行 OK
+- **演练(Task 8)**:DRILL1 `/etc/sing-box` diff IDENTICAL;DRILL2 `~/.config/opencode` exit=1(备份后配置仍在变化,churn 属正常)
+- **SAS**:容器级 racwdl,到期 **2028-09-11T02:59Z**(值只存 1Password「restic desmondlinbak26」+ `/root/restic-env`)
+- **事故与教训**(均已在对应 task 修复并回写文档):
+  1. apt restic 0.18.1 构建不含 azure 后端 → 改官方二进制 0.19.1
+  2. systemd `EnvironmentFile=` 不解析 shell 的 `export KEY=value` 行 → 改 `bash -c 'source … && exec restic …'`
+  3. systemd 服务环境无 `HOME` → `Environment=HOME=/root`
+  4. zsh 交互 shell 粘贴含 `set -e` 的块,遇非零返回码直接关闭终端 → 人工粘贴块禁用 `set -e`
+  5. restic 子路径还原 = subpath 的**内容**直接落 `--target`,不自建子目录 → 比对路径写 `--target` 本身
+- **备份仓**:~/Repos/desmondc9-restic-azure-backup `main` 76b9d97..9992edb(13 commits);timer 已启用(每日 03:00 备份 / 周日 04:00 prune+check)
+- **未做(可选项)**:WSL `wsl --import` 一次性全量演练(spec §4.9.5,建议日后做一次)
+- **1Password + 纸质件**:已提醒用户(用户自留确认)

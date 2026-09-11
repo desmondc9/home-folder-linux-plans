@@ -315,4 +315,15 @@ export RESTIC_PASSWORD_FILE=/root/restic.pw
 
 ---
 
-**实施记录**(实现阶段回填):首备时间/体积/带宽、演练结果。
+**实施记录**(2026-09-11 回填):
+
+- 实施 2026-09-11,10 task 全部完成
+- restic:apt 0.18.1(无 azure 后端)→ 官方 0.19.1(`/usr/local/bin/restic`)
+- dry-run:675205 文件 / 118.458 GiB 原始 / would-add 95.226 GiB(73.365 GiB stored)/ 3:22
+- 首备:快照 `d860c693`(tag daily),12:25→12:58(约 33 分钟);raw-data 614735 blobs / 94.983 GiB 未压缩 / 73.246 GiB 实存 / 压缩比 1.30x(省 22.89%);restore-size 819014 文件 / 118.001 GiB
+- 演练:DRILL1 `/etc/sing-box` diff IDENTICAL;DRILL2 `~/.config/opencode` exit=1(churn 正常)
+- SAS 到期 2028-09-11T02:59Z(值在 1Password + `/root/restic-env`)
+- 事故与教训:apt restic 无 azure 后端;systemd EnvironmentFile 不认 export;systemd 服务无 HOME;zsh 交互 shell set -e 杀终端;restic 子路径还原=内容直接落 target
+- 备份仓:~/Repos/desmondc9-restic-azure-backup main 76b9d97..9992edb(13 commits)
+- 未做(可选项):WSL `wsl --import` 一次性全量演练(§4.9.5,建议日后做一次)
+- 1Password + 纸质件:已提醒(用户自留确认)
