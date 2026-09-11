@@ -325,5 +325,6 @@ export RESTIC_PASSWORD_FILE=/root/restic.pw
 - SAS 到期 2028-09-11T02:59Z(值在 1Password + `/root/restic-env`)
 - 事故与教训:apt restic 无 azure 后端;systemd EnvironmentFile 不认 export;systemd 服务无 HOME;zsh 交互 shell set -e 杀终端;restic 子路径还原=内容直接落 target
 - 备份仓:~/Repos/desmondc9-restic-azure-backup main 76b9d97..9992edb(13 commits)
-- 未做(可选项):WSL `wsl --import` 一次性全量演练(§4.9.5,建议日后做一次)
+- 演练补录(2026-09-11 下午,替代 §4.9.5 的 WSL 演练):podman 全新 ubuntu:24.04 容器内完成"新机器"验证——SAS 认证可见 2 快照、`restic check` 无错、关键路径选择性还原 12,642 文件/1.05 GiB(sing-box/ssh/tailscale 节点身份/manifests 内容抽查全对),DRILL-PASS
+- 演练新教训:podman `--env-file` 不剥单引号(/root/restic-env 里 SAS 带字面 `'`,source 正常、env-file 403);rootful podman netavark veth 失败时用 `--network=host`
 - 1Password + 纸质件:已提醒(用户自留确认)
