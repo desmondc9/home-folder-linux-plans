@@ -47,29 +47,23 @@
 - [x] **Step 2: 发布三个文件到 Apps 目录** ✅(jq 注入真值,占位符版留在档案)
 - [x] **Step 3: 校验配置** ✅ `sing-box check` → CONFIG_CHECK_OK
 
-### Task 3: 安装服务并首启(提权,一次 UAC) `[用户执行,AI 供逐条命令]`
+### Task 3: 安装服务并首启(提权,一次 UAC) ✅ 2026-09-12
 
-> sing-box 1.13.19 **无 `service` 子命令**(实测),Windows 服务用 **WinSW** 包装:下载 `WinSW-x64.exe` → 改名 `sing-box-service.exe` + 同目录 `sing-box-service.xml`,`install` 后即标准 Windows 服务(supports start/stop/restart + 崩溃自动重启)。首启也可先在提权控制台前台跑 `sing-box run`,验证通过再装服务。
+> sing-box 1.13.19 **无 `service` 子命令**(实测),Windows 服务用 **WinSW** 包装:`sing-box-service.exe` + 同名 xml,`install` 后即标准 Windows 服务。实际执行:UAC 由 AI 从 WSL `Start-Process -Verb RunAs` 触发,用户点一次「是」。
 
-- [ ] **Step 1: 部署 WinSW**(AI 已从 WSL 下载放置,含 xml)
-- [ ] **Step 2: [提权] 安装并启动服务**:`sing-box-service.exe install` → `sc start sing-box`;看日志(`Apps\sing-box\logs\` 或 WinSW roll 日志)确认 TUN 创建 + rule-set 全部 updated
-- [ ] **Step 3: 立即回归**:Windows 上网 / `tailscale.exe status` 在线 / WSL localhost 互通 + podman / v2rayN 10808 可用——任何异常 → `sc stop sing-box` 回退并诊断
-- [ ] **Step 4: 本机分流验收**:
-  - `curl myip.ipip.net` → 家宽 IP
-  - `curl api.ipify.org` → 104.194.83.82
-  - google.com 可访问;nslookup 走向检查(解析结果非投毒段)
-- [ ] **Step 5: WSL 分流验收**:WSL 内 `curl myip.ipip.net`(家宽)与 `curl api.ipify.org`(VPS)——mirrored 流量确已进分流
+- [x] **Step 1: 部署 WinSW** ✅ v2.12.0(GitHub 直连下载)+ `sing-box-service.xml`(id=sing-box,自动启动,崩溃 5s 重启,日志 roll 到 `logs\`)
+- [x] **Step 2: [提权] 安装并启动服务** ✅ `elevate-install.ps1`(transcript 留 `install-result.txt`);日志确认 TUN 创建、`process_name` 规则对 `tailscaled.exe` 生效、VLESS 出站连接成功
+- [x] **Step 3: 立即回归** ✅ tailscale 在线 / WSL localhost 互通 / podman 正常 / v2rayN 10808 未受影响
+- [x] **Step 4: 本机分流验收** ✅(WSL 测,经 mirrored 宿主栈):myip.ipip.net → 114.92.157.156 上海电信;api.ipify.org → 104.194.83.82;google 200(0.88s)
+- [x] **Step 5: WSL 分流验收** ✅ **mirrored WSL × TUN 实测共存正常**(spec 风险 #1 解除):WSL 出国外走 VPS、国内出家宽;podman 正常
+- [x] **补:Windows 原生流量验证** ✅ myip.ipip.net → 240e: 家宽 v6 出口;api.ipify.org → VPS
+- [x] **回退开关就位**:`stop-service.ps1` = `sc.exe stop sing-box`(实测未需用)
 
-### Task 4: advertise exit node + headscale 批准
+### Task 4: advertise exit node + headscale 批准 ✅ 2026-09-12
 
-- [ ] **Step 1: `[提权]` `tailscale.exe set --advertise-exit-node=true`**
-- [ ] **Step 2: [AI 从 WSL 代跑] 批准路由**(node id 7):
-
-```bash
-ssh desmond@100.64.0.4 'sudo headscale nodes approve-routes --identifier 7 --routes 0.0.0.0/0,::/0'
-```
-
-- [ ] **Step 3: 客户端可见性**:`tailscale.exe exit-node list` 出现 desktop-j7nbnu4;确认 Windows 自身 **ExitNodeID 仍为空**(不自选出口)
+- [x] **Step 1: `tailscale.exe set --advertise-exit-node=true`** ✅(**免提权直接成功**,无需 UAC;Windows 客户端 CLI 非 admin 可改此 pref,与预期不同,记录在案)
+- [x] **Step 2: [AI 从 WSL 代跑] 批准路由** ✅ `sudo headscale nodes approve-routes --identifier 7 --routes 0.0.0.0/0,::/0` → "Node updated"(注意:0.29 无 `routes list` 命令,验证走客户端)
+- [x] **Step 3: 客户端可见性** ✅ VPS 侧 `tailscale exit-node list` 出现 `desktop-j7nbnu4.tailnet.internal`;Windows 自身 `ExitNodeID: ""`(不自选出口,防环)
 
 ### Task 5: 端到端验收 `[用户执行]`
 
