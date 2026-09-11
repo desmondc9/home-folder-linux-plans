@@ -85,7 +85,7 @@ echo testpw > pw && export RESTIC_PASSWORD_FILE="$PWD/pw"
 restic init
 mkdir -p a/node_modules b/c/node_modules keep
 touch a/node_modules/x b/c/node_modules/x keep/x a/target
-restic backup . --dry-run -vv 2>&1 | grep -E 'node_modules|target' | wc -l   # 期望 0
+restic backup . --dry-run -vv 2>&1 | grep -E 'node_modules|target' | wc -l   # 基线,期望 >0(证明文件确实会进列表)
 restic backup . --exclude '**/node_modules' --exclude '**/target' --dry-run -vv 2>&1 | grep -cE 'node_modules|/target'   # 期望 0;若非 0 → 记录,Task 4 改用逐层 glob
 unset RESTIC_REPOSITORY RESTIC_PASSWORD_FILE
 ```
