@@ -70,6 +70,7 @@
 | 2026-09-11 21:42 | [sdkman-jdk21](./2026-09-11-2142-sdkman-jdk21/) | 官方脚本装 sdkman 5.23.0 + Temurin JDK 21.0.12+1.1-tem 设默认(JAVA_HOME 由 sdkman 托管);坑:安装脚本硬依赖 unzip+zip 但 sudo 无免密 → 用户手装、轮询等待(两轮);zip 仅存在性检查、安装只用 unzip(脚本源码核对);安装器自动补 ~/.bashrc 与 ~/.zshrc 片段,zsh 零手工配置 |
 
 | 2026-09-11 21:20 | [podman-wsl-ubuntu-native](./2026-09-11-2120-podman-wsl-ubuntu-native/) | WSL 弃用 Windows 共享 machine 改 Ubuntu 原生 rootless podman(根因:跨发行版 bind-mount 不支持,podman#21813);Ubuntu/Debian 默认不配短名解析致 `podman pull nginx` 报错 → 用户级 registries.conf + daocloud/1ms 双 mirror;docker-compose-v2 symlink 成 podman compose provider + user socket + linger;坑:恢复的 .git/config 残留 10809 代理致 git 全卡(unset + ssh.github.com:443 推送)、gitleaks 直连 GitHub 可用;Windows 侧清理与 Podman Desktop docker-context 桥接实验待用户手动 |
+| 2026-09-12 00:21 | [windows11-exit-node-singbox](./2026-09-12-0021-windows11-exit-node-singbox/) | Windows 11 物理机成为第三 Exit Node:sing-box 1.13.19 Windows 版 TUN(auto_route)替代 TPROXY/nftables,分流规则与笔记本逐行平移(含 `action: reject` 修复);三出口并存(笔记本/Windows/VPS);AI 经 WSL mirrored interop 摸底并代跑,提权步骤 UAC;最大风险点 = mirrored WSL × TUN 交互与 strict_route/WFP,strict_route false 起步 |
 
 ## 关于本仓库
 
