@@ -459,6 +459,7 @@ cat > restic-backup.service <<'EOF'
 Description=restic daily backup to Azure Blob
 Wants=network-online.target
 After=network-online.target
+OnFailure=restic-backup-failed.service
 
 [Service]
 Type=oneshot
@@ -471,7 +472,7 @@ ExecStart=/usr/bin/restic backup --tag daily --one-file-system \
   /home/desmond /etc /usr/local /var/lib/tailscale /var/spool/cron/crontabs
 ExecStartPost=/usr/bin/restic forget --keep-daily 14 --keep-weekly 8 --keep-monthly 6
 ExecStartPost=/bin/sh -c 'echo "OK $(date -Is)" >> /home/desmond/Backups/last-backup.txt'
-OnFailure=restic-backup-failed.service
+
 EOF
 
 cat > restic-backup.timer <<'EOF'
@@ -491,6 +492,7 @@ cat > restic-maintenance.service <<'EOF'
 Description=restic weekly prune + integrity check
 Wants=network-online.target
 After=network-online.target
+OnFailure=restic-backup-failed.service
 
 [Service]
 Type=oneshot
@@ -499,7 +501,7 @@ Nice=19
 IOSchedulingClass=idle
 ExecStart=/usr/bin/restic prune
 ExecStartPost=/usr/bin/restic check --read-data-subset=1/10
-OnFailure=restic-backup-failed.service
+
 EOF
 
 cat > restic-maintenance.timer <<'EOF'
