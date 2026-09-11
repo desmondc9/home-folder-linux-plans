@@ -126,6 +126,7 @@ export RESTIC_PASSWORD_FILE=/root/restic.pw
 /home/desmond/.freetoken
 /home/desmond/.npm
 /home/desmond/.local/share/uv
+/home/desmond/.local/share/com.freetoken.desktop
 /home/desmond/.local/share/JetBrains
 /home/desmond/.local/share/Trash
 /home/desmond/.local/share/baloo
@@ -146,6 +147,7 @@ export RESTIC_PASSWORD_FILE=/root/restic.pw
 /home/desmond/.xwechat
 /home/desmond/snap/chromium
 /home/desmond/snap/firefox
+/home/desmond/snap/**/.cache
 
 # ---- 工具链(可重装;小配置由钩子打捞)----
 /home/desmond/Android
@@ -162,6 +164,7 @@ export RESTIC_PASSWORD_FILE=/root/restic.pw
 /home/desmond/.wine
 /home/desmond/.var
 /home/desmond/go
+/home/desmond/.local/go
 
 # ---- ~/Repos 编译产物与依赖(.git/.idea/.worktrees 保留)----
 **/node_modules
