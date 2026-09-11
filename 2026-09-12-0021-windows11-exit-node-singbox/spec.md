@@ -61,7 +61,7 @@ iPad/Android ──WireGuard P2P(IPv6)──> Windows tailscaled(100.64.0.7)
 | nftables TPROXY `:7896` + 策略路由表 100 | `tun` inbound(`auto_route: true`) | Windows 唯一透明接管方式 |
 | `routing_mark: 255` + nft mark 豁免防回环 | `auto_detect_interface: true`(出站绑定物理网卡)+ `route_exclude_address`(VPS 双栈 IP 永不进 TUN) | 防回环机制完全不同,双保险 |
 | nft 目的地址豁免清单 | tun `route_exclude_address` 同一份清单平移(私网/100.64/10/fd7a::/48/VPS v4+v6) | 另加 `process_name` 规则直连 tailscaled.exe |
-| systemd `sing-box.service` | Windows 服务(`sing-box service install`,失败则 `New-Service`) | 开机自启 |
+| systemd `sing-box.service` | Windows 服务(WinSW 包装;1.13.19 无 `service` 子命令,实测) | 开机自启 + 崩溃自动重启 |
 | `sing-box-tproxy.service`(规则加载) | 不需要——auto_route 随 TUN 生命周期自动增删路由 | 回退更干净:停服务即恢复 |
 | systemd-resolved→223.5.5.5 被 TPROXY 劫持 | TUN 成为首选 DNS 接口 + `hijack-dns` 规则 | alidns/cfdoh 分流逻辑逐行不变 |
 | `99-exit-node.conf` sysctl(ip_forward) | 不需要——tailscaled 自管 Windows 转发/NAT | |

@@ -32,32 +32,27 @@
 **Files:**
 - Create: `C:\Users\Desmond\Apps\sing-box\sing-box.exe`(免提权目录,不动 Program Files)
 
-- [ ] **Step 1: 下载 v1.13.19 Windows zip**(WSL 代跑;GitHub 直连失败走 `https_proxy=http://127.0.0.1:10808`——v2rayN 在跑)
-
-```bash
-export https_proxy=http://127.0.0.1:10808
-curl -fSL -o /tmp/sing-box.zip \
-  "https://github.com/SagerNet/sing-box/releases/download/v1.13.19/sing-box-1.13.19-windows-amd64.zip"
-```
-
-- [ ] **Step 2: 解压到 `C:\Users\Desmond\Apps\sing-box\` 并校验** `sing-box.exe version` → 1.13.19
-- [ ] **Step 3: `sing-box.exe service --help`** 确认是否带 Windows 服务子命令(决定 Task 3 用官方 service 还是 `New-Service`)
+- [x] **Step 1: 下载 v1.13.19 Windows zip** ✅ 2026-09-12(GitHub 直连 6MB/s,未走代理)
+- [x] **Step 2: 解压到 `C:\Users\Desmond\Apps\sing-box\` 并校验** ✅ 1.13.19 windows/amd64(with_gvisor/with_utls 等 tag 齐)
+- [x] **Step 3: `sing-box.exe service --help`** ✅ **无 `service` 子命令**(1.13.19 实测,unkown command)→ Task 3 改用 WinSW v2.12.0(`sing-box-service.exe` + xml 已就位)
 - [ ] **Step 4: 重启 Windows** `[用户执行]`(顺带清理双 tailscaled 进程;重启后 WSL/interop/tailscale 回归检查)
 
-### Task 2: 配置部署与本地校验(免提权)
+### Task 2: 配置部署与本地校验(免提权) ✅ 2026-09-12
 
 **Files:**
-- Create: `C:\ProgramData\sing-box\config.json`(从本档案 `sing-box-deploy/config.windows.json` 发布,uuid/pbk 填真值)
-- Create: `C:\ProgramData\sing-box\rules\custom-direct.json` / `custom-proxy.json`(从 `sing-box-deploy/rules/` 发布)
+- Create: `C:\Users\Desmond\Apps\sing-box\config.json`(uuid/pbk 已填真值,不入库)
+- Create: `C:\Users\Desmond\Apps\sing-box\rules\custom-direct.json` / `custom-proxy.json`
 
-- [ ] **Step 1: 从本机 v2rayN 提取节点参数**(参考笔记本从 `~/.local/share/v2rayN/binConfigs/config.json` 提取的路径;Windows v2rayN 对应 `%AppData%\v2rayN\binConfigs\config.json`,提取 uuid/reality public_key;只填入部署目标,不入库)
-- [ ] **Step 2: 发布三个文件**(ProgramData 需要提权写?——先用 `%LOCALAPPDATA%`?否:**ProgramData 默认 Users 可写子目录需确认**,不可写则整个 Task 2 并入 Task 3 提权会话)
-- [ ] **Step 3: 校验配置**:`sing-box.exe check -c C:\ProgramData\sing-box\config.json` → OK(占位符未替换会报 uuid 错,属预期)
+- [x] **Step 1: 从本机 v2rayN 提取节点参数** ✅ v2rayN 便携版在 `D:\v2rayN-windows-64\binConfigs\config.json`(xray 运行配置);节点与笔记本完全一致(104.194.83.82:45575 / vision / www.ebay.com / chrome / short_id 空)
+- [x] **Step 2: 发布三个文件到 Apps 目录** ✅(jq 注入真值,占位符版留在档案)
+- [x] **Step 3: 校验配置** ✅ `sing-box check` → CONFIG_CHECK_OK
 
 ### Task 3: 安装服务并首启(提权,一次 UAC) `[用户执行,AI 供逐条命令]`
 
-- [ ] **Step 1: 安装服务**:`sing-box.exe service install -c C:\ProgramData\sing-box\config.json`(无 service 子命令则 `New-Service -Name sing-box -BinaryPathName ...`)
-- [ ] **Step 2: 启动**:`sc start sing-box`;立即看日志(sing-box `run` 前台调试或 Windows 事件日志)确认 TUN 创建 + rule-set 全部 updated
+> sing-box 1.13.19 **无 `service` 子命令**(实测),Windows 服务用 **WinSW** 包装:下载 `WinSW-x64.exe` → 改名 `sing-box-service.exe` + 同目录 `sing-box-service.xml`,`install` 后即标准 Windows 服务(supports start/stop/restart + 崩溃自动重启)。首启也可先在提权控制台前台跑 `sing-box run`,验证通过再装服务。
+
+- [ ] **Step 1: 部署 WinSW**(AI 已从 WSL 下载放置,含 xml)
+- [ ] **Step 2: [提权] 安装并启动服务**:`sing-box-service.exe install` → `sc start sing-box`;看日志(`Apps\sing-box\logs\` 或 WinSW roll 日志)确认 TUN 创建 + rule-set 全部 updated
 - [ ] **Step 3: 立即回归**:Windows 上网 / `tailscale.exe status` 在线 / WSL localhost 互通 + podman / v2rayN 10808 可用——任何异常 → `sc stop sing-box` 回退并诊断
 - [ ] **Step 4: 本机分流验收**:
   - `curl myip.ipip.net` → 家宽 IP
@@ -89,7 +84,7 @@ ssh desmond@100.64.0.4 'sudo headscale nodes approve-routes --identifier 7 --rou
 - [ ] **Step 2: v2rayN 退役**:退出 + 取消开机自启(xray 服务端在 VPS 不动);WSL podman 代理约定 10809 继续有效
 - [ ] **Step 3: strict_route 评估**:试开 true → 回归 tailscale/WSL/串流;异常即回 false 并记录
 - [ ] **Step 4: 文档**:本档案实施结果回填;`~/Notebook/Tailscale-Headscale-DERP/`(Windows 侧或在笔记本上)补第三出口条目;README 索引已加
-- [ ] **Step 5: 自定义规则用法登记**:编辑 `C:\ProgramData\sing-box\rules\custom-{direct,proxy}.json` 数组后 `sc stop sing-box && sc start sing-box`
+- [ ] **Step 5: 自定义规则用法登记**:编辑 `C:\Users\Desmond\Apps\sing-box\rules\custom-{direct,proxy}.json` 数组后 `sc stop sing-box && sc start sing-box`
 
 ## 回退总开关
 

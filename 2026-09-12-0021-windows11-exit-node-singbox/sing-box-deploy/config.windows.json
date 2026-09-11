@@ -187,13 +187,13 @@
         "tag": "custom-direct",
         "type": "local",
         "format": "source",
-        "path": "C:/ProgramData/sing-box/rules/custom-direct.json"
+        "path": "C:/Users/Desmond/Apps/sing-box/rules/custom-direct.json"
       },
       {
         "tag": "custom-proxy",
         "type": "local",
         "format": "source",
-        "path": "C:/ProgramData/sing-box/rules/custom-proxy.json"
+        "path": "C:/Users/Desmond/Apps/sing-box/rules/custom-proxy.json"
       }
     ],
     "final": "proxy",
