@@ -240,10 +240,10 @@ export RESTIC_PASSWORD_FILE=/root/restic.pw
 
 目标:全新 Windows 11 + WSL2 Ubuntu(systemd 已启用):
 
-1. 安装 restic(apt 版本 ≥0.16 即可,或官方二进制)
+1. 安装 restic(apt 版本 ≥0.16 即可,或官方二进制)(已过时:apt 版无 azure 后端,见 RUNBOOK——装官方二进制)
 2. 从 1Password 取回:存储账号名、SAS、restic 密码 → 导出四个环境变量(同 §4.1)
 3. `restic snapshots` 完整性确认;`restic restore latest --target / --dry-run` 预览
-4. `sudo -E restic restore latest --target /`(合并写入 /home/desmond、/etc、/usr/local、/var/lib/tailscale、/var/spool/cron/crontabs;**必须 `-E`**,否则 sudo 丢弃 RESTIC_*/AZURE_* 环境变量)
+4. `sudo -E restic restore latest --target /`(合并写入 /home/desmond、/etc、/usr/local、/var/lib/tailscale、/var/spool/cron/crontabs;**必须 `-E`**,否则 sudo 丢弃 RESTIC_*/AZURE_* 环境变量)(已过时:统一用 sudo bash -c 'source …' 模式,见 RUNBOOK)
 5. 后处理:
    - `sudo chown -R desmond:desmond /home/desmond`
    - `restic check`(仓库体检)
