@@ -75,6 +75,7 @@
 | 2026-09-12 13:15 | [lazyvim-dap-setup](./2026-09-12-1315-lazyvim-dap-setup/) | VPS 上 LazyVim 补齐 DAP 调试工具链(nvim 0.12.5 已是最新无需动):启用 dap.core extra、Mason 装 debugpy/delve/js-debug-adapter/java-debug-adapter/java-test、自写 TS/JS 配置(typescript extra 官方不带 dap 接线);python/go 的 dap 插件挂在 nvim-dap 依赖下"加载即配好"而 rustaceanvim 是 ft 惰性,headless 验证须区分加载时机;mason-nvim-dap 只配 adapter 不给 configurations;DAP 接线+LSP 回归(pyright/ruff/vtsls)全绿 |
 | 2026-09-12 13:19 | [lazyvim-wsl-replay](./2026-09-12-1319-lazyvim-wsl-replay/) | WSL 本机(第三台)重放 LazyVim:官方 starter+档案 deltas(nvim 0.12.5/Go 1.27.1/rsproxy rustup/14 extras+dap.core);新坑:lazyvim.json extras 现行要求**全模块路径**(v8 迁移把相对写法双前缀化并原样持久化,sd 修不掉)、headless 下 Mason ensure_installed 不跑(cmd 懒加载,需 lazy.load 强制)+等待判据须 installing==0;session 中断后交互式使用自动补齐 LSP servers |
 | 2026-09-12 15:36 | [windows-terminal-font-not-found](./2026-09-12-1536-windows-terminal-font-not-found/) | Windows 11 WT 1.24 报找不到 JetBrains Mono NL/Sarasa Mono SC:字体是 per-user 安装(HKCU+LocalAppData)而 WT 的 DirectWrite 系统字体集合不含 per-user 字体(#15344),`face` 逗号列表写法本身无辜 → 提权脚本把 58 个字体转系统级(C:\Windows\Fonts+HKLM+去 MOTW+重启 FontCache)并清用户级残留;经验:给 WT/打包应用装字体必须全机器安装 |
+| 2026-09-12 19:13 | [mise-go-manager](./2026-09-12-1913-mise-go-manager/) | Go 版本管理迁到 mise(rustup 管理的 Rust 不动——它本身就是 Rust 官方的 nvm 式管理器):mise use -g go@1.27.1 替代 ~/.local/go 手动安装,zshrc 换 mise activate;GOPATH 仍 ~/go 且 Mason 自管 gopls,nvim LSP 零影响;mise 下 go 走 dl.google.com,按约定预注 10809 代理 |
 
 ## 关于本仓库
 
