@@ -64,7 +64,7 @@ WT 警告已消失、字体正常渲染(用户回报),但 LazyVim 图标豆腐�
 
 ## 遗留 / 跟进
 
-- `C:\Users\Desmond\font-fix-tmp\` 日志目录,用户确认警告消失后可删
+- ~~`C:\Users\Desmond\font-fix-tmp\` 日志目录,用户确认警告消失后可删~~(2026-09-12 用户确认后已删除)
 - Kubuntu 侧 Konsole 的同类字体问题另见 [2026-09-04-1632-nvim-icon-nerd-font-fix](../2026-09-04-1632-nvim-icon-nerd-font-fix/)(Linux fontconfig 体系,与本次 Windows 注册表体系互为对照)
 
 ## 参考
