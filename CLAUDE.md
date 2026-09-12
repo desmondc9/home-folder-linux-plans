@@ -8,6 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - 个人档案库,不走 `~/CLAUDE.md` 的完整开发流程:无 Kanban work item、无 worktree、无 PR——任务归档直接 commit 到 `main` 并 push。
 - 每个任务收尾时同步 [README.md](README.md) 任务索引(新增一行)。2026-08-22 曾一次性补 11 行缺失索引,属于已知返工点。
+- **spec.md 必须包含「环境」章节**(2026-09-12 约定):写明操作系统与桌面栈(如 Windows 11、Ubuntu + Wayland、Kubuntu + Wayland、macOS 等)、涉及的机器/版本号——同一问题在不同 OS 上根因与修法不同,环境信息是档案可复用的前提。
 - 知识重组类任务(分散档案 → `~/Notebook/` 的 Obsidian 风格知识库)以 [2026-08-21-1511-sunshine-notebook/](2026-08-21-1511-sunshine-notebook/) 为既定范式:源档案原地保留(证据链),产出 MOC + 主题笔记 + wikilink;收尾验证 = wikilink 全部可解析 + gitleaks/rg 扫描 + README 补行。
 - 每次 plans 更新(新增/修订任务档案)后,检查 `~/Notebook/` 对应域笔记是否需同步更新:笔记是活知识、档案是冻结证据链,知识变更应反映进笔记。
 
