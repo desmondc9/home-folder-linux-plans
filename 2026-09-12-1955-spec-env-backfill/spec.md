@@ -44,4 +44,4 @@
 
 ## 遗留 / 跟进
 
-- 6 个目录在 README 索引中缺行(2026-09-01-1537-cursor-sdk2api-shutdown、2026-09-01-1547-vscode-kwallet-keyring、2026-09-03-0953-coding-agents-auto-update、2026-09-03-1025-github-token-multi-tool、2026-09-07-1141-librechat-openclaw、2026-09-07-1329-librechat-websearch)——本次只治环境字段,索引缺行待另行补
+- ~~6 个目录在 README 索引中缺行(2026-09-01-1537-cursor-sdk2api-shutdown、2026-09-01-1547-vscode-kwallet-keyring、2026-09-03-0953-coding-agents-auto-update、2026-09-03-1025-github-token-multi-tool、2026-09-07-1141-librechat-openclaw、2026-09-07-1329-librechat-websearch)~~(同日已按时间序补入 README,覆盖率校验 66/66 通过)
