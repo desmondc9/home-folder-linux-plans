@@ -94,10 +94,24 @@
 ### Task 6: 稳定期与收尾
 
 - [ ] **Step 1: 观察 3-7 天**(日常使用 + 偶发断流记录;重点 mirrored WSL 稳定性)
-- [ ] **Step 2: v2rayN 退役**:退出 + 取消开机自启(xray 服务端在 VPS 不动);WSL podman 代理约定 10809 继续有效
-- [ ] **Step 3: strict_route 评估**:试开 true → 回归 tailscale/WSL/串流;异常即回 false 并记录
-- [ ] **Step 4: 文档**:本档案实施结果回填;`~/Notebook/Tailscale-Headscale-DERP/`(Windows 侧或在笔记本上)补第三出口条目;README 索引已加
-- [ ] **Step 5: 自定义规则用法登记**:编辑 `C:\Users\Desmond\Apps\sing-box\rules\custom-{direct,proxy}.json` 数组后 `sc stop sing-box && sc start sing-box`
+- [ ] **Step 2: v2rayN 退役** ✅ 2026-09-12 用户已关闭(10808 消失,sing-box 10809 独立验证健康;CLAUDE.md 代理段已同步改写)
+- [x] **Step 3: 富途 rule-set 平移**(2026-09-12 追加,原计划无此步)✅ 见下 Task 6b
+- [ ] **Step 4: strict_route 评估**:试开 true → 回归 tailscale/WSL/串流;异常即回 false 并记录
+- [ ] **Step 5: 重启 Windows 清理双 tailscaled 进程**(稳定期进行)
+- [ ] **Step 6: 文档**:本档案实施结果回填;`~/Notebook/Tailscale-Headscale-DERP/`(Windows 侧或在笔记本上)补第三出口条目;README 索引已加
+- [ ] **Step 7: 自定义规则用法登记**:编辑 `C:\Users\Desmond\Apps\sing-box\rules\custom-{direct,proxy}.json` 数组后 `sc stop sing-box && sc start sing-box`
+
+### Task 6b: 富途 37 域名 rule-set 平移(源档案 [../2026-09-03-2047-futu-domain-audit/](../2026-09-03-2047-futu-domain-audit/implementation.md))✅ 2026-09-12
+
+沿用笔记本"独立 rule-set 文件"方案(非嵌入 custom-proxy.json):
+
+- `rules/futu.json`(37 个 domain_suffix,与笔记本同源)→ 部署至 `C:\Users\Desmond\Apps\sing-box\rules\futu.json`
+- config 三处注册:route `futu → proxy`(置于 custom-proxy 之后)、dns `futu → cfdoh`、rule_set local source;另加 `process_name: [FTNN.exe, CrashReporter.exe, FTWebRender.exe, LaunchCheck.exe, LiveUpdate.exe] → proxy` 兜底裸 IP 行情线
+  - **Windows exe 名与笔记本不同**:FTWeb→`FTWebRender.exe`,无 NNPython,多出 `LaunchCheck/LiveUpdate.exe`(更新器,枚举自 `D:\FTNN\app\16.32.17708\`)
+  - process_name 规则安全性:列表只含富途自家 exe,转发流量归因 tailscaled.exe 不在列表——Task 5b 的误伤模式不复现
+- `experimental.clash_api: 127.0.0.1:9090`(对齐笔记本验证口)
+- 备份 `config.json.bak-20260912-futu`;`sing-box check` 过;UAC 重启
+- **验证**:`www.futunn.com` → cfdoh 解析(EdgeOne 国际边缘 43.175.134.104)→ `outbound/vless[proxy]` 连接 ✓;clash_api `/version` 200 ✓;分流回归(国外 VPS)✓
 
 ## 回退总开关
 

@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "rules": [
+    {
+      "domain_suffix": [
+        "futu.cn",
+        "futu.link",
+        "futu5.com",
+        "futu88.com",
+        "futuau.com",
+        "futubos.com",
+        "futuesop.com",
+        "futufin.com",
+        "futuhainan.com",
+        "futuhk.com",
+        "futuhk1.com",
+        "futuhk2.com",
+        "futuhk8.com",
+        "futuhkapp.com",
+        "futuhn.com",
+        "futuhongkong.com",
+        "futuie.com",
+        "futulending.com",
+        "futulti.com",
+        "futunh.com",
+        "futuniuniu.com",
+        "futunn.com",
+        "futunnn.com",
+        "futuoa.com",
+        "futusg.com",
+        "futustatic.com",
+        "fututrade.com",
+        "fututradehub.com",
+        "fututrust.com",
+        "fututrustee.com",
+        "moomoo.com",
+        "moomooapp.com",
+        "moomoobull.com",
+        "moomoocn.com",
+        "moomoocrypto.com",
+        "moomooequity.com",
+        "moomootrustee.com"
+      ]
+    }
+  ]
+}

@@ -32,6 +32,12 @@
       },
       {
         "rule_set": [
+          "futu"
+        ],
+        "server": "cfdoh"
+      },
+      {
+        "rule_set": [
           "geosite-cn"
         ],
         "server": "alidns"
@@ -138,6 +144,22 @@
         "outbound": "proxy"
       },
       {
+        "process_name": [
+          "FTNN.exe",
+          "CrashReporter.exe",
+          "FTWebRender.exe",
+          "LaunchCheck.exe",
+          "LiveUpdate.exe"
+        ],
+        "outbound": "proxy"
+      },
+      {
+        "rule_set": [
+          "futu"
+        ],
+        "outbound": "proxy"
+      },
+      {
         "rule_set": [
           "geosite-cn",
           "geoip-cn"
@@ -187,9 +209,20 @@
         "type": "local",
         "format": "source",
         "path": "C:/Users/Desmond/Apps/sing-box/rules/custom-proxy.json"
+      },
+      {
+        "tag": "futu",
+        "type": "local",
+        "format": "source",
+        "path": "C:/Users/Desmond/Apps/sing-box/rules/futu.json"
       }
     ],
     "final": "proxy",
     "auto_detect_interface": true
+  },
+  "experimental": {
+    "clash_api": {
+      "external_controller": "127.0.0.1:9090"
+    }
   }
 }
