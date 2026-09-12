@@ -117,13 +117,6 @@
         "action": "hijack-dns"
       },
       {
-        "process_name": [
-          "tailscaled.exe",
-          "tailscale-ipn.exe"
-        ],
-        "outbound": "direct"
-      },
-      {
         "network": "udp",
         "port": 443,
         "action": "reject"

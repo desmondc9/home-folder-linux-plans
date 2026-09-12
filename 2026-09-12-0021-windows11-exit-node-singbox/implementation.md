@@ -67,10 +67,29 @@
 
 ### Task 5: 端到端验收 `[用户执行]`
 
-- [ ] iPad(4G,Shadowrocket 关):Exit Node 选 desktop-j7nbnu4 → `myip.ipip.net` 家宽 IP;google 可访问且 `api.ipify.org` = VPS;Moonlight 串流笔记本正常(tailnet 内部流量不经 sing-box)
-- [ ] Android 同上
-- [ ] iPhone(desmond-iphone-11)同上
-- [ ] 切回笔记本出口/VPS 出口/无出口,均正常(并存互不影响)
+- [x] **Step 1: Android(oneplus-15,家 WiFi,Exit Node=desktop-j7nbnu4)首次测试** ⚠️ 国内正常,**国外(youtube 等)不可达** → 见下方 Task 5b 根因记录
+- [ ] **Step 2: 修复后复测** Android:youtube/Google 全量恢复(待用户确认)
+- [ ] **Step 3** iPad(4G)同上
+- [ ] **Step 4** iPhone(desmond-iphone-11)同上
+- [ ] **Step 5** 切回笔记本出口/VPS 出口/无出口,均正常(并存互不影响)
+
+### Task 5b: 出口客户端国外流量走 DIRECT 的根因与修复 ✅ 2026-09-12(systematic-debugging)
+
+**现象**:Android 经 Windows 出口,国内站正常、GFW 域名全灭。本机(Windows/WSL)代理腿健康(api.ipify.org→VPS)。
+
+**证据链**:
+
+1. tailscale status:oneplus-15 `active; direct 192.168.31.189`——隧道与 P2P 健康且流量 6MB+
+2. sing-box 日志(09:51–09:52 手机测试窗口):`open connection to [2001:4860:4844:400::]:443 using outbound/direct[direct]: i/o timeout`——**Google/Facebook 目的走了 direct 直出**(另见 `dns: cached A www.youtube.com → 142.251.x` 真实 IP,DNS 干净,排除 DNS 投毒)
+3. 推理:能到 `direct` 的规则仅 4 条,排除 `ip_is_private`/空 `custom-direct`/`geosite-cn` 后唯一剩 **`process_name: [tailscaled.exe,...] → direct`**(部署配置 jq 复核规则序确认)
+
+**根因**:Windows 上 **exit node 转发的客户端流量在 sing-box 进程归因时归属转发者 `tailscaled.exe`**(日志 `router: found process path: C:\Program Files\Tailscale\tailscaled.exe` 佐证),命中本为"防 tailscaled 自身回环"加的 process_name 规则,被整体放行 direct → 手机流量家宽裸奔,GFW 域名死。笔记本原版用 fwmark 0x80000(只标记 tailscaled 自身 socket)不会有此误伤——**mark 不会沾到转发流量,process_name 会**。
+
+**修复(最小变更)**:删除该 process_name 规则(其保护对象已被覆盖:tailscaled 关键流量→VPS 双栈 IP 在 `route_exclude_address`;MagicDNS 上游查询是 DNS 协议,被更早的 `hijack-dns` 截走)。部署配置与档案配置同步删除,`sing-box check` 过,服务重启(再次 UAC)。
+
+**验证**:本机回归全绿(国内家宽/国外 VPS/youtube 200/tailscale 在线/podman OK),无回环。**手机复测待用户执行(Step 2)**。
+
+**教训**:"本机流量正常"不能外推"转发流量正常"——本地 socket 有真实属主(归因不受影响),转发流量才会撞上进程归因的坑。验收必须含真实出口客户端。
 
 ### Task 6: 稳定期与收尾
 
