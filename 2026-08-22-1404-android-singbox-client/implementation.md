@@ -81,3 +81,12 @@
 3. 其余(tun gvisor/mtu 9000/DNS 分流/custom-* 路径)与 v1 完全一致;custom-*.json 沿用手机应用目录既有文件
 
 导入:HTTP 经 tailnet 下发(`http://100.64.0.7:18080/config.json`,WSL mirrored 临时服务),SFA 从文件导入;结果见验证段(下)。
+
+## 附录 v3: 2026-09-12 一体化(单 VPN 同时解决分流 + tailnet 访问)
+
+用户指出 Android 单 VPN 限制:Tailscale app 与 SFA 互斥(v2 方案"保留 Tailscale 访家"不可行,与 iOS Shadowrocket 互斥同类)。解法:sing-box 1.12+ 内置 `tailscale` endpoint(文档确认支持 `control_url` 自定义协调服务器,headscale 兼容;1.13.19 实测 `sing-box check` 通过):
+
+1. `endpoints[]`: type=tailscale, control_url=headscale, auth_key=headscale preauth key(90d reusable,真值只在下发配置中,不入库), hostname=oneplus-15-sfa, accept_routes=false
+2. route 规则(置于 hijack-dns 后): `ip_cidr: [100.64.0.0/10, fd7a:115c:a1e0::/48, 100.100.100.100/32] → outbound: ts-ep`(注意 1.13.19 路由规则引用 endpoint 用 `outbound` 字段而非 `endpoint` 字段——后者 1.14 才有,踩坑记录)
+3. DNS 增加 `type: tailscale` server(经 ts-ep 解析)+ `tailnet.internal → ts-dns` 规则(MagicDNS)
+4. 效果:SFA 单 VPN = 分流上网(国内直连/国外 VLESS)+ 完整 tailnet(Moonlight/SSH 到 100.64.0.x);Tailscale app 退役(旧节点 oneplus-15 离线属预期)
