@@ -90,3 +90,16 @@
 2. route 规则(置于 hijack-dns 后): `ip_cidr: [100.64.0.0/10, fd7a:115c:a1e0::/48, 100.100.100.100/32] → outbound: ts-ep`(注意 1.13.19 路由规则引用 endpoint 用 `outbound` 字段而非 `endpoint` 字段——后者 1.14 才有,踩坑记录)
 3. DNS 增加 `type: tailscale` server(经 ts-ep 解析)+ `tailnet.internal → ts-dns` 规则(MagicDNS)
 4. 效果:SFA 单 VPN = 分流上网(国内直连/国外 VLESS)+ 完整 tailnet(Moonlight/SSH 到 100.64.0.x);Tailscale app 退役(旧节点 oneplus-15 离线属预期)
+
+## 附录 v3 续: 真机验证通过 + 工作原理沉淀 2026-09-12
+
+**验收**:用户真机确认"运行正常"——分流上网(Moonlight/国外/国内)与 tailnet 访问并存于单 VPN。headscale 侧:`oneplus-15-sfa` = node id 8 = 100.64.0.8 online(旧 Tailscale app 节点 oneplus-15 离线属预期,App 退役)。临时 HTTP 下发服务(WSL mirrored :18080)已关闭。preauth key 仅首次注册用,节点状态持久化,90 天过期不影响在册节点。
+
+**SFA 内嵌 tailscale 工作原理(知识沉淀)**:
+
+1. sing-box 把 Tailscale 官方 Go 客户端库编译进进程(`with_tailscale` build tag)——进程内跑着一个"真·tailscaled",非官方 App、非协议模拟。
+2. **控制面**:endpoint `control_url` → headscale,preauth key 注册、领取 100.64.0.x 身份、拉网络地图(含自建 bwg/bwg-derp DERP 表),与官方 App 同一套协议。
+3. **数据面**(与官方 App 的关键差异):内嵌版**不开自己的 TUN**,WireGuard 会话完全用户态运行,在 sing-box 路由图里就是一个普通 outbound(与 proxy/direct 平级)。tailnet 网段(100.64.0.0/10 + fd7a:115c:a1e0::/48 + 100.100.100.100)由规则导向 `ts-ep`;UDP(Moonlight 串流)同路。
+4. **防回环**:内嵌客户端自身的控制/对端 socket 经 VpnService protect 绕过 TUN 直走物理网卡(等价笔记本 TPROXY 的 mark 0x80000 豁免)。
+5. **单 VPN 互斥因此消失**:全机仅 SFA 一个 VpnService 消费者,Tailscale 退化为它内部的一条路由分支;`type: tailscale` DNS server = 经内嵌客户端的 MagicDNS(`*.tailnet.internal` 可解析)。
+6. endpoint 另有 `exit_node` 字段可让内嵌客户端选别人出口(当前无需)。

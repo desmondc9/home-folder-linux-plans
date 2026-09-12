@@ -68,7 +68,7 @@
 ### Task 5: 端到端验收 `[用户执行]`
 
 - [x] **Step 1: Android(oneplus-15,家 WiFi,Exit Node=desktop-j7nbnu4)首次测试** ⚠️ 国内正常,**国外(youtube 等)不可达** → 见下方 Task 5b 根因记录
-- [ ] **Step 2: 修复后复测** Android:youtube/Google 全量恢复(待用户确认)
+- [x] **Step 2: 修复后复测** ✅ 国外恢复(确认 Task 5b 修复有效);但随后暴露国内慢/图片挂 → Task 5c 定位为 Windows 用户态转发天花板 → **Android 最终改走 SFA v3 一体化本地分流**(不再经 Windows 出口上网,见 Task 5c 修复方向 1)
 - [ ] **Step 3** iPad(4G)同上
 - [ ] **Step 4** iPhone(desmond-iphone-11)同上
 - [ ] **Step 5** 切回笔记本出口/VPS 出口/无出口,均正常(并存互不影响)
@@ -124,7 +124,8 @@
 **修复方向(架构选择,非 config)**:
 
 1. **手机上网不走 Windows 出口**:启用手机本地 SFA sing-box 客户端(2026-08-22-1404 已部署,分流语义 1:1)——国内 4G 直连、国外手机直连 VPS VLESS,全程线速,不依赖任何出口节点;Tailscale 保留但不开 exit,仅用于访家(Moonlight/SSH)。**注意**:笔记本 `/etc/sing-box/android/config.json` 尚存已知 `outbound: block` 旧写法(2026-09-03-1824 档案记录),重启使用前需同步修为 `action: reject` 并平移 futu 规则
-2. **iPad(iOS 单 VPN 互斥,无 SFA)**:笔记本出口(内核转发,快)醒着时用;否则 VPS 出口(全局美国,youtube 可用)或 Windows 出口(知晓 8Mbps 限制)
+   → **✅ 已执行并验证(2026-09-12,方案升级)**:用户指出 Android 单 VPN 使 SFA 与 Tailscale app 互斥 → 最终落地 **SFA v3 一体化**(内嵌 tailscale endpoint 连 headscale,单 VPN 同时分流 + tailnet,详见 [../2026-08-22-1404-android-singbox-client/implementation.md](../2026-08-22-1404-android-singbox-client/implementation.md) 附录 v3);真机运行正常,新节点 oneplus-15-sfa = 100.64.0.8
+2. **iPad(iOS 单 VPN 互斥,无 SFA)**:笔记本出口(内核转发,快)醒着时用;否则 VPS 出口(全局美国,youtube 可用)或 Windows 出口(知晓 8Mbps 限制)。**iOS 侧可探索同款一体化**:sing-box for Apple(SFI/SFM 1.12+ 亦有 tailscale endpoint + control_url),可替代 Shadowrocket×Tailscale 互斥困局——待办
 3. Windows 出口保留通告(轻量浏览可用),本文档即容量说明
 
 ### Task 6b: 富途 37 域名 rule-set 平移(源档案 [../2026-09-03-2047-futu-domain-audit/](../2026-09-03-2047-futu-domain-audit/implementation.md))✅ 2026-09-12

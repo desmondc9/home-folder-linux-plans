@@ -35,7 +35,7 @@
 | 2026-08-22 10:24 | [singbox-notebook](./2026-08-22-1024-singbox-notebook/) | sing-box/tproxy 知识重组为 Obsidian 风格 Notebook（~/Notebook/sing-box-分流网关/）：MOC + 6 笔记（架构/配置/TPROXY/DNS/运维/深坑），跨域与 Sunshine MOC 互链 |
 | 2026-08-22 11:30 | [tailscale-notebook](./2026-08-22-1130-tailscale-notebook/) | tailscale/headscale/DERP 知识重组为 Obsidian 风格 Notebook（~/Notebook/Tailscale-Headscale-DERP/）：MOC + 7 笔记（架构/控制面/节点打洞/DERP/双出口/运维/深坑），与 Sunshine、sing-box 域 MOC 互链 |
 | 2026-08-22 11:55 | [notebook-readme](./2026-08-22-1155-notebook-readme/) | ~/Notebook 纵览 README：三域按依赖排序（组网层 tailnet → 网关层 sing-box → 应用层 Sunshine），症状索引 + 共同约定 + 仓库信息 |
-| 2026-08-22 14:04 | [android-singbox-client](./2026-08-22-1404-android-singbox-client/) | Android sing-box (SFA 1.13.19) 客户端配置：与本机 `/etc/sing-box/config.json` 的 DNS/流量分流与 ruleset 语义 1:1 对齐，在 redroid 容器内实测验证 |
+| 2026-08-22 14:04 | [android-singbox-client](./2026-08-22-1404-android-singbox-client/) | Android sing-box (SFA 1.13.19) 客户端配置：与本机 `/etc/sing-box/config.json` 的 DNS/流量分流与 ruleset 语义 1:1 对齐，在 redroid 容器内实测验证;2026-09-12 v3 升级为**一体化单 VPN**(内嵌 tailscale endpoint 连 headscale + tailnet 网段路由到 ts-ep + MagicDNS),解决 Android 单 VPN 下 SFA×Tailscale 互斥,真机验证通过(oneplus-15-sfa=100.64.0.8) |
 | 2026-08-22 23:02 | [exfat-mount-fix](./2026-08-22-2302-exfat-mount-fix/) | exFAT U 盘挂载失败：kernel.modprobe sysctl 被清空致模块按需加载失效（写入者未定，crun/conmon 已源码排除）；modules-load.d 预加载 + sysctl 恢复修复 |
 | 2026-08-22 23:54 | [browser-hevc-bilibili](./2026-08-22-2354-browser-hevc-bilibili/) | Chrome/Edge 报"浏览器不支持 HEVC"：独显直连 + 无 NVIDIA VAAPI 驱动 + Chromium 默认跳过 NVIDIA + 特性开关未开四层叠加；nvidia-vaapi-driver + 三特性 flags + ksycoca 重建修复 |
 | 2026-08-22 23:59 | [konsole-autoswitch-removal](./2026-08-22-2359-konsole-autoswitch-removal/) | 拆除 Konsole 随系统主题自动切换 rig 的自动部分（开机 kdeglobals 未落定误判 light）；保留手动 Meta+Shift+T toggle，默认 profile 修正为 Dark |
@@ -70,7 +70,7 @@
 | 2026-09-11 21:42 | [sdkman-jdk21](./2026-09-11-2142-sdkman-jdk21/) | 官方脚本装 sdkman 5.23.0 + Temurin JDK 21.0.12+1.1-tem 设默认(JAVA_HOME 由 sdkman 托管);坑:安装脚本硬依赖 unzip+zip 但 sudo 无免密 → 用户手装、轮询等待(两轮);zip 仅存在性检查、安装只用 unzip(脚本源码核对);安装器自动补 ~/.bashrc 与 ~/.zshrc 片段,zsh 零手工配置 |
 
 | 2026-09-11 21:20 | [podman-wsl-ubuntu-native](./2026-09-11-2120-podman-wsl-ubuntu-native/) | WSL 弃用 Windows 共享 machine 改 Ubuntu 原生 rootless podman(根因:跨发行版 bind-mount 不支持,podman#21813);Ubuntu/Debian 默认不配短名解析致 `podman pull nginx` 报错 → 用户级 registries.conf + daocloud/1ms 双 mirror;docker-compose-v2 symlink 成 podman compose provider + user socket + linger;坑:恢复的 .git/config 残留 10809 代理致 git 全卡(unset + ssh.github.com:443 推送)、gitleaks 直连 GitHub 可用;Windows 侧清理与 Podman Desktop docker-context 桥接实验待用户手动 |
-| 2026-09-12 00:21 | [windows11-exit-node-singbox](./2026-09-12-0021-windows11-exit-node-singbox/) | Windows 11 物理机成为第三 Exit Node:sing-box 1.13.19 Windows 版 TUN(auto_route)替代 TPROXY/nftables,分流规则与笔记本逐行平移(含 `action: reject` 修复);三出口并存(笔记本/Windows/VPS);AI 经 WSL mirrored interop 摸底并代跑,提权步骤 UAC;最大风险点 = mirrored WSL × TUN 交互与 strict_route/WFP,strict_route false 起步 |
+| 2026-09-12 00:21 | [windows11-exit-node-singbox](./2026-09-12-0021-windows11-exit-node-singbox/) | Windows 11 物理机成为第三 Exit Node:sing-box 1.13.19 Windows 版 TUN(auto_route)替代 TPROXY/nftables,分流规则与笔记本逐行平移(含 `action: reject` 修复);三出口并存(笔记本/Windows/VPS);AI 经 WSL mirrored interop 摸底并代跑;Task 5b 修复 process_name 误伤转发流量(Windows 进程归因归属 tailscaled);Task 5c 受控实验定位 **tailscaled Windows 用户态转发 ~8Mbps 天花板**(sing-box 无罪),手机改走 SFA v3 本地分流,Windows 出口保留供轻量/iPad 场景;富途 37 域名 rule-set 平移(futu.json + process_name 兜底 + clash_api) |
 
 ## 关于本仓库
 
