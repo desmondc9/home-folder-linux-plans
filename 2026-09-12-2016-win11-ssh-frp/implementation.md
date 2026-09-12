@@ -94,22 +94,26 @@ unzip -j /tmp/opencode/frp.zip 'frp_0.65.0_windows_amd64/frpc.exe' -d /mnt/c/Use
 ```bash
 TOKEN=$(ssh desmond@100.64.0.4 "sudo grep 'auth.token' /etc/frp/frps.toml" | cut -d'"' -f2)
 cat > /mnt/c/Users/Desmond/Apps/frp/frpc.toml <<EOF
-serverAddr = "104.194.83.82"
+serverAddr = "bandwagon.signal-align.com"
 serverPort = 7000
+auth.method = "token"
 auth.token = "${TOKEN}"
+
+[transport]
+tcpMuxKeepaliveInterval = 10
+dialServerKeepAlive = 30
 
 [[proxies]]
 name = "win11-ssh"
 type = "tcp"
+localIP = "127.0.0.1"
+localPort = 22
 remotePort = 6001
-[proxies.transport]
-useEncryption = true
-useCompression = true
 EOF
 unset TOKEN
 ```
 
-(serverAddr 用 IP 而非域名:避免 frpc 启动期 DNS 依赖,与 sing-box 豁免精确对齐)
+(serverAddr 用域名对齐笔记本 frpc 惯例;**localIP/localPort 必须显式**——frp 默认 localPort=remotePort,漏写会连 127.0.0.1:6001;keepalive 调优沿用户参考配置;不加 useEncryption/useCompression,SSH 载荷已加密,双重处理徒增延迟。**修订记录**:初版漏 localIP/localPort,2026-09-12 依用户提供的笔记本 /etc/frp/frpc.toml 参考修正)
 - [ ] **Step 3: AI 写 WinSW xml + 下载 sing-box-service.exe 同款 WinSW**:
 
 ```xml
