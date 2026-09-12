@@ -50,3 +50,24 @@ Windows 11 物理机(DESKTOP-J7NBNU4,100.64.0.7,RTX 4060 Laptop)安装 Sunshine(
 - 笔记本 Sunshine 方案(端口清单/看门狗):[../2026-08-19-1302-sunshine-moonlight-tailnet/](../2026-08-19-1302-sunshine-moonlight-tailnet/implementation.md)
 - 用户下载:`C:\Users\Desmond\Downloads\Sunshine-Windows-AMD64-installer.msi` + debuginfo.7z(未用上,日志已定位根因)
 - 修复脚本:`sunshine-fix.ps1`(三轮迭代)/`sunshine-fix{,2,3}-result.txt`
+
+## 终局修订(2026-09-12 13:35,第三轮)
+
+上文的"排除区/保留"叙事需要修正——完整因果链分两个纪元:
+
+1. **纪元一(昨晚 22:23 首崩)**:47984–48010 落入动态排除表(winnat/HNS),`[::]:48010` 绑定 WSAEACCES
+2. **纪元二(今日排障期)**:排障中从 WSL 用 python 探测绑定了 `[::]:48010` 等端口——**WSL mirrored 的宿主侧端口中继在套接字关闭后泄漏**(对 netstat 隐形、令原生进程 EADDRINUSE/EACCES),即使删除全部排除表项、Sunshine 依然绑不上。控制实验:`:::48111` 与 `:::48010` EADDRINUSE vs `:::55124`/`49000` 正常
+3. **自锁插曲**:期间按 Docker 民间偏方加的 `excludedportrange store=persistent` 在本机上**连应用 bind 一起挡**(与偏方语义相反),已全部删除修正
+4. **最终修复**:`wsl --shutdown` 清掉全部镜像中继泄漏 → 重启 SunshineService → 端口全自由,绑定成功(WSL 重启后镜像中继重建,会避让已被 Sunshine 持有的端口;开机时 SunshineService 先于 WSL 启动,稳态)
+
+**防复发守则**:
+- **永远不要从 WSL bind Sunshine 端口段(47984–48010)做探测**——mirrored 中继泄漏是本机已证实的坑
+- 若未来再出现"端口看不见却绑不上",先 `node -e` 原生 bind 对照,再考虑 `wsl --shutdown`
+- 排除表用 `netsh int ipv6 show excludedportrange`(双栈都查)仅作诊断;**不要**给应用端口加持久保留
+
+## 交接(待用户执行)
+
+1. Windows 侧管理员 PowerShell:`wsl --shutdown`(WSL 会话终结属预期)
+2. 10 秒后:`Restart-Service SunshineService`
+3. 验证:`netstat -ano | findstr "479 480"` 有 LISTENING;`https://localhost:47990` 设凭据
+4. Moonlight(Android/iPad)加主机 `100.64.0.7` 配对;重启 opencode 会话回填验收
