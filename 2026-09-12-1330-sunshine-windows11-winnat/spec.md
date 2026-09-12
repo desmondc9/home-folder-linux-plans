@@ -31,11 +31,12 @@ Windows 11 物理机(DESKTOP-J7NBNU4,100.64.0.7,RTX 4060 Laptop)安装 Sunshine(
 
 ## 验收标准
 
-- [ ] 重启后 `netstat` 显示 47984/47989/47990/48010 LISTENING
-- [ ] sunshine.log 无 Fatal,出现 Web UI 提示
-- [ ] Web UI `https://localhost:47990` 可达并设置凭据
+- [x] 重启后 `netstat` 显示 47984/47989/47990/48010 LISTENING ✅ 2026-09-12 15:33(`wsl --shutdown` + 服务重启后,四端口 `0.0.0.0` 全监听,单实例无僵尸)
+- [x] sunshine.log 无 Fatal,出现 Web UI 提示 ✅(托盘正常,用户已打开 Web UI)
+- [ ] Web UI `https://localhost:47990` 可达并设置凭据(用户打开过,`not authorized` = 待设账号密码)
 - [ ] Moonlight(Android/iPad)添加主机 `100.64.0.7` 配对成功,串流出画面(tailnet 内部流量经 sing-box route_exclude 豁免,不进 TUN)
-- [ ] 再次重启一次验证持久性(保留任务生效)
+- [x] **tailnet 侧四端口可达** ✅ VPS(100.64.0.4)对 100.64.0.7 的 47984/47989/47990/48010 TCP 全通(2026-09-12 15:4x 实测)——sing-box TUN 与入站服务共存无恙
+- [ ] 再次重启一次验证持久性(SunshineService 开机先于 WSL 启动,稳态预期成立;待观察)
 
 ## 坑位登记(方法论)
 
