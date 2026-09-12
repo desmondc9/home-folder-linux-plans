@@ -101,6 +101,32 @@
 - [ ] **Step 6: 文档**:本档案实施结果回填;`~/Notebook/Tailscale-Headscale-DERP/`(Windows 侧或在笔记本上)补第三出口条目;README 索引已加
 - [ ] **Step 7: 自定义规则用法登记**:编辑 `C:\Users\Desmond\Apps\sing-box\rules\custom-{direct,proxy}.json` 数组后 `sc stop sing-box && sc start sing-box`
 
+### Task 5c: 出口客户端国内流量慢/图片挂 — 根因:tailscaled Windows 用户态转发天花板(systematic-debugging)✅ 2026-09-12 定位
+
+**现象**:Android 经 Windows 出口,国内站慢、图片大量加载失败;国外正常。
+
+**排除项(全部实测无罪)**:sing-box 配置(本机同栈 16MB/s 拉完 38MB)、direct/proxy 腿、DNS(解析干净且快)、手机 WiFi 链路(5GHz ch40 96% PHY 961Mbps,ping 4ms)、路由器/ISP(VPS 直连 35MB/s)、QUIC reject(回退不致停滞)。
+
+**证据链(受控实验)**:
+
+| 路径 | 吞吐 | 结论 |
+|---|---|---|
+| WSL 本机 → TUN → sing-box direct → 阿里云 | **16 MB/s** | sing-box 栈健康 |
+| VPS 直连 → 阿里云 | 35 MB/s | 线路健康 |
+| **VPS 经 Windows 出口(有 sing-box)** | **~1 MB/s(38MB/38s)** | 转发路径瓶颈 |
+| **VPS 经 Windows 出口(无 sing-box,服务停)** | **~0.6–0.9 MB/s** | **瓶颈与 sing-box 无关** |
+| 手机实测(clash_api 字节速率) | 起步 ~470KB/s,2–3MB 后停滞、连接被杀 | 与 RST 风暴签名吻合(151 次客户端侧 abort + 40 次远端 RST,主落在手机流) |
+
+**根因**:Windows 上 tailscaled 对 exit node 客户端流量的转发走**用户态网络栈**(WG 封解密 + wintun 逐包穿越用户态),聚合吞吐天花板 ~8Mbps 量级,持续长流在压力下停滞——这是 Tailscale-on-Windows 的已知架构限制(Linux 出口走内核转发,是笔记本出口当年表现正常的根本原因)。非配置问题,config 级无解。
+
+**诊断彩蛋**:`tailscale up` 改 prefs 需重述全部非默认 flag(VPS 实测踩中),改单个 pref 一律用 `tailscale set`;VPS 上"通告出口"与"使用出口"互斥,测试前须 `set --advertise-exit-node=false`。
+
+**修复方向(架构选择,非 config)**:
+
+1. **手机上网不走 Windows 出口**:启用手机本地 SFA sing-box 客户端(2026-08-22-1404 已部署,分流语义 1:1)——国内 4G 直连、国外手机直连 VPS VLESS,全程线速,不依赖任何出口节点;Tailscale 保留但不开 exit,仅用于访家(Moonlight/SSH)。**注意**:笔记本 `/etc/sing-box/android/config.json` 尚存已知 `outbound: block` 旧写法(2026-09-03-1824 档案记录),重启使用前需同步修为 `action: reject` 并平移 futu 规则
+2. **iPad(iOS 单 VPN 互斥,无 SFA)**:笔记本出口(内核转发,快)醒着时用;否则 VPS 出口(全局美国,youtube 可用)或 Windows 出口(知晓 8Mbps 限制)
+3. Windows 出口保留通告(轻量浏览可用),本文档即容量说明
+
 ### Task 6b: 富途 37 域名 rule-set 平移(源档案 [../2026-09-03-2047-futu-domain-audit/](../2026-09-03-2047-futu-domain-audit/implementation.md))✅ 2026-09-12
 
 沿用笔记本"独立 rule-set 文件"方案(非嵌入 custom-proxy.json):
