@@ -1,0 +1,171 @@
+# Windows 11 SSH 公网可达(frp 反代)实施计划
+
+> **For agentic workers:** 本计划在 ~/.plans 档案体系内按任务顺序执行;步骤用 `- [ ]` 追踪。执行环境特殊:AI 运行在宿主机 WSL 中,Windows 侧经 interop 代跑,提权步骤由用户在管理员 PowerShell 粘贴执行(VPS 侧 AI 从 WSL ssh 代跑)。
+
+**Goal:** 星巴克任意 ssh 设备 → `ssh -p 6001 desmond@bandwagon.signal-align.com` → Windows 11 宿主机 PowerShell。
+
+**Architecture:** 原生 OpenSSH Server(系统服务,免登录自启)+ frpc(WinSW 服务)反向隧道至 VPS 已有 frps:7000,公网暴露仅 VPS:6001 一 port;两阶段认证(密码+ed25519 双开 → 用户触发收紧仅密钥)。
+
+**Tech Stack:** Windows OpenSSH Server(可选功能)/ frp(fatedier/frp 最新 release,Windows amd64)/ WinSW v2.12.0 / OpenSSH ed25519
+
+**Spec:** [spec.md](spec.md)
+
+## Global Constraints
+
+- **机密红线**:frps token、私钥、Windows 密码绝不进入任何 git 跟踪文件(含本档案);`gitleaks dir` 在每次 commit 前跑
+- **免登录可达**:`sshd` 与 `frpc` 两服务 StartType=Automatic——断电重启后无人登录即恢复(否决 WSL 方案的根本理由,验收必测)
+- **提权方式**:Windows 管理操作打包为 `C:\Users\Desmond\Downloads\ssh-frp-*.ps1`,用户在管理员 PowerShell 执行,transcript 落盘供 AI 读取回填
+- **端口约定**:公网 6001(allowPorts 6000–6010 首个空闲位);本地仅用 127.0.0.1:22 与 LAN:22
+- **sing-box 互不影响**:frpc → VPS:7000 出站已被宿主 sing-box `route_exclude_address`(104.194.83.82)豁免,直连家宽;不得改动宿主 sing-box 配置
+
+---
+
+### Task 1: 安装 OpenSSH Server + PowerShell 默认 shell
+
+**Files:**
+- Create: `C:\Users\Desmond\Downloads\ssh-frp-task1.ps1`(提权安装脚本)
+- Modify: 注册表 `HKLM:\SOFTWARE\OpenSSH` DefaultShell;服务 `sshd` 恢复策略
+
+**Interfaces:**
+- Produces: `sshd` 服务监听 `0.0.0.0:22`(Task 3 的 frpc 与 Task 4 的验收依赖此)
+
+- [ ] **Step 1: AI 写提权脚本**(安装能力 → 启服务设 Automatic → DefaultShell=powershell.exe → sc failure 恢复 → 状态输出):
+
+```powershell
+$ErrorActionPreference = 'Stop'
+Start-Transcript -Path C:\Users\Desmond\Downloads\ssh-frp-task1-result.txt -Force
+Add-WindowsCapability -Online -Name 'OpenSSH.Server~~~~0.0.1.0'
+Set-Service sshd -StartupType Automatic
+sc.exe failure sshd reset= 86400 actions= restart/5000
+New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -PropertyType String -Force
+Start-Service sshd
+Get-Service sshd | Format-Table Name,Status,StartType -AutoSize
+netstat -ano | Select-String ':22 ' | Select-String LISTENING
+Stop-Transcript
+```
+
+- [ ] **Step 2: 用户管理员 PowerShell 执行** `powershell -ExecutionPolicy Bypass -File C:\Users\Desmond\Downloads\ssh-frp-task1.ps1`
+- [ ] **Step 3: AI 验证**:transcript 显示 State=Installed、服务 Running、`:22 LISTENING`;WSL 免密探活 `ssh -o BatchMode=yes -o ConnectTimeout=3 desmond@127.0.0.1 exit`(预期失败于认证=端口通)
+
+### Task 2: ed25519 密钥对 + authorized_keys
+
+**Files:**
+- Create: WSL `~/.ssh/id_ed25519_winhost[.pub]`(引导密钥对;用户负责分发私钥到常用设备+密码管理器)
+- Create: `C:\Users\Desmond\.ssh\authorized_keys`(Windows 侧)
+
+**Interfaces:**
+- Consumes: Task 1 的 sshd
+- Produces: 密钥登录能力(Task 4 验收依赖)
+
+- [ ] **Step 1: AI 在 WSL 生成密钥对**:`ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_winhost -N '' -C 'desmond-winhost-bootstrap'`
+- [ ] **Step 2: AI 装公钥**(sshd 阶段 1 允许密码,但 authorized_keys 免提权可直接写):
+
+```bash
+mkdir -p /mnt/c/Users/Desmond/.ssh && chmod 700 /mnt/c/Users/Desmond/.ssh 2>/dev/null
+cat ~/.ssh/id_ed25519_winhost.pub >> /mnt/c/Users/Desmond/.ssh/authorized_keys
+```
+
+- [ ] **Step 3: AI 验证密钥登录**:`ssh -i ~/.ssh/id_ed25519_winhost -o BatchMode=yes desmond@127.0.0.1 'echo KEY_AUTH_OK; $PSVersionTable.PSVersion.ToString()'`(预期输出 KEY_AUTH_OK + 5.1.x,同时证明 PowerShell 默认 shell)
+- [ ] **Step 4: 用户分发私钥**(手机/常用 PC/密码管理器;`~/.ssh/id_ed25519_winhost` 即文件)——登记为交付物
+
+### Task 3: frpc 部署(WinSW 服务)
+
+**Files:**
+- Create: `C:\Users\Desmond\Apps\frp\frpc.exe`(最新 release Windows amd64)
+- Create: `C:\Users\Desmond\Apps\frp\frpc.toml`(**含真 token,不入库**)
+- Create: `C:\Users\Desmond\Apps\frp\frpc-service.exe` + `frpc-service.xml`(WinSW v2.12.0,复用 sing-box 剧本)
+- Create: `C:\Users\Desmond\Downloads\ssh-frp-task3.ps1`(提权装服务)
+
+**Interfaces:**
+- Consumes: Task 1 的 `127.0.0.1:22`;VPS 现有 frps(bind 7000,token,allowPorts 6000-6010)
+- Produces: 公网 `bandwagon.signal-align.com:6001` → 宿主 22(Task 4 验收依赖)
+
+- [ ] **Step 1: AI 下载 frp**(GitHub 直连,失败走 `https_proxy=http://127.0.0.1:10809`):
+
+```bash
+curl -fSL -o /tmp/opencode/frp.zip https://github.com/fatedier/frp/releases/download/v0.65.0/frp_0.65.0_windows_amd64.zip
+mkdir -p /mnt/c/Users/Desmond/Apps/frp
+unzip -j /tmp/opencode/frp.zip 'frp_0.65.0_windows_amd64/frpc.exe' -d /mnt/c/Users/Desmond/Apps/frp/
+/mnt/c/Users/Desmond/Apps/frp/frpc.exe -v   # 预期 0.65.0
+```
+
+- [ ] **Step 2: AI 生成 frpc.toml**(token 从 VPS 实时读取注入,不落终端历史之外):
+
+```bash
+TOKEN=$(ssh desmond@100.64.0.4 "sudo grep 'auth.token' /etc/frp/frps.toml" | cut -d'"' -f2)
+cat > /mnt/c/Users/Desmond/Apps/frp/frpc.toml <<EOF
+serverAddr = "104.194.83.82"
+serverPort = 7000
+auth.token = "${TOKEN}"
+
+[[proxies]]
+name = "win11-ssh"
+type = "tcp"
+remotePort = 6001
+[proxies.transport]
+useEncryption = true
+useCompression = true
+EOF
+unset TOKEN
+```
+
+(serverAddr 用 IP 而非域名:避免 frpc 启动期 DNS 依赖,与 sing-box 豁免精确对齐)
+- [ ] **Step 3: AI 写 WinSW xml + 下载 sing-box-service.exe 同款 WinSW**:
+
+```xml
+<service>
+  <id>frpc</id>
+  <name>frpc</name>
+  <description>frp client: win11-ssh via frps:6001</description>
+  <executable>C:\Users\Desmond\Apps\frp\frpc.exe</executable>
+  <arguments>run -c C:\Users\Desmond\Apps\frp\frpc.toml</arguments>
+  <log mode="roll-by-size">
+    <logpath>C:\Users\Desmond\Apps\frp\logs</logpath>
+    <sizeThreshold>10240</sizeThreshold>
+    <keepFiles>4</keepFiles>
+  </log>
+  <onfailure action="restart" delay="5 sec"/>
+  <startmode>Automatic</startmode>
+</service>
+```
+
+```bash
+curl -fSL -o /mnt/c/Users/Desmond/Apps/frp/frpc-service.exe https://github.com/winsw/winsw/releases/download/v2.12.0/WinSW-x64.exe
+```
+
+- [ ] **Step 4: 提权脚本 task3.ps1**(`.\frpc-service.exe install` → `sc start frpc` → sleep 8 → `netstat :6001` 无需 → 日志 tail 确认 `login to server success` + `start proxy success`),用户管理员执行
+- [ ] **Step 5: AI 验证**:VPS 侧 `ss -tln | rg 6001` 出现 LISTEN(frpc 注册成功);`frpc.toml` 权限属用户目录,档案只存脱敏版
+
+### Task 4: 端到端验收 + 指纹入档
+
+**Files:**
+- Modify: 本档案 implementation.md(验收勾选 + host key 指纹)
+
+**Interfaces:**
+- Consumes: Task 1–3 全部
+
+- [ ] **Step 1: 本机双因子**:`ssh desmond@127.0.0.1`(密码,用户交互)✓;`ssh -i ~/.ssh/id_ed25519_winhost desmond@127.0.0.1` ✓
+- [ ] **Step 2: VPS 公网回环**:`ssh desmond@100.64.0.4` 后 `ssh -p 6001 desmond@104.194.83.82`(完整走 frps→frpc;密钥需先拷到 VPS 或用密码)
+- [ ] **Step 3: 真·外网**:用户手机热点 + 任意设备 `ssh -p 6001 desmond@bandwagon.signal-align.com`,首连 TOFU 记录指纹:`ssh-keyscan -p 6001 bandwagon.signal-align.com 2>/dev/null | ssh-keygen -lf -`(结果写入本档案)
+- [ ] **Step 4: 服务自启核查**:`sc qc sshd` / `sc qc frpc` 均 AUTO_START;稳定期重启 Windows 验证免登录恢复(登记待办)
+- [ ] **Step 5: 档案回填 + commit**(含 gitleaks)
+
+### Task 5(用户触发,阶段 2): 关闭密码认证
+
+**Files:**
+- Modify: `C:\ProgramData\ssh\sshd_config`(PasswordAuthentication no)
+- Modify: 本档案(待办销项)
+
+**触发条件**:Task 4 Step 1-3 密钥路径全部 ✓ 且私钥已分发备份。
+
+- [ ] **Step 1: 提权修改** `C:\ProgramData\ssh\sshd_config`:追加/改 `PasswordAuthentication no` → `Restart-Service sshd`;同时 AI 把修改后的 sshd_config **脱敏快照**存入本档案(`sshd-config.snapshot`,密码/无密内容本就非敏感,防 Windows 更新重置的对账基线)
+- [ ] **Step 2: 验证**:密码登录被拒(`Permission denied (publickey)`),密钥仍通
+- [ ] **Step 3: 档案销项 + commit**
+
+## 回退总开关
+
+```powershell
+sc stop frpc; sc delete frpc                      # 撤公网入口
+# 或彻底:Remove-WindowsCapability -Online -Name 'OpenSSH.Server~~~~0.0.1.0'
+```
+VPS 侧零改动(6001 随 frpc 下线自动消失)。
