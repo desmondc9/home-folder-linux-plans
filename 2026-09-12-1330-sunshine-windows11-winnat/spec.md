@@ -78,3 +78,7 @@ Windows 11 物理机(DESKTOP-J7NBNU4,100.64.0.7,RTX 4060 Laptop)安装 Sunshine(
 新版 Sunshine(2026.x)的手柄虚拟化分层:libvirtualhid(开源库)+ Virtual HID Driver(Windows 驱动,**付费机器授权** $14.99/年 或 $49.99 买断/5 机;LizardByte 商业模式)。**免费替代 = ViGEmBus**(开源 LGPL,GitHub ViGEm/ViGEmBus,项目已归档但 Win11 可用),Sunshine 检测到即自动回退。用户双装(libvirtualhid + ViGEmBus)后 `Restart-Service SunshineService`,日志中全部 gamepad disabled 警告消失 = 回退生效,**未购买授权**。鼠标/键盘/触控本来就不经过此层(SendInput)。
 
 验收终态:四端口 LISTENING ✓ tailnet 可达 ✓ Moonlight(Android/iPad)串流成功 ✓ 手柄支持(ViGEmBus 回退)✓
+
+## 终稿补充(17:55)
+
+用户随后**购买了 Virtual HID Driver 正版授权**($49.99 买断/5 机,支持 LizardByte 上游开发)并激活;`Restart-Service SunshineService` 后最终态:零 gamepad 警告、零 Fatal、四端口正常——libvirtualhid 授权路径接管,ViGEmBus 保留作冗余回退。档案就此封版。
