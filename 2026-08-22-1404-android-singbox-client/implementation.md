@@ -69,3 +69,15 @@
 - **VpnJni EBADF** = `/dev/tun` 缺失,与 TUNSETIFF busy 是两个不同的坑
 - redroid 无 VPN 本地子网豁免 → 测试必须显式 route_exclude_address,否则 adb 失联
 - 静态 musl curl 在 Android 上不用 netd resolver(空 resolv.conf → "Could not resolve host"),测试需 nslookup+--resolve 组合
+
+## 附录 v2: 2026-09-12 复启用手机 SFA(Windows 出口转发瓶颈 → 手机本地分流)
+
+背景见 [../2026-09-12-0021-windows11-exit-node-singbox/implementation.md](../2026-09-12-0021-windows11-exit-node-singbox/implementation.md) Task 5c:tailscaled Windows 用户态转发天花板 ~8Mbps,手机经 Windows 出口国内图站不可用 → 手机改回本地 SFA 分流(国内 4G 直连/国外直连 VPS),Tailscale 不开 exit 仅访家。
+
+本档案 config 的 v2 变更(config.sanitized-v2.json,脱敏快照;真值 profile 由当日会话生成):
+
+1. 修 1.12+ 已移除的 `"outbound": "block"` → `"action": "reject"`(2026-09-03-1824 档案预告的欠账)
+2. 富途 37 后缀**内联**进 route(`→ proxy`)与 dns(`→ cfdoh`)规则,置于 custom-proxy 之后——与笔记本/Windows 的 futu rule-set 语义一致但不再依赖额外文件(SFA 导入即校验,少一个 local rule-set 依赖)
+3. 其余(tun gvisor/mtu 9000/DNS 分流/custom-* 路径)与 v1 完全一致;custom-*.json 沿用手机应用目录既有文件
+
+导入:HTTP 经 tailnet 下发(`http://100.64.0.7:18080/config.json`,WSL mirrored 临时服务),SFA 从文件导入;结果见验证段(下)。
