@@ -175,3 +175,7 @@ sc stop frpc; sc delete frpc                      # 撤公网入口
 # 或彻底:Remove-WindowsCapability -Online -Name 'OpenSSH.Server~~~~0.0.1.0'
 ```
 VPS 侧零改动(6001 随 frpc 下线自动消失)。
+
+## 附录: DNS 别名(2026-09-12)
+
+`laptop.signal-align.com` 由 A 记录**原位改为 CNAME → bandwagon.signal-align.com**(Cloudflare API,`~/.cloudflare/credentials.jsonc` 的 `apiTokens.token`,zone 3b564a8b;proxied=false)——双栈自动继承(A 104.194.83.82 + AAAA 2607:8700:5500:7bd3::2),VPS 换地址只改 bandwagon 一处。权威 NS 与 1.1.1.1 实测链路完整;sshfrp 用法不变:`ssh -p 6001 desmond@laptop.signal-align.com`。注意:改记录前存在的 AAAA 否定缓存最长 5 分钟才过期(WSL/Windows 客户端侧)。
