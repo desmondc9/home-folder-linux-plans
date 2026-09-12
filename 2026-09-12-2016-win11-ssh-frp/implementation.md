@@ -149,7 +149,8 @@ curl -fSL -o /mnt/c/Users/Desmond/Apps/frp/frpc-service.exe https://github.com/w
 - Consumes: Task 1–3 全部
 
 - [x] **Step 1: 本机双因子** ✅ 密钥路径 ✓:`ssh -i ~/.ssh/id_ed25519_winhost desmond@127.0.0.1`(证据:Task 2 Step 3 `KEY_AUTH_OK` + PS 5.1.22621.6133);密码路径(`ssh desmond@127.0.0.1`,用户交互)**未验证,并入用户侧待办(与热点测试同批)**
-- [x] **Step 2: VPS 公网回环** ✅ `VPS_LOOP_OK`:`ssh desmond@100.64.0.4` 后 `ssh -p 6001 desmond@104.194.83.82`(完整走 frps→frpc;密钥需先拷到 VPS 或用密码)
+- [x] **Step 2: VPS 公网回环** ✅ `VPS_LOOP_OK`——**但此测试走 loopback 绕过了 ufw,属假绿灯**(2026-09-12 iPad 实连失败暴露)
+- [x] **Step 2b: ufw 放行 6001** ✅(根因:VPS 防火墙仅放行 6000 旧口,6001 未开;`sudo ufw allow 6001/tcp comment "frps win11-ssh"` 后 WSL 走公网域名复测 `WSL_VIA_PUBLIC_OK`)。**教训:外部可达性验收必须从公网接口侧发起,loopback 自环不能替代**:`ssh desmond@100.64.0.4` 后 `ssh -p 6001 desmond@104.194.83.82`(完整走 frps→frpc;密钥需先拷到 VPS 或用密码)
 - [ ] **Step 3: 真·外网**(用户手机热点自验;TOFU 指纹已入档:ECDSA `SHA256:BOHaQVi/HfOsJYKO4dSyGV3c709jRoupUM95zTDfZ/w`、ED25519 `SHA256:uWSgxwA5TK56apRQuhV74k7tQpA1qxnJzOQC+o1VvnA`、RSA `SHA256:5mQo5+KEPvx87XbvDSi2DvyJ194nzcr+ytfBfZsPfvU`) + 任意设备 `ssh -p 6001 desmond@bandwagon.signal-align.com`,首连 TOFU 记录指纹:`ssh-keyscan -p 6001 bandwagon.signal-align.com 2>/dev/null | ssh-keygen -lf -`(结果写入本档案)
   - **用户侧待办汇总(四项)**:① 私钥分发到常用设备+密码管理器(Task 2 Step 4);② 删除 VPS 侧私钥副本(Task 2 Step 4);③ 手机热点真·外网自验(本 Step);④ 稳定期重启 Windows 验证免登录恢复(Step 4 登记,复查)
 - [x] **Step 4: 服务自启核查** ✅ 两服务 AUTO_START(RUNNING);**断电重启免登录恢复**已由本轮重启实证(sshd capability 物化即无人登录场景)`sc qc sshd` / `sc qc frpc` 均 AUTO_START;稳定期重启 Windows 验证免登录恢复(登记待办)
