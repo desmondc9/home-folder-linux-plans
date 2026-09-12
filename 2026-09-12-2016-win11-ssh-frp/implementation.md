@@ -179,3 +179,7 @@ VPS 侧零改动(6001 随 frpc 下线自动消失)。
 ## 附录: DNS 别名(2026-09-12)
 
 `laptop.signal-align.com` 由 A 记录**原位改为 CNAME → bandwagon.signal-align.com**(Cloudflare API,`~/.cloudflare/credentials.jsonc` 的 `apiTokens.token`,zone 3b564a8b;proxied=false)——双栈自动继承(A 104.194.83.82 + AAAA 2607:8700:5500:7bd3::2),VPS 换地址只改 bandwagon 一处。权威 NS 与 1.1.1.1 实测链路完整;sshfrp 用法不变:`ssh -p 6001 desmond@laptop.signal-align.com`。注意:改记录前存在的 AAAA 否定缓存最长 5 分钟才过期(WSL/Windows 客户端侧)。
+
+## 附录续: zone 级 CNAME 收敛(2026-09-12)
+
+derp / librechat / searxng 三对 A+AAAA → CNAME → bandwagon(与 auth/identity/login/laptop 统一)。保留直连:bandwagon(锚)、apex(MX+SOA 牵制不动)、openclaw(A→100.64.0.1 tailnet 地址,CNAME 无处指)。1.1.1.1 实测三链解析正常,headscale DERP 引用不受影响。操作坑:shell 变量直拼 JSON 会在 comment 字段产生非法载荷(PUT 被拒)——DNS API 调用一律 heredoc/jq 构造 JSON。
