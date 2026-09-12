@@ -2,7 +2,7 @@
 
 - 日期:2026-09-12 15:36
 - 类型:本机环境调查 + 修复(无 repo 代码变更,无 PR)
-- 状态:已修复,脚本侧验证全部通过;用户端「完全关闭 WT 后重开、警告消失」未见回报记录
+- 状态:已修复并经用户确认(WT 以新字体正常运行,警告消失);18:05 追加 face 切 NF 家族修复图标豆腐块(见「追加」)
 
 ## 环境
 
@@ -28,7 +28,7 @@ WT 启动弹警告:`Unable to find the following fonts: JetBrains Mono NL, Saras
 | 读 WT 源码 `AtlasEngine.api.cpp` `_resolveFontMetrics` | `til::iterate_font_families(faceName, ...)` 逐个 `FindFamilyName`,找不到的拼进 `missingFontNames` 并以 `DWRITE_E_NOFONT` 回调 | **WT 1.24 支持逗号回退列表,配置写法本身没问题**;是 DirectWrite 系统字体集合里 `FindFamilyName` 返回不存在 |
 | 查上游 issue | [microsoft/terminal#15344](https://github.com/microsoft/terminal/issues/15344) "Per-user fonts don't load" | 实锤:WT(打包应用)的 DWrite 系统字体集合**不包含仅当前用户安装的字体** |
 
-字体来源追溯:当天 14:00 的另一个 session 用「复制文件到 `%LOCALAPPDATA%\Microsoft\Windows\Fonts` + 只写 HKCU」的脚本方式安装——正是 per-user 安装,埋下此雷。
+字体来源追溯:当天两个 session 都以「复制到 `%LOCALAPPDATA%\Microsoft\Windows\Fonts` + 只写 HKCU + `AddFontResourceW` 热加载」的免管理员方式装字体——12:20 装 Sarasa Mono SC 10 字重,13:12–13:28 的 [lazyvim-wsl-replay](../2026-09-12-1319-lazyvim-wsl-replay/) 在 Windows 侧装 JetBrainsMonoNL NerdFontMono 16 权重——均为 per-user 安装,埋下此雷。
 
 **根因**:字体此前按「仅当前用户」方式安装(HKCU + `%LOCALAPPDATA%`),而 WT 的 DirectWrite 系统字体集合不含 per-user 字体(#15344),`FindFamilyName` 两家全部 miss,遂弹警告回退 Consolas。与 `face` 的逗号列表写法无关。
 
@@ -48,13 +48,19 @@ WT 启动弹警告:`Unable to find the following fonts: JetBrains Mono NL, Saras
 - [x] 新进程枚举:`JetBrains Mono NL`、`Sarasa Mono SC`(含全部字重子家族)均可见
 - [x] HKLM 58 条登记、`C:\Windows\Fonts` 文件在位
 - [x] HKCU 残留 = 0,用户级旧文件已删
-- [ ] 用户完全关闭所有 WT 窗口后重开,警告消失(运行中的实例缓存了旧字体集合;会话中断前未收到用户回报)
+- [x] 用户完全关闭所有 WT 窗口后重开,警告消失(2026-09-12 用户以该字体正常使用 nvim 确认)
 
 ## 经验教训
 
 - **给 WT(及一切 UWP/打包应用)装字体必须走系统级安装**(`C:\Windows\Fonts` + HKLM,或右键字体文件→「为所有用户安装」);「复制文件 + 只写 HKCU」的 per-user 方式对 WT 的 DirectWrite 不可见(#15344),GDI 老应用却能看到,极具迷惑性
 - WT 1.24 的 `face` 支持 CSS 式逗号回退列表,配置写法无辜时别急着改配置
 - 从 WSL interop 拉起的 Windows 进程不一定跑在 session 0——用进程 session id + 交互性核实后再下「探针被污染」的结论,避免冤枉/漏判证据
+
+## 追加(2026-09-12 18:05):nvim 图标不显示 → face 换 NF 家族
+
+WT 警告已消失、字体正常渲染(用户回报),但 LazyVim 图标豆腐块:WT 的 `face` 指向**原版** `JetBrains Mono NL`(不含 Nerd Font PUA 字形,与母本 [2026-09-04-1632-nvim-icon-nerd-font-fix](../2026-09-04-1632-nvim-icon-nerd-font-fix/) 同款),而 NF 字形的家族名是另一个——`GlyphTypeface` 实读 name table:`JetBrainsMonoNL NFM / JetBrainsMonoNL Nerd Font Mono`(Win32 家族名/DWrite 家族名)。修复:`face` 改为 `"JetBrainsMonoNL Nerd Font Mono, Sarasa Mono SC"`(Sarasa 保留 CJK 回退),新开 WT 窗口生效。
+
+**经验**:「装了字体」≠「用上字体」——WT 的 face 匹配的是 DWrite 家族名,与注册表 GDI 名(`JetBrainsMonoNLNerdFontMono-*`)还不一样,以 name table 为准。
 
 ## 遗留 / 跟进
 
