@@ -10,3 +10,4 @@
 # 临时文件
 *.bak
 *.tmp
+.superpowers/

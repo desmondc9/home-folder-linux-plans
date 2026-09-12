@@ -22,6 +22,10 @@
 2. `pgrep restic` 确认无进程 → `restic unlock`(3 把)→ 重跑
 3. 21:06-21:11 快照 `7e05d536` + forget 完成,记 OK(两个同日快照,保留策略内)
 
+## 追加(2026-09-12):子目录还原前缀剥离坑
+
+- 用 `restic restore 00ae3b7e:/home/desmond/learning --target /home/desmond` 从笔记本快照恢复 `~/learning` 时,restic 0.17+ 会**剥掉过滤路径前缀**,子目录被平铺进 `$HOME` 顶层;靠快照树 diff 确认无混淆后 mv 归位。正确写法:`--target` 直接写最终目录本身。已记入 RUNBOOK §3b(`~/Repos/desmondc9-restic-azure-backup`,本地仓无 remote)。
+
 ## 用户手动动作(提醒)
 
 - 1Password 条目「restic desmondlinbak26」无需变更(同仓库同凭据);如尚未做纸质件,补打
