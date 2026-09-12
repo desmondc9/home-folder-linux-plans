@@ -1,6 +1,7 @@
 # OpenClaw 默认模型切 zhipu GLM + 4 个 MCP + doctor 加固
 
 - 日期:2026-09-06 21:45
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 - 类型:本机服务配置(无 repo 代码变更,无 PR)
 - 状态:已上线并验证(infer model run / mcp probe / doctor findings 4→1)
 

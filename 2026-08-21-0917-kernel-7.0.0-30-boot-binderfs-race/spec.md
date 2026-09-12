@@ -1,4 +1,5 @@
 # 内核升级 7.0.0-30 后正常模式启动失败 —  binderfs 挂载竞态
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)(Ubuntu 主线内核 7.0.0-30)
 
 ## 背景
 

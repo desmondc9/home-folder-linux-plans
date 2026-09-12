@@ -1,6 +1,7 @@
 # LazyVim DAP 调试工具链补齐(VPS)
 
 - **日期**:2026-09-12
+- 环境:Bandwagon VPS(Ubuntu,ssh 远程)
 - **运行环境**:Bandwagon VPS(`brave-goose-1`),LazyVim 栈按 [2026-09-07-1522-lazyvim-vps-replay](../2026-09-07-1522-lazyvim-vps-replay/spec.md) 已部署
 - **性质**:系统环境变更(nvim 配置 + Mason 包,无业务代码)
 - **状态**:已完成,DAP 接线 + LSP 回归全绿

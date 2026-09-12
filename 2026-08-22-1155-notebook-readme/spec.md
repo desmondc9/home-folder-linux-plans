@@ -1,6 +1,7 @@
 # ~/Notebook 纵览 README — 设计
 
 日期: 2026-08-22 · 状态: 已完成 · 实施记录: [implementation.md](implementation.md)
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)(~/Notebook)
 
 ## 背景与目标
 

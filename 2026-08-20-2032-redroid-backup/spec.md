@@ -1,6 +1,7 @@
 # redroid Android 备份 — 设计文档
 
 日期:2026-08-20
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)(其上 redroid 容器的数据卷)
 
 ## 背景与目标
 

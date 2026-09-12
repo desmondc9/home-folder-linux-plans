@@ -1,6 +1,7 @@
 # GitHub token 五端配置(openclaw + opencode/kimi/pi/claude)
 
 - 日期: 2026-09-03
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 - 状态: 向导已生成待运行(owner 在终端粘贴一次 token 即完成;token 不经聊天)
 
 ## 背景与目标

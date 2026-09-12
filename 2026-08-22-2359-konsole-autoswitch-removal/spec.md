@@ -1,6 +1,7 @@
 # 移除 Konsole 随系统主题自动切换 profile 的 rig(自动部分)
 
 日期: 2026-08-22
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 状态: 已完成并验证——自动 rig 全部拆除,手动 toggle 保留,默认 profile 修正为 Dark
 
 ## 背景

@@ -1,6 +1,7 @@
 # frp token 泄露清除与机密入库禁令
 
 日期:2026-08-19 · 状态:**全部完成**(git 清除 + 文档纠错 + 立规 + token 轮换)
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)(plans 仓库当时所在地;事故快照含 VPS frps 配置)
 
 ## 背景
 

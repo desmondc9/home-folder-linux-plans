@@ -1,6 +1,7 @@
 # nvim 图标不显示 — 根因调查与修复(Nerd Font)
 
 - 日期:2026-09-04 16:32
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 - 类型:本机环境调查 + 修复(无 repo 代码变更,无 PR)
 - 状态:已修复,用户已确认(2026-09-04,重启 Konsole 后 tabline / dashboard 图标均正常)
 

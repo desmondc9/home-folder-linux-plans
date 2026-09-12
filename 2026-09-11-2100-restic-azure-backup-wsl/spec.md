@@ -1,6 +1,7 @@
 # restic 备份 WSL 侧重建(同仓库)设计规格
 
 - 日期:2026-09-11 21:00
+- 环境:WSL2 Ubuntu 26.04(宿主 Windows 11 物理机 DESKTOP-J7NBNU4,mirrored networking)
 - 状态:实施完成(当日回填)
 - 目标机器:Windows 11 + WSL2 Ubuntu 26.04(`DESKTOP-J7NBNU4`,systemd 已启用)
 - 母方案:`~/plans/2026-09-11-1012-restic-azure-backup/`(原实体机 yaoshi15pro 系列,2026-09-11 上午上线)

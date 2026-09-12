@@ -1,6 +1,7 @@
 # 移除 Cloudflare Zero Trust 残留 + 归档 frp 配置
 
 日期:2026-08-19 · 状态:**全部完成**(本机 + CF 云端均已验证无残留) · 实施记录:[implementation.md](implementation.md)
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 
 ## 背景与目标
 

@@ -1,6 +1,7 @@
 # Windows 11 宿主机 Sunshine 安装 — WinNAT/HNS 端口保留致 RTSP 绑定失败 设计与排障记录
 
 日期:2026-09-12 · 状态:修复方案落地中(待重启验证)
+- 环境:Windows 11 物理机(DESKTOP-J7NBNU4)(WSL interop 排查)
 
 ## 背景与目标
 

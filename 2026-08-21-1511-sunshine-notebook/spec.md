@@ -1,6 +1,7 @@
 # Sunshine/Moonlight 知识库整理 → ~/Notebook — 设计
 
 日期: 2026-08-21 · 状态: 已完成 · 实施记录: [implementation.md](implementation.md)
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)(~/Notebook)
 
 > **补记说明**:本 spec 于 2026-08-31 依据 [implementation.md](implementation.md)、`~/Notebook/Sunshine-Moonlight-串流/` 实际产出与四份源档案**事后补写**,以补齐 `~/CLAUDE.md` 要求的 spec + implementation 双文档。内容均可从上述证据复原,未凭记忆杜撰;无法从证据确定的部分已在文中标注。
 

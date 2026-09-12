@@ -1,6 +1,7 @@
 # Chrome/Edge 报"浏览器不支持 HEVC"(B 站直播)
 
 日期: 2026-08-22
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 状态: 已修复——Chrome/Edge 双双验收通过:B 站"浏览器不支持 HEVC"提示消失、直播播放正常
 
 ## 背景

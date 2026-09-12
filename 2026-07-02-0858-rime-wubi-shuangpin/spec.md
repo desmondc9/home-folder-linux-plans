@@ -2,6 +2,7 @@
 
 **Date:** 2026-07-02  
 **Status:** Approved
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)(fcitx5)
 
 ## 背景
 

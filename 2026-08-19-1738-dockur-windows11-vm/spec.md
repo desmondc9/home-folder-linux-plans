@@ -1,6 +1,7 @@
 # dockur/windows Windows 11 VM — 设计
 
 日期: 2026-08-19
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)(rootless podman 宿主)+ Win11 25H2 dockur VM
 
 ## 背景与目标
 

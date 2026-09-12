@@ -1,6 +1,7 @@
 # OpenClaw Gateway 无法启动修复(stale systemd unit)
 
 - 日期:2026-09-06 21:05
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 - 类型:本机服务修复(无 repo 代码变更,无 PR)
 - 状态:已修复并验证(gateway status --deep 全绿)
 

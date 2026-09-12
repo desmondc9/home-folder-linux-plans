@@ -1,6 +1,7 @@
 # 使用中无征兆熄屏 + 离开后 Sunshine 断连:HDMI FRL 链路训练失败
 
 日期: 2026-08-21
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 状态: 已修复(降 4K@60 + watchdog 自愈),FRL 复发监控运行中
 
 ## 背景

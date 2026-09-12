@@ -1,6 +1,7 @@
 # OpenClaw 本机查漏补缺(systemAgent / 密钥收尾 / 本地 embedding / weixin 停用 / GitHub token / 备份)
 
 - 日期:2026-09-06 23:25(grilling 起点,实施跨零点至 09-07 01:50)
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 - 类型:本机服务配置(无 repo 代码变更,无 PR)
 - 状态:已完成并验证(infer / mcp probe / doctor / memory 全绿)
 

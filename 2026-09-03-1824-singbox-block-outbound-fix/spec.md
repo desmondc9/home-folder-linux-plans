@@ -1,6 +1,7 @@
 # sing-box 代理故障诊断与修复 — QUIC block 出站引用失效
 
 - 日期: 2026-09-03
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)(/etc/sing-box 分流网关)
 - 主题: youtube.com 等被代理网页无法浏览
 - 诊断方法: diagnosing-bugs skill (反馈回路 → 复现 → 假设 → 验证 → 修复)
 

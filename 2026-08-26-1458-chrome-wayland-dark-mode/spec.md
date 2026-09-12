@@ -1,6 +1,7 @@
 # Linux Wayland + Chrome light/dark 自动切换:调研与落地
 
 **日期**: 2026-08-26
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 **性质**: 系统配置任务(排查验证 + 上游调研 + 浏览器扩展配置优化)
 **环境**: Kubuntu 26.04 / KDE Plasma 6(Wayland)/ Chrome stable 152.0.7977.64(取证时运行实例为 151,待重启升级)/ Dark Reader 4.9.129(extension ID `eimadpbcbfnmbkopoojfekhnkhdbieeh`)
 **结论**: Dark Reader "Use system color scheme" 警告是 Linux 硬编码文案且本机跟随链路健康;Chrome 原生暗色能力有限(UI 可跟随、内容变暗只有实验 flag),Dark Reader 仍是最优解;据此用 Chrome 历史 + CDP 双遍实测筛出 **11 个原生支持系统配色自动切换**的站点加入 DR `disabledFor`,把自带暗色的站交还给网站自己。

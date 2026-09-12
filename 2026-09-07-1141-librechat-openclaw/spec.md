@@ -1,4 +1,5 @@
 # LibreChat @ Bandwagon VPS — 部署并接入 OpenClaw + 5 家模型 API
+- 环境:Bandwagon VPS(brave-goose-1,Ubuntu Server 24.04.4 LTS,详见下方「运行环境」)
 
 **运行环境**:Bandwagon VPS(`brave-goose-1` / `104.194.83.82` / IPv6 `2607:8700:5500:7bd3::2`),Ubuntu Server 24.04.4 LTS,4C / 3.9G RAM / 78G 盘(45G 可用)。
 

@@ -4,6 +4,7 @@
 
 ## 背景与目标
 6 个端点均无搜索能力;用户实测 Kimi K3 对"现在几点/天气"给出幻觉答案(自称实时,日期却是 2025-01-27)。目标:两端都能拿到真实实时数据。
+- 环境:Bandwagon VPS(Ubuntu,ssh 远程)
 
 ## 决策
 1. **OpenClaw → MiniMax Token Plan search**(`tools.web.search.provider: minimax`, region cn):官方支持 `MINIMAX_CODE_PLAN_KEY` = 用户现有 MiniMax coding plan key,零新注册。key 放 `~/.openclaw/.env`(600)。原配置 `provider: "kimi"` 因无 moonshot 平台 key 一直 autodetect 失败(日志 `WEB_SEARCH_PROVIDER_INVALID_AUTODETECT`)。

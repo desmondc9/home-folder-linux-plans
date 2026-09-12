@@ -1,6 +1,7 @@
 # Android sing-box 客户端配置 — 设计文档
 
 - 日期:2026-08-22
+- 环境:Android 15(SFA,OnePlus 15 真机;Kubuntu 笔记本 redroid 容器验证,配置编写于笔记本)
 - 目标:基于本机 Kubuntu `/etc/sing-box/config.json`(sing-box 1.13.19,VLESS+Reality+TPROXY 分流网关),产出一份 **Android 版 sing-box (SFA 1.13.19) 客户端配置**,DNS 分流 / 流量分流 / 自定义 ruleset 语义与本机 1:1 一致,并在本机 redroid 容器里实测验证。
 
 ## 背景与目标

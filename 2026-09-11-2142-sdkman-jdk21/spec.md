@@ -1,6 +1,7 @@
 # sdkman 安装 + JDK 21(Temurin)设默认 设计规格
 
 - 日期:2026-09-11 21:42
+- 环境:WSL2 Ubuntu 26.04(宿主 Windows 11 物理机 DESKTOP-J7NBNU4,mirrored networking)
 - 状态:完成并验证
 - 目标机器:本 Linux 机(WSL,用户 desmond,zsh)
 

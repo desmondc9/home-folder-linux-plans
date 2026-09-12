@@ -1,6 +1,7 @@
 # 开发流程加装「性能验收门禁」+ scalability 清单重构
 
 **日期**: 2026-08-30
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)(~/CLAUDE.md 与 ~/docs)
 **性质**: 家目录规范文件维护(`~/CLAUDE.md` 开发流程 + `~/docs/scalability-review-checklist.md` 重构)
 **改动文件**: `~/CLAUDE.md`、`~/docs/scalability-review-checklist.md`(两者均不在任何 git 仓库内,本档案是唯一的变更记录)
 **结论**: 把「性能」从"想起来才做的事后审查"改成**流程里的三个固定动作**——设计期取真实数据(Step A)、计划期写死性能决策(Step B)、提 PR 前过门禁(新增 Step E);清单本身从 11 节扩到 13 节,补进一批来自真实生产事故的教训。

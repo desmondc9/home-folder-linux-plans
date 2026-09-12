@@ -77,6 +77,7 @@
 | 2026-09-12 15:36 | [windows-terminal-font-not-found](./2026-09-12-1536-windows-terminal-font-not-found/) | Windows 11 WT 1.24 报找不到 JetBrains Mono NL/Sarasa Mono SC:字体是 per-user 安装(HKCU+LocalAppData)而 WT 的 DirectWrite 系统字体集合不含 per-user 字体(#15344),`face` 逗号列表写法本身无辜 → 提权脚本把 58 个字体转系统级(C:\Windows\Fonts+HKLM+去 MOTW+重启 FontCache)并清用户级残留;经验:给 WT/打包应用装字体必须全机器安装 |
 | 2026-09-12 19:13 | [mise-go-manager](./2026-09-12-1913-mise-go-manager/) | Go 版本管理迁到 mise(rustup 管理的 Rust 不动——它本身就是 Rust 官方的 nvm 式管理器):mise use -g go@1.27.1 替代 ~/.local/go 手动安装,zshrc 换 mise activate;GOPATH 仍 ~/go 且 Mason 自管 gopls,nvim LSP 零影响;mise 下 go 走 dl.google.com,按约定预注 10809 代理 |
 | 2026-09-12 19:38 | [claude-network-doc-split](./2026-09-12-1938-claude-network-doc-split/) | CLAUDE.md 的 GFW 网络章节(39 行常驻)拆分到 ~/docs/network-access-china.md,原位换 5 行 context pointer:内联只留触发条件(Google/GCP 请求前主动读——GFW 下是挂起不是报错)与 10808 退役护栏,镜像/代理细节单源下沉 |
+| 2026-09-12 19:55 | [spec-env-backfill](./2026-09-12-1955-spec-env-backfill/) | 存量档案全量回填环境信息(58 个):时间线硬边界(WSL 机器 09-11 才启用,之前皆 Kubuntu 笔记本)+ 关键词指纹(KDE/WSL/VPS/redroid)推断,66/66 spec 均含 `- 环境:` 行;约定放宽为头部行(推荐)或 ## 环境 章节;发现 6 个目录 README 索引缺行(遗留) |
 
 ## 关于本仓库
 

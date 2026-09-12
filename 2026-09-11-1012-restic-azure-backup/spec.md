@@ -1,6 +1,7 @@
 # restic 备份 Linux 桌面 → Azure Blob(WSL 可还原)设计规格
 
 - 日期:2026-09-11 10:12
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)(yaoshi15pro;还原目标为 WSL2 Ubuntu)
 - 状态:设计已获用户逐节确认(brainstorming + grilling 两轮问答)
 - 目标机器:HP/机械革命 笔记本,Ubuntu 26.04 LTS,ext4 `/` 1.9T(已用 1001G),独立空分区 `/data1`,主机名 yaoshi15proseries…
 

@@ -1,6 +1,7 @@
 # 打印机任务卡死 "Unable to locate printer" — mDNS 队列改固定 IP 直连
 
 日期: 2026-09-07
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)(家庭网络 HP 打印机)
 状态: 已修复——队列切换 + 测试页 35 秒完成验证(实体出纸待用户确认)
 
 ## 背景

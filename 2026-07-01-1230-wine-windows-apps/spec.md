@@ -1,6 +1,7 @@
 # Design: Latest Wine + Windows WeChat/Teams on Kubuntu 26.04
 
 **Date:** 2026-07-01
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)(RTX 4060 + 核显混合)
 **Machine:** Kubuntu 26.04 LTS (resolute), KDE Plasma, Wayland
 **Hardware:** Intel Raptor Lake iGPU + NVIDIA RTX 4060 Mobile (hybrid, open driver 595.71.05)
 

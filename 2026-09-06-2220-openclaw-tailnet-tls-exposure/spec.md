@@ -1,6 +1,7 @@
 # OpenClaw 经 tailnet 暴露(自签路线受阻 → ACME DNS-01 真证书 + tailnet-only)
 
 - 日期:2026-09-06 22:20
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)(100.64.0.1;客户端 Android)
 - 类型:本机服务配置 + 网络暴露面变更(无 repo 代码变更,无 PR)
 - 状态:已上线并验证(HTTPS 200 + LE 证书链 + 本机 CLI + MCP 复测)
 

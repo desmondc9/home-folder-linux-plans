@@ -1,6 +1,7 @@
 # exFAT U 盘挂载失败 "Filesystem type exfat not configured in kernel"
 
 日期: 2026-08-22
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 状态: 已修复——即时修复与持久化配置均已验证;最终验收(下次开机直接挂载)待下次开机确认
 
 ## 背景

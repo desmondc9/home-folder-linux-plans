@@ -1,6 +1,7 @@
 # opencode 启动缓慢 — 根因诊断与修复
 
 - 日期: 2026-09-01
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 - 主机: Kubuntu 26.04 (Linux 7.0.0-30-generic), 大陆网络环境
 - opencode 版本: 1.18.25 (npm `opencode-ai`, bun 单文件二进制 184MB)
 - 方法: `diagnosing-bugs` skill(测量优先,禁止先猜后验)

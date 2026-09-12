@@ -1,6 +1,7 @@
 # screen-wake-daemon 开机后 kscreen-doctor 崩溃循环 (SIGABRT ×20+)
 
 日期: 2026-08-22
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 状态: 已修复(unit 排序 + 脚本环境守卫),验证通过
 
 ## 背景

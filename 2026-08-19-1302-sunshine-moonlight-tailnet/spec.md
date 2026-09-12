@@ -1,6 +1,7 @@
 # Sunshine + Moonlight 串流接入自建 Tailnet 设计文档
 
 日期:2026-08-18(2026-08-19 补记并加固) · 状态:已完成,已验证 · 实施记录:[implementation.md](implementation.md) · 后续演进:[../2026-08-18-2224-tailnet-exit-singbox/spec.md](../2026-08-18-2224-tailnet-exit-singbox/spec.md)(tailnet 升级为双 Exit Node + sing-box 分流网关)
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)(Sunshine 服务端)+ Bandwagon VPS;客户端 iPad/Android(Moonlight)
 
 ## 背景与目标
 

@@ -1,6 +1,7 @@
 # jdtls prepareRename 全项目失效 — 排查与修复(prepareProvider 拦截)
 
 - **日期**:2026-09-05(约 09:00–10:45)
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 - **性质**:本机工具链 bug 调查 + 修复(用户 nvim 配置新增一个 workaround 插件文件,无业务代码变更)
 - **状态**:已修复并端到端验证;根因止步于"jdtls 1.60 服务器内部 OccurrencesFinder 通路在该项目失灵",未继续上游定位
 

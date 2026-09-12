@@ -1,6 +1,7 @@
 # agentmemory 跨 agent 记忆层落地
 
 - 日期: 2026-08-30
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 - 状态: **已于 2026-08-31 彻底卸载**(结论:该类技术尚不成熟);本档案作为评估结论与反面教材保留,见 implementation.md 第 8 步
 
 ## 背景与目标

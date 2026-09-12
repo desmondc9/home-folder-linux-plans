@@ -1,6 +1,7 @@
 # Sunshine 串流显示器切换脚本 — 设计
 
 日期: 2026-08-19
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 
 ## 背景与目标
 

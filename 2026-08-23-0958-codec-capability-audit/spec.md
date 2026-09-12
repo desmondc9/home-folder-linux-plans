@@ -1,6 +1,7 @@
 # Chrome/Edge/OS 音视频编解码能力审计与补齐
 
 日期: 2026-08-23
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 状态: 已完成——浏览器侧能力完整;OS 侧补齐 GStreamer bad+vaapi 并解锁 NVIDIA VAAPI(白名单),E2E 硬解验证通过
 
 ## 背景

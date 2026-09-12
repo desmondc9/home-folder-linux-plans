@@ -1,4 +1,5 @@
 # redroid Android 容器 (droidvm) — 设计
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)(rootful podman 宿主)+ Android 15 redroid 容器
 
 ## 背景与目标
 

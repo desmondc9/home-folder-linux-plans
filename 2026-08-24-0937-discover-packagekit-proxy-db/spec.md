@@ -1,6 +1,7 @@
 # Discover/apt 代理错误修复 — PackageKit 持久化代理数据库
 
 - 日期：2026-08-24
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 - 主机：desmond-yaoshi15proseriesgm5ix0a (Kubuntu 26.04, kernel 7.0.0-30)
 - 状态：✅ 已修复并端到端验证
 

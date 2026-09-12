@@ -1,6 +1,7 @@
 # Sunshine 熄屏后 Moonlight 无法连接 (RTSP 500 / Error 503)
 
 日期: 2026-08-20
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 状态: 已修复 (fix A), fix B 经实验证伪后回退
 
 ## 背景

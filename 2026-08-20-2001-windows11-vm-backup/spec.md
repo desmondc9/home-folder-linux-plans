@@ -1,6 +1,7 @@
 # Windows 11 VM 备份 — 设计文档
 
 日期:2026-08-20
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)(备份其上的 dockur Win11 25H2 VM 镜像)
 
 ## 背景与目标
 

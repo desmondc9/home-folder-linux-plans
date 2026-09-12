@@ -1,6 +1,7 @@
 # opencode serve 远程暴露(systemd 常驻,供 opencode-mobile 连接)
 
 - 日期:2026-09-06 18:47
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)(tailscale 100.64.0.1)
 - 类型:本机服务配置(无 repo 代码变更,无 PR)
 - 状态:已上线并验证(curl 鉴权矩阵 + 手机端待用户实测)
 

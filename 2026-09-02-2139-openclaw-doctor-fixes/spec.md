@@ -1,6 +1,7 @@
 # OpenClaw doctor 全面修复与 gateway 配置加固
 
 - 日期: 2026-09-02
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 - 状态: **已完成并验证**(doctor 仅余预期内提示;follow-ups 见文末)
 - 追加1: 当日晚间完成 nvm/npm-global 迁移善后 + kimi-k3 备用模型配置(见 implementation.md 追加记录)
 - 追加2: 当日深夜修复 kimi-claw 官方桥接脚本安装失败(三处与 openclaw 2026.8.2 的不兼容,补丁方案见 implementation.md)

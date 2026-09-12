@@ -1,6 +1,7 @@
 # LazyVim 在 Bandwagon VPS 的重放部署(按 2026-09-05-0040 清单)
 
 - **日期**:2026-09-07
+- 环境:Bandwagon VPS(Ubuntu,ssh 远程)
 - **运行环境**:Bandwagon VPS(`brave-goose-1` / 104.194.83.82),Ubuntu Server 24.04,4C / 3.9G / 78G(当日二次升级后执行)
 - **性质**:教育工作区系统环境重放(无代码仓库变更),母本:[2026-09-05-0040-lazyvim-learning-workspace](../2026-09-05-0040-lazyvim-learning-workspace/spec.md)(notebook)
 - **状态**:已完成,6 语言 LSP 挂载验证通过

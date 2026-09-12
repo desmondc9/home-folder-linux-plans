@@ -1,6 +1,7 @@
 # Windows 11 物理机成为第三个 Exit Node(TUN 版 sing-box 分流) 设计文档
 
 日期:2026-09-12 · 状态:已批准,实施中 · 实施计划:[implementation.md](implementation.md)
+- 环境:Windows 11 物理机(DESKTOP-J7NBNU4)(经 WSL2 mirrored interop 操作)
 
 ## 背景与目标
 

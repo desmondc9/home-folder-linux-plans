@@ -1,6 +1,7 @@
 # opencode TUI 键绑定(取消 ctrl+c / ctrl+shift+c 退出)设计规格
 
 - 日期:2026-09-11 21:36
+- 环境:WSL2 Ubuntu 26.04(宿主 Windows 11 物理机 DESKTOP-J7NBNU4,mirrored networking)
 - 状态:验证完成(配置随灾备恢复已就位,本次为验证与建档)
 - 目标机器:WSL Ubuntu(DESKTOP-J7NBNU4),opencode 1.18.30(`~/.opencode/bin/opencode`)
 

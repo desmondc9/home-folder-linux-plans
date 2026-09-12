@@ -1,6 +1,7 @@
 # 自建 DERP 兜底中继(derp.signal-align.com)
 
 日期:2026-08-19 · 状态:已完成
+- 环境:Bandwagon VPS(Ubuntu,ssh 远程)(headscale/derper/nginx;自 Kubuntu 笔记本运维)
 
 ## 背景与目标
 

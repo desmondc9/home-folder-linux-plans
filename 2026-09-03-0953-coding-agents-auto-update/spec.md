@@ -1,6 +1,7 @@
 # Coding agents 每日自动更新(claude/opencode/kimi/pi)
 
 - 日期: 2026-09-03
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 - 状态: 已完成并验证(当日手动触发实测:claude 2.1.258→2.1.259 真实升级)
 
 ## 背景与目标

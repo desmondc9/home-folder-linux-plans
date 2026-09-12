@@ -1,6 +1,7 @@
 # cursor-sdk2api 本地网关下线 — 设计规格
 
 - **日期**: 2026-09-01 15:37–16:0x CST
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)
 - **作者**: Desmond(与 Claude brainstorming 产出)
 - **性质**: 家目录系统配置任务(bounded);无 Kanban 工作项(个人环境,非项目仓库改动)
 

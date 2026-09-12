@@ -1,6 +1,7 @@
 # 本机 frp 客户端配置档案
 
 日期:2026-08-19(归档日;配置本身 2026-07 建、2026-08-18 扩展 Sunshine 端口) · 状态:线上生效中
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro)(frpc)+ Bandwagon VPS(frps)双端快照
 
 本目录是**本机 frp 配置的实体快照与说明**。配置曾被文字引用在串流档案里,2026-08-19 借清理 Cloudflare Zero Trust 之机把实体文件归档入库(最初误放在 [../2026-08-19-1414-cloudflare-zerotrust-removal/](../2026-08-19-1414-cloudflare-zerotrust-removal/) 内,同日应要求移出独立成档)。
 

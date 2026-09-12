@@ -1,6 +1,7 @@
 # Tailnet 双 Exit Node + sing-box 分流网关 设计文档
 
 日期:2026-08-18 · 状态:已批准,实施中 · 实施计划:[implementation.md](implementation.md)
+- 环境:Kubuntu 26.04 + Wayland 笔记本(yaoshi15pro) + Bandwagon VPS 双端(出口节点/分流网关)
 
 ## 背景与目标
 
