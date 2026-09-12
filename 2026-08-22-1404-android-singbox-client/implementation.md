@@ -113,3 +113,13 @@
 3. Legacy Address Filter Fields in DNS rules → 根因是**手机侧 custom-*.json 文件内含 `ip_cidr` 键**(DNS 规则引用了含 ip_cidr 条目的 rule-set)。又因 1.14 拒绝空 inline 规则集(`parse rule-set: empty inline rule-set`),干脆**移除这两个自始为空的 custom rule-set** 及其 dns/route 规则引用——自定义规则通道今后按 futu 模式(需要时在 config 内联 `domain_suffix` 数组)添加
 
 校验:sing-box **1.14.0** `check` 通过(本机 Windows 1.13.19 认不得 `http_clients`,特意下载 1.14.0 二进制校验;校验文件 `config.phone-v4.json`)。交付:WSL 临时 HTTP(:18080)下发,手机 SFA 导入新 profile + 删旧 profile(新节点经 90d preauth key 自动注册,旧 node id 8 事后在 headscale 清理)。
+
+## 附录 v4 续: 跨平台推广(2026-09-12)
+
+统一模式(内嵌 tailscale endpoint 的 sing-box 单 VPN)推广到其他 Windows/Linux/macOS 设备——纯客户端配置比出口节点简单得多(无 TPROXY/转发豁免,`auto_detect_interface` 防回环即可)。生成并通过 sing-box 1.14.0 `check` 的三份变体(`config-{winpc,linuxpc,mac}.json`,hostname 分别 desmond-{win-pc,linux-pc,mac},均含 mixed 127.0.0.1:10809 供本机工具显式代理;Windows 变体 strict_route=false 沿用本机实证结论):
+
+- **Windows PC**:sing-box.exe(便携目录)+ WinSW 服务(照 2026-09-12-0021 剧本),UAC 一次
+- **Linux PC**:发行版包 + systemd 跑 `sing-box run -c /etc/sing-box/config.json`(需 /dev/net/tun)
+- **macOS**:SFM(sing-box for macOS)导入 profile,App 自动管 TUN
+
+各设备经 90d 可复用 preauth key 自动注册为新节点;Moonlight 全平台客户端连 `100.64.0.7` 串流 Sunshine。**注意鸡生蛋**:新设备入 tailnet 前拿不到 `100.64.0.7:18080` 的下发服务——在家用 `192.168.31.100:18080`,异地设备首次需文件拷贝。复用配置时务必改 `endpoints[].hostname`。
