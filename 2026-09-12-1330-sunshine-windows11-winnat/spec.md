@@ -1,0 +1,52 @@
+# Windows 11 宿主机 Sunshine 安装 — WinNAT/HNS 端口保留致 RTSP 绑定失败 设计与排障记录
+
+日期:2026-09-12 · 状态:修复方案落地中(待重启验证)
+
+## 背景与目标
+
+Windows 11 物理机(DESKTOP-J7NBNU4,100.64.0.7,RTX 4060 Laptop)安装 Sunshine(Moonlight 主机端),供 Android(SFA)/iPad/PC/Mac 经 tailnet 用 Moonlight 串流。参考笔记本方案 [../2026-08-19-1302-sunshine-moonlight-tailnet/](../2026-08-19-1302-sunshine-moonlight-tailnet/spec.md)。
+
+## 现象
+
+用户经 `Sunshine-Windows-AMD64-installer.msi`(版本 2026.906.2225.25)安装后 "Sunshine 一直在重启"。
+
+## 根因(systematic-debugging,证据链完整)
+
+1. **事件日志**:`Sunshine.exe 0xc0000005` 固定偏移 `0x1ec59a1`,~20s 一崩(服务不断拉起)——崩溃是**果**(异常退出路径上的崩溃)
+2. **Sunshine 日志临终行**(真因):
+   `Fatal: Couldn't bind RTSP server to port [48010], An attempt was made to access a socket in a way forbidden by its access permissions`(WSAEACCES)
+3. **绑定栈**:Sunshine RTSP 绑 `[::]:48010`(IPv6 通配);v4 通配可绑、v6 不可
+4. **`netsh int ipv6 show excludedportrange protocol=tcp`**:**47984–48010 被动态保留**(最初只查 v4 表而漏掉 v6——排障走了一段弯路)
+5. **保留持有者不是 winnat**:`net stop winnat` 后 v6 持久保留 add 仍报 "file being used by another process" → 持有者是 **HNS**(Host Network Service;本机 WSL2 **mirrored 模式**的宿主组件)
+6. 对照实验(排除项):nvenc 三编码器(h264/hevc/av1)全部就绪;GPU/防火墙/安装本体无罪;控制端口(55123/49000)原生 bind 正常
+
+**结论**:WSL2 mirrored 的 HNS 在 v6 上动态保留了 47984–48010,导致 Sunshine 的 `[::]:48010` RTSP 绑定 WSAEACCES → 进程 Fatal → 异常退出路径 0xc0000005 → 服务拉起 → 死循环。与笔记本 2026-08-19 的 RTSP 绑定故障"同穴位、不同病理"(彼为端口冲突 EADDRINUSE,此为保留区 EACCES)。
+
+## 方案
+
+1. **v4 持久保留**(已成功):TCP 47984–48010、UDP 47998–48002、UDP 48010
+2. **v6 持久保留**:当前被 HNS 动态占用加不进 → **开机 SYSTEM 计划任务 `SunshinePortReserve`**(onstart)在 HNS/WSL 认领前重assert全部保留(持久保留写入注册表后,动态分配器会避让)
+3. **重启清场**:重启后动态保留清空、持久保留就位、SunshineService(Automatic)绑定成功
+4. 附带收获:MSI 不支持 INSTALLDIR 属性,默认装 `C:\Program Files\Sunshine`(配置随安装目录,非 D:\Sunshine)
+
+## 验收标准
+
+- [ ] 重启后 `netstat` 显示 47984/47989/47990/48010 LISTENING
+- [ ] sunshine.log 无 Fatal,出现 Web UI 提示
+- [ ] Web UI `https://localhost:47990` 可达并设置凭据
+- [ ] Moonlight(Android/iPad)添加主机 `100.64.0.7` 配对成功,串流出画面(tailnet 内部流量经 sing-box route_exclude 豁免,不进 TUN)
+- [ ] 再次重启一次验证持久性(保留任务生效)
+
+## 坑位登记(方法论)
+
+1. **排障先查双栈排除表**:`netsh int <ipv4|ipv6> show excludedportrange`,只查 v4 会漏案
+2. **WSL mirrored 的 WSL 侧 bind 会污染宿主端口状态**(探测本身改变现场);跨栈测端口用原生进程(node/TcpListener),且注意 WSL 镜像 bind 不受宿主保留约束——结果不可迁移
+3. **`net stop winnat` 只清 winnat 的动态保留**,HNS 的保留不受影响;持久保留(`store=persistent`)才是跨重启的防御
+4. UAC 触发(`Start-Process -Verb RunAs`)经 WSL interop 不稳定(阻塞/弹窗丢失)——关键安装步骤改为用户手动跑管理员脚本更可靠
+5. Sunshine 崩溃循环的日志在 `<安装目录>\config\sunshine.log`(服务包 sunshinesvc.exe + 用户会话 sunshine.exe;僵尸态与笔记本 Task 7 同款)
+
+## 参考
+
+- 笔记本 Sunshine 方案(端口清单/看门狗):[../2026-08-19-1302-sunshine-moonlight-tailnet/](../2026-08-19-1302-sunshine-moonlight-tailnet/implementation.md)
+- 用户下载:`C:\Users\Desmond\Downloads\Sunshine-Windows-AMD64-installer.msi` + debuginfo.7z(未用上,日志已定位根因)
+- 修复脚本:`sunshine-fix.ps1`(三轮迭代)/`sunshine-fix{,2,3}-result.txt`
