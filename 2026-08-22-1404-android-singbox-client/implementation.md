@@ -103,3 +103,13 @@
 4. **防回环**:内嵌客户端自身的控制/对端 socket 经 VpnService protect 绕过 TUN 直走物理网卡(等价笔记本 TPROXY 的 mark 0x80000 豁免)。
 5. **单 VPN 互斥因此消失**:全机仅 SFA 一个 VpnService 消费者,Tailscale 退化为它内部的一条路由分支;`type: tailscale` DNS server = 经内嵌客户端的 MagicDNS(`*.tailnet.internal` 可解析)。
 6. endpoint 另有 `exit_node` 字段可让内嵌客户端选别人出口(当前无需)。
+
+## 附录 v4: 2026-09-12 SFA 升级 1.14.0 的三项弃用修正
+
+用户手机 SFA 升至 1.14.0,启动报 3 条弃用警告(均 1.16.0 移除),依官方迁移文档修正:
+
+1. `dns.independent_cache` → **直接删除**(1.14 起 DNS 缓存恒按 transport 分键,字段冗余)
+2. rule-set `download_detour` → **`http_clients` + `http_client`**:顶层新增 `http_clients: [{tag: proxy-http, detour: proxy}]`(HTTP Client 含 Dial Fields,detour 指定出站),三个 remote rule-set 改引 `http_client: proxy-http`
+3. Legacy Address Filter Fields in DNS rules → 根因是**手机侧 custom-*.json 文件内含 `ip_cidr` 键**(DNS 规则引用了含 ip_cidr 条目的 rule-set)。又因 1.14 拒绝空 inline 规则集(`parse rule-set: empty inline rule-set`),干脆**移除这两个自始为空的 custom rule-set** 及其 dns/route 规则引用——自定义规则通道今后按 futu 模式(需要时在 config 内联 `domain_suffix` 数组)添加
+
+校验:sing-box **1.14.0** `check` 通过(本机 Windows 1.13.19 认不得 `http_clients`,特意下载 1.14.0 二进制校验;校验文件 `config.phone-v4.json`)。交付:WSL 临时 HTTP(:18080)下发,手机 SFA 导入新 profile + 删旧 profile(新节点经 90d preauth key 自动注册,旧 node id 8 事后在 headscale 清理)。
