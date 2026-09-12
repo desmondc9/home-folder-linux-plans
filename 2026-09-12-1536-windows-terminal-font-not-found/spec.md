@@ -58,7 +58,7 @@ WT 启动弹警告:`Unable to find the following fonts: JetBrains Mono NL, Saras
 
 ## 追加(2026-09-12 18:05):nvim 图标不显示 → face 换 NF 家族
 
-WT 警告已消失、字体正常渲染(用户回报),但 LazyVim 图标豆腐块:WT 的 `face` 指向**原版** `JetBrains Mono NL`(不含 Nerd Font PUA 字形,与母本 [2026-09-04-1632-nvim-icon-nerd-font-fix](../2026-09-04-1632-nvim-icon-nerd-font-fix/) 同款),而 NF 字形的家族名是另一个——`GlyphTypeface` 实读 name table:`JetBrainsMonoNL NFM / JetBrainsMonoNL Nerd Font Mono`(Win32 家族名/DWrite 家族名)。修复:`face` 改为 `"JetBrainsMonoNL Nerd Font Mono, Sarasa Mono SC"`(Sarasa 保留 CJK 回退),新开 WT 窗口生效。
+WT 警告已消失、字体正常渲染(用户回报),但 LazyVim 图标豆腐块:WT 的 `face` 指向**原版** `JetBrains Mono NL`(不含 Nerd Font PUA 字形,与母本 [2026-09-04-1632-nvim-icon-nerd-font-fix](../2026-09-04-1632-nvim-icon-nerd-font-fix/) 同款),而 NF 字形的家族名是另一个——`GlyphTypeface` 实读 name table:`JetBrainsMonoNL NFM / JetBrainsMonoNL Nerd Font Mono`(Win32 家族名/DWrite 家族名)。修复:`face` 改为 `"JetBrainsMonoNL Nerd Font Mono, Sarasa Mono SC"`(Sarasa 保留 CJK 回退),新开 WT 窗口生效。**用户已确认图标正常显示(2026-09-12)。**
 
 **经验**:「装了字体」≠「用上字体」——WT 的 face 匹配的是 DWrite 家族名,与注册表 GDI 名(`JetBrainsMonoNLNerdFontMono-*`)还不一样,以 name table 为准。
 
