@@ -76,6 +76,7 @@
 | 2026-09-12 13:19 | [lazyvim-wsl-replay](./2026-09-12-1319-lazyvim-wsl-replay/) | WSL 本机(第三台)重放 LazyVim:官方 starter+档案 deltas(nvim 0.12.5/Go 1.27.1/rsproxy rustup/14 extras+dap.core);新坑:lazyvim.json extras 现行要求**全模块路径**(v8 迁移把相对写法双前缀化并原样持久化,sd 修不掉)、headless 下 Mason ensure_installed 不跑(cmd 懒加载,需 lazy.load 强制)+等待判据须 installing==0;session 中断后交互式使用自动补齐 LSP servers |
 | 2026-09-12 15:36 | [windows-terminal-font-not-found](./2026-09-12-1536-windows-terminal-font-not-found/) | Windows 11 WT 1.24 报找不到 JetBrains Mono NL/Sarasa Mono SC:字体是 per-user 安装(HKCU+LocalAppData)而 WT 的 DirectWrite 系统字体集合不含 per-user 字体(#15344),`face` 逗号列表写法本身无辜 → 提权脚本把 58 个字体转系统级(C:\Windows\Fonts+HKLM+去 MOTW+重启 FontCache)并清用户级残留;经验:给 WT/打包应用装字体必须全机器安装 |
 | 2026-09-12 19:13 | [mise-go-manager](./2026-09-12-1913-mise-go-manager/) | Go 版本管理迁到 mise(rustup 管理的 Rust 不动——它本身就是 Rust 官方的 nvm 式管理器):mise use -g go@1.27.1 替代 ~/.local/go 手动安装,zshrc 换 mise activate;GOPATH 仍 ~/go 且 Mason 自管 gopls,nvim LSP 零影响;mise 下 go 走 dl.google.com,按约定预注 10809 代理 |
+| 2026-09-12 19:38 | [claude-network-doc-split](./2026-09-12-1938-claude-network-doc-split/) | CLAUDE.md 的 GFW 网络章节(39 行常驻)拆分到 ~/docs/network-access-china.md,原位换 5 行 context pointer:内联只留触发条件(Google/GCP 请求前主动读——GFW 下是挂起不是报错)与 10808 退役护栏,镜像/代理细节单源下沉 |
 
 ## 关于本仓库
 

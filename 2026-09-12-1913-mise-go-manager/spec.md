@@ -27,6 +27,7 @@
 | GOPROXY | `goproxy.cn,...`(保留不动) | 同左 |
 | mise 本体 | 无 | `curl https://mise.run \| sh` → `~/.local/bin/mise`(2026.9.5) |
 | Rust | rustup 1.98.1 stable | 不变 |
+| `~/.claude/CLAUDE.md` | 无 mise 条目 | Preferred CLI tools 小节登记 mise/rustup 管理约定(never install Go by hand;opencode 经 AGENTS.md 符号链接同享) |
 
 关键无害性依据:**GOPATH 默认仍是 `~/go`**(工具缓存/未来 `go install` 落点不变),且 `~/go/bin` 本来为空——gopls/gofumpt/goimports/golangci-lint 都由 Mason 装在自己的 bin(`~/.local/share/nvim/mason/bin/`)里,nvim LSP 链路零影响。
 
