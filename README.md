@@ -94,7 +94,7 @@
 | 2026-09-12 19:13 | [mise-go-manager](./2026-09-12-1913-mise-go-manager/) | Go 版本管理迁到 mise(rustup 管理的 Rust 不动——它本身就是 Rust 官方的 nvm 式管理器):mise use -g go@1.27.1 替代 ~/.local/go 手动安装,zshrc 换 mise activate;GOPATH 仍 ~/go 且 Mason 自管 gopls,nvim LSP 零影响;mise 下 go 走 dl.google.com,按约定预注 10809 代理 |
 | 2026-09-12 19:38 | [claude-network-doc-split](./2026-09-12-1938-claude-network-doc-split/) | CLAUDE.md 的 GFW 网络章节(39 行常驻)拆分到 ~/docs/network-access-china.md,原位换 5 行 context pointer:内联只留触发条件(Google/GCP 请求前主动读——GFW 下是挂起不是报错)与 10808 退役护栏,镜像/代理细节单源下沉 |
 | 2026-09-12 19:55 | [spec-env-backfill](./2026-09-12-1955-spec-env-backfill/) | 存量档案全量回填环境信息(58 个):时间线硬边界(WSL 机器 09-11 才启用,之前皆 Kubuntu 笔记本)+ 关键词指纹(KDE/WSL/VPS/redroid)推断,66/66 spec 均含 `- 环境:` 行;约定放宽为头部行(推荐)或 ## 环境 章节;发现 6 个目录 README 索引缺行(遗留) |
-| 2026-09-13 20:15 | [github-ssh-key-multi-account](./2026-09-13-2015-github-ssh-key-multi-account/) | karirichen 添加 id_rsa 报 "Key is already in use" 而账号列表为空:GitHub 公钥全局唯一,`ssh -T` 问候语直接指出占用者 desmondc9(deploy key 同症状且网页不可见);双账号隔离 = github.com(id_rsa/desmondc9)+ github-karirichen 别名(新 ed25519、gh ssh-key add、IdentitiesOnly);口诀:already in use 先查被谁占用再谈修复;同会话 Mac 的 ~/plans 改追本仓库(原 mac commits bundle 备份,此为本仓库首个 Mac 侧条目;注意此 Mac 活代理口是 10808 而非 10809) |
+| 2026-09-13 20:15 | [github-ssh-key-multi-account](./2026-09-13-2015-github-ssh-key-multi-account/) | karirichen 添加 id_rsa 报 "Key is already in use" 而账号列表为空:GitHub 公钥全局唯一,`ssh -T` 问候语直接指出占用者 desmondc9(deploy key 同症状且网页不可见);双账号隔离 = github.com(id_rsa/desmondc9)+ github-karirichen 别名(新 ed25519、gh ssh-key add、IdentitiesOnly);口诀:already in use 先查被谁占用再谈修复;同会话 Mac 的 ~/plans 改追本仓库(原 mac commits bundle 备份,此为首个在 Mac 上直接记录的新条目(07 月的 Mac 条目系 mac-plans 并入;注意此 Mac 活代理口是 10808 而非 10809) |
 
 ## 关于本仓库
 
