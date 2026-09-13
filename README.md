@@ -96,6 +96,7 @@
 | 2026-09-12 19:55 | [spec-env-backfill](./2026-09-12-1955-spec-env-backfill/) | 存量档案全量回填环境信息(58 个):时间线硬边界(WSL 机器 09-11 才启用,之前皆 Kubuntu 笔记本)+ 关键词指纹(KDE/WSL/VPS/redroid)推断,66/66 spec 均含 `- 环境:` 行;约定放宽为头部行(推荐)或 ## 环境 章节;发现 6 个目录 README 索引缺行(遗留) |
 | 2026-09-13 20:15 | [github-ssh-key-multi-account](./2026-09-13-2015-github-ssh-key-multi-account/) | karirichen 添加 id_rsa 报 "Key is already in use" 而账号列表为空:GitHub 公钥全局唯一,`ssh -T` 问候语直接指出占用者 desmondc9(deploy key 同症状且网页不可见);双账号隔离 = github.com(id_rsa/desmondc9)+ github-karirichen 别名(新 ed25519、gh ssh-key add、IdentitiesOnly);口诀:already in use 先查被谁占用再谈修复;同会话 Mac 的 ~/plans 改追本仓库(原 mac commits bundle 备份,此为首个在 Mac 上直接记录的新条目(07 月的 Mac 条目系 mac-plans 并入;注意此 Mac 活代理口是 10808 而非 10809) |
 | 2026-09-13 22:19 | [singbox-bilibili-dns-stall](./2026-09-13-2219-singbox-bilibili-dns-stall/) | Win 宿主 sing-box 下 bilibili 偶发卡顿:分流无辜(实时连接全 direct),根因是 alidns 裸 UDP:53 交换间歇性卡 7-10s/超时 × bilibili CDN 域名 TTL≈10s 高频重解析,Tailscale MagicDNS 竞速再放大 ×4-8;修复=传输层单变量切 DoH(https://223.5.5.5),浸泡 636/636 <500ms;经验:国内 DNS 上游一律 DoH、短 TTL 域名是 DNS 故障放大镜 |
+| 2026-09-13 23:00 | [win11-usb-kb-mouse-wedge](./2026-09-13-2300-win11-usb-kb-mouse-wedge/) | Win11 外接键鼠集体失灵而内置键鼠正常:设备 MCU 挂死(枚举 OK 但中断输入停发),一次 USB 扰动打挂两设备(Logi 口有 descriptor failed 幽灵记录佐证);重启无效因不断 VBUS,拔插断电复位即愈;排除法全记录(类过滤干净/PnP 全 OK/同口 U盘活/同控制器 JBL 出声);经验:「重启无效拔插有效」= 设备端挂死指纹、枚举 OK ≠ 输入活着 |
 
 ## 关于本仓库
 
