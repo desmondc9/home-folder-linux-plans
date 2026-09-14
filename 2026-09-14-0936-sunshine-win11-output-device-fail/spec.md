@@ -50,6 +50,10 @@
 
 `~/Notebook/Sunshine-Moonlight-串流/05-故障模式诊断手册.md` 遵循「所有故障须有实证证据」而本案根因未验证,**暂不写入**;验证结案后在 05 速查表补 Win11 行(并把 Win11 宿主侧故障从 Linux 特定的排查路径里分节)。
 
+## 后续修正(2026-09-14 09:5x,来自关机慢案的时间线解谜)
+
+同日关机排查([2026-09-14-0953-win11-shutdown-wslservice-hang](../2026-09-14-0953-win11-shutdown-wslservice-hang/))实证:**当晚(00:27)机器根本没有重启**——那次"关机"被 WSLService 挂死拖了 60s 后转换失败,滑入 Modern Standby 整夜睡眠(Power-Troubleshooter:Sleep 00:27:25 → Wake 08:59:06),08:59 唤醒登录后 tray 才创建。故本案"00:27 服务全新启动"的真相是:关机转换中途 Sunshine 被停止后由 SCM 恢复策略拉起,探测失败于**转换/无会话状态**——假设 #1"无人登录时启动"方向正确、机制修正(不是开机自启时机问题,是关机转换态问题)。修复建议不变:登录后 `Restart-Service Sunshine` 验证;若"关机变睡眠"治好后再开机自启,探测应正常。
+
 ## 参考
 
 - LizardByte/Sunshine 已知同类:#1293(远程 headless 启动)、#939(停用某屏后)、#3447(Win 24H2)、#260(指定 dGPU)
