@@ -2,7 +2,7 @@
 
 - 日期:2026-09-20 22:15
 - 环境:WSL2 Ubuntu 26.04 @ yaoshi15pro(目标);数据来源 = 桌面机快照 `8b56d354`(DESKTOP-J7NBNU4,2026-09-19 08:01,内容 = 笔记本 8 个月 + 桌面机一周的**全量超集**)
-- 状态:数据已就位;opencode v1→v2 迁移待服务重启自动触发(见 §5 待办)
+- 状态:全部完成并验证(重启触发迁移成功,843 session)
 
 ## 1. 背景与关键发现(opencode v1/v2 schema 断代)
 
@@ -29,7 +29,7 @@
 | 真库合并 | ✅ 840/29,616/125,410/885 入库,孤儿 0,kv 待迁移态 |
 | MCP | ✅ 4 项恢复,本会话热加载可见 |
 | cursor-agent | ✅ 194 transcripts @ 24 项目目录;`cursor-agent ls/--resume` 可用(CLI 2026.09.18) |
-| 真库迁移触发 | ⏳ 待 `opencode service restart`(见 §5)|
+| 真库迁移触发 | ✅ `opencode service restart` 后自动完成:kv = completed,**session_v2 = 843**(840 历史 + 本机 3),覆盖 840/840,integrity ok;`session list` 已可见 9/11 桌面机历史 session |
 
 ## 4. 教训
 
@@ -41,9 +41,9 @@
 6. zsh 里 `wsl.exe … /tmp/x-*` 无匹配时 nomatch 中止整条命令(连 wsl.exe 都不执行)——通配交给对端 bash
 7. 恢复的登录态可能要求重新登录(机器指纹),属预期(2310 先例)
 
-## 5. 待办(用户操作)
+## 5. 用户操作(已于 2026-09-20 22:45 完成)
 
-- **重启 opencode(关掉重开,或 `opencode service restart`)**:首次启动自动跑 V1Migration(沙箱实测 840 个约 10 秒),之后 `opencode session list` 应见 843 个(840 历史 + 本机 3)
+- 重启已执行(`opencode service restart`):迁移自动完成,重启期间运行中的会话存活,4 个 MCP 重连正常
 - 回滚(如需):`~/Backups/opencode-db-backups/2026-09-20-premerge-v2/opencode.db` 覆盖回 `~/.local/share/opencode/opencode.db`(服务停止状态下)
 
 ## 6. 性能与容量
