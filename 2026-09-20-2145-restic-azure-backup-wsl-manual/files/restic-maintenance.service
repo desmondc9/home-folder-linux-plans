@@ -1,0 +1,13 @@
+[Unit]
+Description=restic prune + integrity check (manual trigger, no timer on this host)
+Wants=network-online.target
+After=network-online.target
+OnFailure=restic-backup-failed.service
+
+[Service]
+Type=oneshot
+Environment=HOME=/root
+Nice=19
+IOSchedulingClass=idle
+ExecStart=/bin/bash -c 'source /root/restic-env && exec /usr/local/bin/restic prune'
+ExecStartPost=/bin/bash -c 'source /root/restic-env && exec /usr/local/bin/restic check --read-data-subset=1/10'
