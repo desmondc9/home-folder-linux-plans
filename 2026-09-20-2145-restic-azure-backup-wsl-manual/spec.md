@@ -40,7 +40,9 @@
 2. 连通性:`restic snapshots` 可见 12 个既有快照,host 分组 = `desmond-yaoshi15proseriesgm5ix0a`(原 Kubuntu 实体机 ×2)+ `DESKTOP-J7NBNU4`(桌面 WSL ×10,其 timer 仍在每日跑)——与本机 `yaoshi15pro` 无冲突;仓库 raw-data 75.421 GiB / 压缩比 1.36x
 3. 钩子试跑:`~/Backups/manifests/` 共 740 行非空、属主 desmond(snap-list 空行 = 本机无 snap,`command -v` 守护分支正常;打捞到 `.sdkman/etc/config`)
 4. dry-run:176,447 文件 / 7.686 GiB 原始 / **would-add 仅 1.236 GiB(580.5 MiB stored)** / 23 秒——与仓库既有块大量去重(home 数据系从仓库迁移而来);精确断言(顶层工具链/凭据目录)全部 0 命中;宽匹配 7 处人工复核均按设计在内(nvim 插件源码树自带 `.cargo/config.toml` ×4、钩子打捞件路径含 `.sdkman` ×3);必含项 `.ssh`/`plans`/`Repos`/`.config/opencode`/`.zshrc`/`.git/config`/`/etc/systemd`/`/usr/local/bin/restic` 全部在场
-5. 首备:用户选择自行执行 `backup-now.sh`;完成后留档:`wsl.exe -u root -- bash -c 'source /root/restic-env && restic snapshots --host yaoshi15pro && restic stats --mode raw-data latest'`
+5. 首备(用户手动触发,2026-09-20 22:07):首次运行快照 `5b66ae4c` 落库(7.687 GiB,整趟 46 秒;本快照实存 2.792 GiB / 压缩比 1.78x,与仓库既有块大量共享),但 forget 阶段 exit 11——仓库有一把 **DESKTOP-J7NBNU4 于 2026-09-13 08:59:11 留下的陈旧锁**(181h 前,storage ID 0ab4baa3)。处理 = 母 WSL 方案同款 runbook:`pgrep` 确认无活进程 → `restic unlock`(removed 1)→ 重跑 service → 快照 `2cade3bb` + forget 完成,`last-backup.txt` 末行 **OK 2026-09-20T22:09:02**。同日双快照在 keep-daily-14 内,无害
+
+**观察与后续**:该陈旧锁源于桌面机 WSL 被中断的操作(时间与桌面机 `2026-09-14-0953-win11-shutdown-wslservice-hang` 吻合);其 backup 走非排它锁不受影响(快照排到 09-19),但其 forget 需排它锁,大概率 09-13 起日日 exit 11——**待办:在 DESKTOP-J7NBNU4 上查 `~/Backups/last-backup.txt` 是否连记 FAIL,若是则同样 unlock 一次即可**
 
 ## 5. 手动运行与维护(本机日常)
 

@@ -16,7 +16,7 @@
 - [x] 钩子试跑:manifests 740 行、属主 desmond;打捞 `.sdkman/etc/config`
 - [x] dry-run 双断言:精确断言(顶层工具链/凭据目录)全 0;宽匹配 7 处人工复核 = 按设计在内(nvim 插件源码 `.cargo` ×4 + 钩子打捞件路径含 `.sdkman` ×3);必含项全在场
 - [x] spec.md 回填(验收结果);`files/` 证据链副本(凭据除外)
-- [ ] 首备:用户自行执行 `backup-now.sh`(选择不代跑);结果可按 spec §4.5 留档
+- [x] 首备(用户手动触发,22:07):`5b66ae4c` 落库(46 秒,实存 2.792 GiB / 1.78x);forget exit 11(桌面机 181h 前的陈旧锁)→ unlock → 重跑 `2cade3bb` + forget 完成,`last-backup.txt` OK 22:09:02(详见 spec §4.5)
 
 ## 关键实现点(复用的教训)
 
@@ -35,6 +35,18 @@
 | 手动入口 | `sudo systemctl start` | `wsl.exe -u root` 优先,sudo 兜底 |
 | 排除表 | 原样 | + `/home/desmond/.restic` |
 | 其余 | — | 凭据/钩子/forget 策略/service 内容原样复用 |
+
+## 首备事故时间线(2026-09-20 22:07,与母 WSL 方案 09-11 事故同型)
+
+1. 22:07 用户 `backup-now.sh`:backup 阶段成功(`5b66ae4c`,46 秒)→ forget 阶段 exit 11,报仓库被 PID 3145@DESKTOP-J7NBNU4 锁定,锁龄 181h(2026-09-13 08:59:11 所留)→ OnFailure 记 FAIL
+2. `pgrep -x restic` 确认本机无活进程 → `restic unlock`(removed 1)→ 重跑 service
+3. 22:08:38 快照 `2cade3bb` + forget 完整跑完,`last-backup.txt` 记 OK(22:09:02);同日双快照保留策略内
+4. 根因在桌面机(锁创建时刻与其 WSL 关机挂起事件吻合):其 backup 非排它锁不受阻,forget 排它锁大概率日日失败 → 待办见 spec §4.5 观察段
+
+### 本次新增教训
+
+1. **跨机陈旧锁会隔空打新节点**:共享仓库的第三台机首备即被另一机的陈旧锁打出 exit 11;共享仓库环境下 forget/prune 失败先 `restic snapshots --json` 看锁归属再 unlock
+2. **监视脚本等待循环的竞态**:`systemctl start --no-block` 后服务仍处 failed 态的一瞬,`is-active --quiet` 返回非零使循环立即假退出——等待循环首检前应 sleep 几秒(或对 activating 也计为在跑)
 
 ## 用户手动动作(提醒)
 
