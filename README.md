@@ -103,6 +103,7 @@
 | 2026-09-17 09:15 | [ipv6-ax6000-ra-outage](./2026-09-17-0915-ipv6-ax6000-ra-outage/) | 国内站全挂而 sing-box 代理的国外站正常:根因=小米 AX6000 固件两段式 v6 故障(PD 前缀轮换不跟随→黑洞;重启后 odhcpd RA 服务不复活而 DHCPv6 活着),电信 ISP/光猫/RB03 卫星全排除(路由器 API 自检全绿+客户端 DHCPv6/NDP 通但 siteprefixes 空=RA 半死指纹,set_wan6 软切换无效唯冷启,RA 恢复需 ~100s);误导机制=sing-box TUN 本地假握手令 Happy Eyeballs 失效;已建客户端免疫层(AAAA reject+静态 DNS+accept-dns=false,浏览器永远 v4 而 Tailscale 走 IP 无恙);根治路线备选(Omada/UniFi/Flint2+小米降级AP),当前靠手动重启;附小米 RA72 API 登录算法与 WSL mirrored 取证陷阱(经 TUN 的 ping 假应答/组播盲区) |
 | 2026-09-17 21:33 | [win11-power-defaults-restore](./2026-09-17-2133-win11-power-defaults-restore/) | 用户记忆"被改成 legacy 电源管理"核查为虚——睡眠从来是 Modern Standby(固件仅支持),"legacy"实为 09-14 USB 楔死事故缓解(关选择性暂停+禁快速启动);因当日驱动精灵大批量更新 Intel 驱动(DTT/ME/GNA/LPSS/芯片组INF/Wi-Fi,另有 hpygid19 误推存疑),恢复默认设置并复测:首轮 2m53s 小睡唤醒全 OK 但无 196/205(危险窗口未开,弱证据),**判定待过夜待机晨间复测**;TB4 栈本身未换(仍 2023 Intel 驱动+微软 inbox xHCI),且 OS 已 23H2→25H2 两级跳,归因需分开记;附 WSL 提权改电源设置/解析 setupapi.dev.log 时间线套路 |
 | 2026-09-20 15:42 | [opencode-global-agents-audit](./2026-09-20-1542-opencode-global-agents-audit/) | OpenCode V2 global `AGENTS.md` 全量审计：核对官方加载语义与本机工具/路径，中文正文改为英文主文+术语中文辅注，修复 worktree 基线、submodule pin、计划命名、测试数据脱敏、squash 清理及 ADO 路径/权限；归档修订后快照与 SHA-256 manifest，凭据内容不入库 |
+| 2026-09-22 09:12 | [windows11-powershell-fzf](./2026-09-22-0912-windows11-powershell-fzf/) | Win11 PowerShell 装 fzf(winget)+ PSFzf(CurrentUser):`$PROFILE` 绑 `Ctrl+T`(文件插入)/`Ctrl+R`(历史命令)/`Alt+C`(模糊 cd);管道可直接 `Get-ChildItem -Recurse \| fzf` 等;快捷键无反应时先 `Import-Module PSReadLine` 再 `Import-Module PSFzf`(加载顺序坑) |
 
 ## 关于本仓库
 
