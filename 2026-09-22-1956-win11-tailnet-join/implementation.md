@@ -49,6 +49,7 @@
 - [x] netcheck ✅ UDP true;IPv6 native(电信 240e:);Nearest DERP = bwg-derp **130.6ms**(基线 131.4ms 同量级)
 - [x] WSL 回归 ✅ localhost 互通 / `podman ps` 正常 / 外网 200 / **`ssh desmond@100.64.0.4` 经 mirrored 直达 tailnet**;ping .4 0% 丢包(~143ms)
 - [x] 回退开关登记 ✅ `tailscale down`(停用) / `sc stop Tailscale`(停服务) / 删 `/etc/nginx/sites-enabled/headscale-new`(下线新域名) / CF 删记录 —— 均不影响存量节点
+- [x] 真实出口客户端验收 `[用户执行]` ✅ 2026-09-22 Android 手机选择 `yaoshi15pro-win` 出口验证成功(spec 验收 #5 的最后一环;~8Mbps 用户态转发天花板容量说明仍适用,轻量浏览场景)
 
 ### Task 6: 文档收尾 ✅ 2026-09-22
 
