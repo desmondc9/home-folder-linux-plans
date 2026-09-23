@@ -77,10 +77,55 @@ neotest(全局映射)与 jdtls(java buffer 内覆盖 `tt`/`tr`/`tT`)并存;`td`(
 
 ## Follow-ups
 
-- [ ] pom 修改随 `2026-09-21-1726-lazyvim-java-lsp` 分支正常走 PR;CI 无影响(代码 0 处 preview 使用)
+- [x] pom 修改以正式 PR 落库:backend **PR 18213**(drop preview,`f422af25d4`)+ umbrella **PR #18222**(pin 提升)均已合并;本地收尾见下方 2026-09-23 执行记录
 - [ ] 关注 #1692 后续(已订阅);若维护者需要,可提供 m2e 映射层面的进一步 dump
 - [ ] 等 mason registry 把 jdtls pin 到 ≥1.61 后,`:Mason` 更新即与手动覆盖对齐
 - [ ] (可选)等上游修复后,评估是否恢复 `--enable-preview`(目前无任何功能损失)
+- [ ] (可选)`origin/feature/pin-backend-drop-preview-flags` 远程分支仍留在 ADO,如需清理在 PR 页面删除
+- [ ] (建议)主仓 `.vscode/settings.json` 的 `**/.worktrees/**` 排除目前是本地未提交修改,值得走一个 umbrella PR 让全组受益
+
+## 2026-09-23 追认:VSCode 侧同病同源(inline Run/Debug CodeLens 消失)
+
+用户次日报告 VSCode(Windows 主机 + WSL remote)打开同一项目时,test 方法上方没有 Run/Debug CodeLens。排查确认**同一条根因链,无需新假设**:
+
+1. **机制同一**:VSCode 的测试 CodeLens 由 Test Runner for Java(`vscjava.vscode-java-test` WSL 侧 0.46.0)提供,调用的是同一个 jdt.ls 内嵌插件 `com.microsoft.java.test.plugin` 的 `vscode.java.test.findTestTypesAndMethods`——与 nvim-jdtls 完全同一条服务端路径。redhat.java 1.56.0 + TR 0.46.0 满足"≥1.55/0.46 仍坏"的已知条件。
+2. **实锤签名**:worktree 窗口(`workspaceStorage/57d0b057…/redhat.java/jdt_ws/.metadata/.log`)里存在 `Preview features enabled at an invalid source release level 21, preview can be enabled only at source level 26; code: 2098258`,resource 指向 `.worktrees/2026-09-21-1726-lazyvim-java-lsp/backend/src/main/java/…`——即 #1692 的 ECJ 静默降级在本机 VSCode 的直接证据。
+3. **为什么修复后仍坏(两层)**:
+   - 修复已正式落库:backend 子模块 PR 18213(drop preview,`f422af25d4`)+ umbrella PR #18222(pin → `2cb92732b1`)均已合并;但**本地主仓落后**(umbrella main 落后 origin/main 34 commits,backend 检出停留在修复前的 `9d02357cfd` 本地 develop)→ 主仓窗口的 pom 仍带 `--enable-preview`(L736)。
+   - worktree 窗口的 jdt_ws 工程状态是 09-21 20:08/20:28(修复前)导入的,pom 事后改了,但该窗口的 Java LS 再没启动过(client.log 停在 09-21)→ 陈旧映射未刷新。
+4. **修复**(主仓):`git pull --ff-only origin main && git submodule update backend` + VSCode "Java: Clean Java Language Server Workspace"(清两个陈旧 jdt_ws),重开窗口等 import 完成。
+5. **状态更新**:worktree `2026-09-21-1726-lazyvim-java-lsp/backend` 里未提交的 ` M pom.xml` 手动修复自此冗余(上游已正式修复);Follow-up #1("pom 修改随分支走 PR")以 PR 18213 + #18222 的形式完成,可勾销。
+
+### 最终确认(2026-09-23 09:49-10:00,VSCode 自愈复现)
+
+用户今早在同一 worktree 窗口重开 backend,09:49 jdt.ls 起了全新会话(扩展 redhat.java 1.56.0 实际捆绑 **jdt.ls 1.61.0-SNAPSHOT 2026-09-02 构建**)——该会话以修复后的 pom 重新导入,**全程 0 条新 preview 错误**,test discovery 恢复 → test 方法 gutter 出现绿色箭头(Run/右键 Debug)。诊断闭环:根因唯一且修复有效。
+
+时间线澄清:昨天用户看的是 worktree 窗口没错,但 (a) 该工作区 jdt_ws 在 9-22 全天无新会话(Java LS 停在 9-21 20:28 的中毒状态);(b) pom 修复 9-22 ~19:00 才落地。今早重启窗口 → 新会话吃到干净 pom → 恢复。**"重启/重开窗口"本身是修复生效的必要一步**。
+
+## 2026-09-23 收尾执行记录(含计划修正)
+
+### 关键源码结论:exclusions 匹配语义(决定设置放置)
+
+读 jdt.ls 上游源码(`BasicFileDetector.java`,`MavenProjectImporter.applies()` 调用):`java.import.exclusions` 的 glob 由 `FileSystems.getPathMatcher("glob:"+pattern)` 对 **walkFileTree 遍历到的目录绝对路径**做匹配,命中即 `SKIP_SUBTREE`。推论:
+
+- **User 全局放 `**/.worktrees/**` 会炸掉"直接打开 worktree backend"的窗口**——工作区根自身路径就含 `.worktrees/`,整棵树被跳过 → Maven 工程不导入(退化为 invisible project,无依赖)。
+- 唯一安全位置:**umbrella 的 `.vscode/settings.json`(工作区级)**——只有以主仓为根的窗口读它,恰好是唯一需要排除 `.worktrees` 的场景。注意 settings.json 设置该键会**整体覆盖默认值**,必须带上 4 条默认再追加。
+
+### 执行清单(实际)
+
+| 项 | 结果 |
+|---|---|
+| 主仓 backend pom | ✅ 外科手术:删 compilerArgs 3 行(与 worktree 同型);surefire 运行时 flag 保留 |
+| worktree pom 手动修复 | ✅ **保留不丢弃(计划修正)**:该 worktree 分支 pin 的 backend `dd604f51a5` 仍是修复前 commit,丢弃本地编辑会把 `--enable-preview` 带回来,毒化正在使用的 VSCode 窗口。若要真正干净,应把 `feature/lazyvim-java-lsp` rebase 到 main(其 pin 已含修复)后再丢 |
+| umbrella main 同步 | ⛔ **跳过(计划修正)**:主仓实际有 33 处本地修改(deploy/seed 脚本、5 个子模块指针、load-test 计划等),其中 5 处与 incoming 重叠(`backend`、`web`、`endpoints`、`release.sh`、`load-test-plan.md`);stash+pull+pop 需在在途工作上做冲突手术,而 pull 的关键 payload(backend pin)因 backend 内有已暂存的用户工作(`BarCodeCalculator.java` 重构)本就无法应用。收益/风险不成立 |
+| 子模块更新 | ⛔ 全部跳过(同上,各子模块均有本地修改,是用户活跃工作区) |
+| 已合并 worktree 清理 | ✅ `2026-09-22-2204-pin-backend-drop-preview` remove(含子模块需 `--force --force`;移除前确认 umbrella+backend 均无未提交内容)+ 本地分支 `feature/pin-backend-drop-preview-flags` 删除(真 merge,-d 成功);远程分支留 ADO |
+| `.vscode/settings.json` | ✅ 追加 `java.import.exclusions`(4 默认 + `**/.worktrees/**`);该文件被 git 跟踪 → 成为本地未提交修改,建议后续走 PR 提交 |
+| 主仓窗口陈旧 jdt_ws | ✅ `workspaceStorage/060f6a69…/redhat.java/jdt_ws` 删除(日志与 ss_ws 保留;删前确认无 java 进程;注意 ps 自匹配误报要用 `awk '/\/bin\/java/ && /060f6a69/'` 这种双条件) |
+
+### 用户工作区状态(未动一字节)
+
+主仓 backend 的暂存 `BarCodeCalculator.java` 重构、`entrypoint.sh` 权限位、未跟踪 `systemfile/`、umbrella 的 33 处本地修改、其余 worktree——全部保持原样。
 
 ## 方法论小结
 
