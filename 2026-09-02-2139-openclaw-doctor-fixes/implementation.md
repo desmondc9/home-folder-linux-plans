@@ -630,3 +630,137 @@ kimiapiHost,token)→ promptTimeoutMs=1800000 → 重启 gateway。
 - 验证:127.0.0.1:1080 在听;cninfo 主页经代理 HTTP 200 (0.65s,直连12s超时);真实 API 查询成功(POST hisAnnouncement/query,需先 GET 主页拿 cookie + XHR 头,平安银行 2025 年报列表返回,含 PDF adjunctUrl)
 - 用法:curl 走 socks5h://127.0.0.1:1080(注意 bash 变量存 --proxy 会整词展开报错,用 ALL_PROXY 环境变量);依赖笔记本在线(关机即断,降级=直连超时)
 - 三市场财报通道现状:A股=代理✓ 美股SEC(XBRL API)直连✓ 港股披露易直连✓
+
+# 追加记录(2026-09-07 22:35)— 晨报双通道:webchat 转发任务
+
+- 需求:用户在 webchat 主会话(agent:main:openai-user:6a9e3a48f15f902727dc27db)要求晨报「发送到这里」;微信通道(已验证链路)完全不动,只做增量。
+- 改动1(07:15 主任务 c93a7761 提示词,openclaw cron edit --message):步骤7新增「同时用 write 把简报全文原样保存到 日报/YYYY-MM-DD.简报.md(不加小节头)」;本目录存档副本《研究报告Kimi晨报-任务提示词.md》同步更新。
+- 改动2(新建 automations 7b1a652a「晨报-webchat送达」):cron `50 7 * * *` Asia/Shanghai;sessionTarget=上述 webchat 会话(创建时绑定);delivery=announce → 落会话历史,webchat 实时可见;model zai/glm-5.3;tools=[read,exec];contextMessages=0。逻辑:简报.md 存在→最终回复=全文原样;仅「简报已发」标记存在(未落盘异常)→一行告警;两者皆无(晨报未跑)→NO_REPLY 不产噪音(看门狗兜底补跑)。
+- 回填:今日(09-07)简报全文从 cron 会话 transcript(sessions_list kind=cron → agent:main:cron:c93a7761 的末条 assistant text)取回,write 落盘 2026-09-07.简报.md(9921B)。**坑:`openclaw cron runs` 的 summary 字段约 4KB 截断,不能作全文来源**。
+- 时序依据:主任务今晨 07:15→07:19:19 完成(259s);timeoutSeconds=1800 → 最晚 07:45 结束;伴生 07:50 留 5min 余量。
+- 验证:创建后 automations get 复核绑定会话与 cron 表达式;今日已手动 force-run 测试(本聊天收到今日简报=通过);09-08 07:50 首次例行跑 QA。
+
+# 追加记录(2026-09-08 08:00)— 微信通道退役,报告管线投递全量切 webchat
+
+- 背景:用户 09-07 23:41 禁用微信 channel(网关自此零已配置 channel)。09-08 07:15 晨报主任务对死通道 announce 仍报 delivered=true——实为 fallback 落入不可见 cron 会话,用户侧无感知;07:50「晨报-webchat送达」正常提交到本聊天(用户 07:59 问「没收到」时消息已在会话里)。
+- 晨报 c93a7761:delivery → none(--no-deliver + 清除死微信 channel/to/account);提示词步骤7措辞改「微信通道已退役,07:50 webchat 转发任务负责送达」,顺修 07:35→07:50 笔误。
+- 周报 d1643cb0:delivery → none + 清除微信引用;步骤6措辞同步(其本就有步骤5落盘 周报/YYYY年第N周-趋势综述.md)。
+- 新建 d1d64a65「周报-webchat送达」:周五 08:20,sessionTarget=current(绑定本会话),读周报文件原样转发,缺失→NO_REPLY。
+- 看门狗 c43b6520:--session current --session-key <本会话> + 清除微信引用 → 告警改落本聊天(list 显示 announce -> current session,与已验证的转发任务同形态)。
+- 坑:① 零 channel 下 announce 的 channel 解析失败但 fallbackUsed 会话提交仍 delivered=true——转发任务即依赖此路径,两日验证 OK;② CLI edit 只给 --session current 会得到 sessionKey=null 的悬空 current,必须补 --session-key 显式绑定;③ runs 历史 summary ~4KB 截断(昨日已记)。
+- 终态:晨报 07:15(生成+落盘,不投递)→ 07:50 webchat 转发;周报周五 07:45(生成+落盘)→ 08:20 转发;看门狗 15m 自愈+告警落本聊天。09-09 07:50 例行 QA;09-11(周五)08:20 周报首验。
+
+# 追加记录(2026-09-08 09:00)— 应用户要求关闭 Control UI
+
+- 改动:openclaw.json 设 `gateway.controlUi.enabled=false`(直接 jq 写文件,未用 config set 以避免可能的即时重启杀掉进行中的会话轮;文件权限保持 600)。
+- 生效方式:systemd-run --user --on-active=75s 延迟重启定时器(脚本先 `pgrep -x llama-server | xargs -r kill` 排掉排水期阻塞,再 `systemctl --user restart openclaw-gateway.service`),定时器 09:01:59 触发,避开本回复投递窗口。
+- 不受影响:LibreChat 用的 OpenAI 兼容接口(gateway.http.endpoints,独立开关)、晨报/周报转发任务(会话提交,不依赖 UI)、Android 客户端 wss 端点(nginx 18790 → 18789,node 协议非 UI)。Control UI 会话页链接自此 404/不可用。
+- 回滚:`jq '.gateway.controlUi.enabled=true'` + 重启网关。
+
+# 追加记录(2026-09-08 12:00)— 2026.9.2 升级失败全程与回滚（重大事故复盘）
+
+## 事故时间线
+- 10:38 用户拍板升级 2026.8.2→2026.9.2；npm 装好、CLI 验证 2026.9.2
+- 10:44 新版起跑：16 插件无 openclaw-weixin（微信断）；插件列表显示 disabled 但配置 enabled=true，无任何加载错误日志（静默失效）
+- 10:57 plugins install --force（generation 目录机制）→ 重启 → 仍不加载
+- 10:57-11:12 三轮回滚 8.2 全被翻回 9.2（npm 日志 11:02/11:31 两次 9.2 安装非我发起；疑似 9.2 的插件代/自修复机制，未确证）；期间 dist 目录半新半旧导致运行实例 exec 工具 ENOENT
+- 11:12 systemd 瞬态单元降级成功（disk=8.2）→ 但又被翻回 → 11:38/11:46 两轮 9.2 实例 weixin 仍不加载（含 11:40 彻底 uninstall+clean install+enable 全套）
+- 11:50 终极回滚单元：停网关→npm 8.2→3分钟15秒间隔翻版监测（抓现行）→启动；监测结果待查 /tmp/rollback2.log
+
+## 教训（重大）
+1. **升级前必须验证关键插件兼容**：唯一 IM 通道（微信）绑在插件上，插件静默失效=用户完全失联65分钟+；升级窗口应先 channels status 冒烟再切流量
+2. **2026.9.2 的插件"generation"机制与 weixin 2.4.8 不兼容**（clean install+enable+restart 仍不加载，无报错）——等上游适配后再升
+3. **systemd --user 瞬态单元是重启风暴中的可靠执行原语**：systemd-run 的单元不依赖网关进程树，npm/重启链不会被 SIGTERM 连锁杀死
+4. **kill -9 主进程是排水卡死的唯一速效药**（9.2 排水反复超过 5m30s 超时且 systemd SIGKILL 报 Invalid argument）；先 kill -9 MainPID 再等
+5. **npm 装完后 exec 工具报 dist/*.js ENOENT = 运行实例与磁盘版本错位**，重启即愈；诊断时先 jq package.json 看磁盘真版本
+6. npm install-scripts 警告（koffi/tree-sitter 等被拦）未造成实际故障，但升级命令应带 --allow-scripts 或先 npm config set
+
+## 待办
+- 验证 rollback2.log（翻版监测是否抓到/8.2 是否站稳）+ 微信恢复 + 账号是否需重扫码
+- 给 openclaw 上游提 issue：2026.9.2 插件静默不加载无错误日志
+- LibreChat invalid tool configuration 未解（升级动机作废），继续用关闭联网搜索规避
+
+## 追加(09-08 15:20) 微信插件彻底停用(用户拍板)+ 铁律确认
+- 用户指示「停用微信插件」——实际状态:已完全卸载(14:50 净化恢复清了全部插件目录+注册记录,15:16 验证 Plugin not found,配置段也已清)
+- 微信通道下线保持;用户经 LibreChat 交流不受影响
+- 用户铁律已入 MEMORY.md 第15行:agent 永不通过对话变更 openclaw 本体版本;回 8.2 由用户终端执行
+- 翻版监视器(oclaw-flip-watcher, /tmp/flip-watcher.log)15:08 起 9.2 稳定无翻转——翻转怪疑似只在 8.2 存在时触发
+- 恢复路径(待用户将来拍板):用户 npm 装 8.2+重启 → agent 重装 weixin 插件(v2.4.8)+恢复 channels 配置(replyProgressMessages=false+blockStreamingCoalesce)+检查登录态(可能需扫码)
+
+# 追加记录(2026-09-13 09:38)— web search 主提供商切换 searxng→tavily
+
+- 背景:searxng 实例连续多日返回污染结果(晨报扫描日志+本会话多次实证,MDN 无关页),用户要求 tavily 为主、searxng 保留为辅。
+- 过程:按 acpx-agent-dispatch 规程派发 opencode exec——它完成了状态核验,但读取 ~/.tavily/credentials.jsonc 被其自身权限策略拒绝(退出码 5,预期内:非交互策略拦凭证类读取,skill 已记载该模式);密钥接线按规程兜底由主会话文件到文件完成。
+- 改动:tools.web.search.provider=searxng→tavily;plugins.entries.tavily.config.webSearch.apiKey 写入(37 字符 tvly-,明文存于 600 权限的 openclaw.json);searxng 条目原样保留(手动切回:provider 改回 searxng)。备份 openclaw.json.bak-20260913-093748。systemd-run 延迟 75s 重启网关生效。
+- 注:web_search 无文档化的查询级 fallback 链;「为辅」= searxng 保持已配置状态,需要时一行命令切换。opencode 权限策略对凭证文件的保护行为符合预期,无需修 skill。
+
+# 追加记录(2026-09-13 13:25)— tavily 深度检索优化
+
+- 用户要求"精确+有深度"的搜索。源码核实:managed web_search 通道 schema 仅 query+count(描述原文即"Use tavily_search for Tavily-specific options like search depth"),无配置级 depth 默认值;深度/主题(topic: general|news|finance)/域过滤/advanced 抽取只存在于显式工具 tavily_search / tavily_extract。
+- 改动:agents.entries.main.tools.alsoAllow += ["tavily_search","tavily_extract"](备份 openclaw.json.bak-20260913-13xxxx;延迟 75s 重启)。生效后主会话研究型检索改用 tavily_search(search_depth=advanced, topic 按需)+ web_fetch 深读两段式;扫描任务主搜索仍为 zai web-search-prime,tavily 为兜底,credit 消耗可控(advanced=2 credits/次)。
+
+# 追加记录(2026-09-14 21:15)— 新增 IPO 周报流水线(用户三轮设计讨论后定稿)
+
+- 需求:三市场(A股/港股/美股)IPO 周报——30 天窗口内标的全量建档(不分级)、1-12 月递表池一行清单、下周 IPO 日历、撤回监控、新股表现回顾、上市前融资史;SPAC/借壳/分拆一句话简讯;纯研究视角;追加式更新。
+- 关键设计决议:窗口从 12 个月缩至 1 个月(数据量降一个量级,且定价/日历信息恰好在此窗口硬化);分层被否,改时间窗分层;保留 1-12 月递表池清单作广撒网雷达。
+- 目录:/home/desmond/reports/IPO观察库/(周报/ 子目录+标的档案文件夹,首收录日为时间戳前缀)。
+- 任务:cron 6d42f0ed「IPO周报生成」周五 06:30 Asia/Shanghai,isolated,delivery none,zai/glm-5.3,timeout 14400s;cron 9b51b7db「IPO周报-webchat送达」周五 09:00,current=本会话,announce,pacing 20m-1h(无哨兵→next_check 30m 重试至 13:00,超时一行告警)。提示词存档:IPO周报-任务提示词.md。
+- 数据源探测(2026-09-14):沪深北交易所 200、披露易 302(需跟随重定向)、EDGAR 403→合规 UA(声明联系方式)后 200——UA 要求已写入提示词。
+- MEMORY.md 已加「IPO周报」取报惯例;首跑 2026-09-18(周五),生成后例行 QA(档案数/下周日历/简报三方核对)。
+
+# 追加记录(2026-09-19 08:35)— 报告投递切回 Kimi 通道（用户 Kimi 恢复）
+
+- 用户 09-19 08:28 经 kimi-claw 归来（账号/会话 1a0b6ef3-4fc2-8dbe-8000-09f5c2bc951c，通道 enabled+running，用户自行恢复）并指示「日报和周报发到这个 channel」
+- 切换四项：晨报 c93a7761、周报 d1643cb0 → delivery kimi-claw/裸 UUID（沿用 09-05 教训：kimi 桥接拒绝带前缀目标）；看门狗 c43b6520 announce、扫描 72bbfb86 failureAlert 一并迁移（原 weixin 通道 09-08 起死亡，告警无人可见——迁移纯改善，已向用户披露）
+- 断供期（09-09→09-19 共 11 天）日报/周报全部照常生成在盘、零缺勤，仅未送达；今日（09-19）晨报改由 message 工具直接补发
+- 检查微信插件：仍保持卸载状态未动（用户未拍板恢复）
+
+## 追加(09-19 16:32) VPS 安全加固落地（用户经 Kimi 拍板）
+- ufw 精简：关闭 6000(X11)/1022(死规则)/45575(后经用户确认恢复——sing-box 入站)；最终保留 22/80/443/45575/6001/7000(frps)/tailscale UDP 三件套/网关 tailnet 专属规则
+- SSH 密码认证关闭：sshd_config.d/00-hardening.conf（PasswordAuthentication no+KbdInteractive no，00- 前缀压过 cloud-init 的 50- 文件——sshd Include 首匹配生效）；带 15min 自动回滚安全网流程；16:30 用户实测密钥登录成功，16:32 取消回滚——**永久生效**
+- 流程教训：上一轮(11:26)因用户未在窗口内确认被安全网自动回滚——「带自动回滚的应用→即时用户验证→取消回滚」三步流程对 SSH 类变更是对的，但用户确认环节要盯紧
+- 遗留可选项：fail2ban(优先级已降——密码认证已关，爆破成无害噪音)、openclaw.json 权限 600 修复、52 个待升级包、frps(6001/7000) 鉴权强度核查
+
+# 追加记录(2026-09-21 10:15)— 明文密钥清理(用户拍板「全部执行」)
+
+## 完成(已验证)
+- TAVILY_API_KEY → secrets store(secret 类,--allow-host api.tavily.com 出口限定);配置字段替换为 SecretRef {source:store,provider:default,id:TAVILY_API_KEY};网关重启后真实 tavily_search 调用成功(1.1s 返回)——store 代换端到端可用
+- MINIMAX_CODE_PLAN_KEY → store(env 类);.env 明文行已清除(备份 .env.bak-20260921)
+- openclaw.json 权限修复 600(09-19 审计发现项顺带闭环)
+- secrets audit:plaintext 4→2;备份 openclaw.json.bak-20260921-secrets-migration
+
+## 未完成(2 处,需用户终端操作)
+- profiles.zai:default.key 与 profiles.moonshot:manual.key(sqlite auth profile):`openclaw secrets configure` 强制交互式 TTY(实测 CLI 报错),agent 无法代办;二者位于状态库内(权限保护,暴露面小于配置文件);用户终端跑 `openclaw secrets configure` 引导完成(带 preflight)
+
+## 教训
+- secrets store set 用 --value-file -(stdin 管道)实现文件到文件无暴露搬运;--value 仅 env 类且会进命令行历史
+- 2026.9.2 网关排水病:重启后 deactivating 超 5m30s 仍不切,kill -9 MainPID 仍是唯一速效药(本次又复现一次)
+
+# 追加记录(2026-09-21 11:05)— secrets 终局：PTY 自动驱动 configure 全程
+
+## 过程
+- exec pty:true + write(\x1b[B/\r/文本) 成功驱动 secrets configure 交互式 TUI——「无TTY不能跑」被伪终端解决，全程 20+ 步菜单零失误
+- 值搬运(zai 49字符/moonshot 72字符)经 python 只读 sqlite→600权限临时文件→store set --value-file→shred 临时件，明文全程未显示
+- 映射创建成功：zai:default→ZAI_API_KEY(api.z.ai)、moonshot:manual→MOONSHOT_API_KEY(api.kimi.com)；preflight targets=2 changed=false；apply 报「no changes」——**该版本工具对已存在明文 profile 只登记映射不重写字段**（半成品），audit 仍 plaintext=2
+
+## 最终状态
+- 配置文件/.env 明文：清零 ✓（tavily SecretRef 验证可工作）
+- store：TAVILY/MINIMAX/ZAI/MOONSHOT 四把全入库（secret 类+allow-host）
+- 残留：zai/moonshot 明文副本在 openclaw.sqlite（600权限状态库，非标准路径）——记为已知项，待上游修 profile apply 或用户从控制台重新生成密钥彻底轮换
+- 应急副本：~/.openclaw/.migration-breakglass（600，两把key各一行）——store 只写不读，这是唯一可恢复副本；用户确认稳定后可删
+
+## 技能沉淀
+- PTY 交互自动化：exec(pty:true) + process write(原始转义序列 \x1b[B=↓ \r=Enter)；send-keys 的 cursor-key 模式检测常卡，write 更可靠
+- clack TUI 菜单计数要先 poll 读全菜单再数 down 次数（新条目会插入列表）
+
+# 追加记录(2026-09-24 08:35)— 晨报周报交接(Kimi 群 ClawMeeting)·09-25 影子跑证据包一次性任务
+- 背景:群主在 Kimi 群 ClawMeeting 定案,晨报/周报两条流水线交 KimiClaw 执行;已交付《晨报周报交接清单-已填写.md》(~/.openclaw/workspace/kimi-group-chat/ClawMeeting/),含四 job 配置/流程/坑/历史样本/验收方式
+- KimiClaw 定 09-25(周五)影子跑验收,要求提供四个 job 的 run_id/session_key/落盘路径/delivered;为此建一次性 job 649c78f1(at 2026-09-25 08:35 Asia/Shanghai,isolated,timeout 600s,tools read+exec+write,delivery none)
+- 该 job 汇总 c93a7761(晨报生成)/7b1a652a(晨报转发)/d1643cb0(周报生成)/d1d64a65(周报转发)+看门狗 c43b6520 的运行证据,write 到群目录 09-25证据包.md,再 exec kimiim-cli send-message 发主群(chat_id 1a0d0c70-6792-8369-8000-0cf5d9b2bb12);kimiim 失败重试一次,证据文件无论如何落盘
+- 坑:automations create 默认 delivery={mode:announce, channel:last},一次性静默任务会往 last 渠道投最终回复;需显式 edit --no-deliver --clear-channel --clear-to --clear-account,已改并验证(nextRunAtMs=2026-09-25 08:35 CST)
+- 提示词存档:本目录 09-25交接证据包-任务提示词.md
+- 待协调者定:①上游 06:00 扫描+看门狗是否随迁 ②转发 job(绑定 webchat 会话)是否交接 ③切换日期
+
+## 追加(2026-09-24 08:40)·协调者拍板全量交接
+- 08:33 协调者三决定:①扫描 72bbfb86+看门狗 c43b6520 随迁(KimiClaw 全量接手) ②转发送达交接,验收含 delivered=true ③切换=影子跑通过次日(09-26 起 KimiClaw 正式跑,我侧六 job 停用不删、配置留到 10-02 回滚兜底,09-25 复盘发群验收)
+- 交接清单已补 §7:扫描 job(0 6,14400s,禁子任务派发,哨兵,ls 硬校验)+看门狗三件套(探针/trigger 内嵌 job id 需 KimiClaw 重建后改指向/执行器);证据任务 649c78f1 提示词已改为五个 job(含扫描)并 automations edit 生效

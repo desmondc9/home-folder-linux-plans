@@ -9,6 +9,12 @@
 - 追加4: 2026-09-03 上午·二 opencode 代跑 doctor 体检:即修 openclaw.json 权限 664→600 与两个 workspace skill 的 frontmatter;owner 配置/qwen·trae 遗留目录/AGENTS.md symlink 待用户拍板(见 implementation.md 追加记录)
 - 追加5: 2026-09-03 上午·三 执行 doctor 三项拍板:ownerAllowFrom 双渠道配置(重启生效)、qwen/trae 遗留目录清理(牵出 sqlite 句柄 fatal 教训)、AGENTS.md 实体化(bootloader 可读,20000 字符截断注入)(见 implementation.md 追加记录)
 - 追加6: 2026-09-03 上午·四 创建定时任务「每日全球机构研究报告扫描」(automations 72bbfb86,0 6 * * * Asia/Shanghai,isolated,announce→kimi-claw 私聊;产出 /mnt/agents/output/研究报告库/;提示词存档于本目录,见 implementation.md 追加记录)
+- 追加7: 2026-09-07 晚·晨报双通道:主任务提示词加「简报落盘 日报/*.简报.md」+ 新建 07:50「晨报-webchat送达」(automations 7b1a652a,绑定主 webchat 会话,announce 落会话历史;runs summary ~4KB 截断坑)(见 implementation.md 追加记录)
+- 追加8: 2026-09-08 晨·微信通道退役后管线全量切 webchat:晨报/周报 delivery→none(纯生成+落盘),新建周五 08:20「周报-webchat送达」(d1d64a65),看门狗告警绑定本聊天;坑:零 channel 下 announce fallback 会话提交、--session current 需配显式 --session-key(见 implementation.md 追加记录)
+- 追加9: 2026-09-08 09:00·应用户要求关闭 Control UI(controlUi.enabled=false,delayed-restart 定时器生效;LibreChat/OpenAI 接口与转发任务不受影响)(见 implementation.md 追加记录)
+- 追加10: 2026-09-14 晚·新增 IPO 周报流水线:三市场 30 天窗口全量建档+1-12 月递表池清单+下周日历,周五 06:30 生成(6d42f0ed)+09:00 webchat 转发(9b51b7db,pacing 重试);库 /home/desmond/reports/IPO观察库/;EDGAR 需声明式 UA(见 implementation.md 追加记录)
+- 追加11: 2026-09-24 08:35·晨报周报交接启动(Kimi 群 ClawMeeting 群主定案):已交《晨报周报交接清单-已填写.md》(群目录 kimi-group-chat/ClawMeeting/);建一次性证据包任务 649c78f1(09-25 08:35,汇总四 job 运行证据发群,配合 KimiClaw 影子跑验收);坑:automations create 默认 delivery=announce(channel=last),静默任务需显式 edit --no-deliver --clear-*(见 implementation.md 追加记录)
+- 追加12: 2026-09-24 08:33·协调者拍板全量交接:扫描 72bbfb86+看门狗 c43b6520 随迁、转发送达交接(验收含 delivered=true)、切换=影子跑通过次日(09-26 起 KimiClaw 正式跑,我侧六 job 停用不删、配置留到 10-02 回滚兑底);交接清单补 §7 随迁配置(trigger 硬编码 job id 需改指向),证据任务 649c78f1 扩为五 job(见 implementation.md 追加记录)
 
 ## 背景与目标
 
