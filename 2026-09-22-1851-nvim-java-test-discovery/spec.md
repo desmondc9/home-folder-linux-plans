@@ -127,6 +127,21 @@ neotest(全局映射)与 jdtls(java buffer 内覆盖 `tt`/`tr`/`tT`)并存;`td`(
 
 主仓 backend 的暂存 `BarCodeCalculator.java` 重构、`entrypoint.sh` 权限位、未跟踪 `systemfile/`、umbrella 的 33 处本地修改、其余 worktree——全部保持原样。
 
+## 2026-09-24 追认:症状第三度复发 —— `git stash` 吞掉了 worktree 的本地 pom 修复
+
+**症状**: 同一 worktree 窗口, VSCode 右键 `src/test/java` 下某测试目录 → Run Tests → `No tests found in the selected file or folder`。
+
+**证据链**(全部当日实锤):
+
+1. worktree backend `pom.xml` L735-737 的 `<compilerArgs><arg>--enable-preview</arg></compilerArgs>` **重新出现**; `git status` 干净(仅 `?? test.md`), 即工作树已回到 pin commit 的内容。
+2. backend 子模块 `stash@{0}`(创建于 **2026-09-23 20:35:14**, `git reflog stash` 为证)内容 = 恰好那 3 行 compilerArgs 删除 —— 09-23 计划"保留不丢弃"的本地外科修复被一次 `git stash` 吞掉。
+3. 分支 `feature/lazyvim-java-lsp` 的 backend pin `dd604f51a5` 不含官方修复 `f422af25d4`(`git merge-base --is-ancestor` 证伪); 主仓 backend pom 干净(L815 仅剩 surefire 运行时 flag, 不经 m2e 映射, 无害)。
+4. 窗口 `57d0b057…` jdt_ws 今天有两个会话(09:46 / 10:04:24), pom mtime **10:06:28**、log 落笔 10:06:34(自动重导入, `updateBuildConfiguration: automatic`); 本会话 **0 条** 2098258 日志行 —— 与 §"为什么症状如此迷惑"一致: ECJ 错误只在特定文件 reconcile 时落日志, 发现失败本身静默, **无日志 ≠ 未中毒**。
+
+**结论**: 与 LazyVim 问题同一根因链([#1692](https://github.com/microsoft/vscode-java-test/issues/1692)), 第三种表象: nvim `No suitable test method found`(9-22)→ VSCode Run/Debug CodeLens 消失(9-23)→ VSCode Run Tests `No tests found in the selected file or folder`(9-24)。discovery 返回 `[]` 时, 右键任何文件/目录都报这个消息。
+
+**修复**(用户选 B, 2026-09-24 执行): backend 子模块 `git checkout 55da56ce89`(origin/develop tip, 含 `f422af25d4`; 该 commit 连 surefire 运行时 preview flag 也已删, pom 中 `enable-preview` 0 匹配)→ `git stash drop stash@{0}`(那 3 行外科修复自此冗余)→ umbrella 提交 `ac31d3cab6`(`chore(backend): pin submodule past drop-preview fix`)。工作树常清, 后续 `git submodule update` 也只会重置到无毒 pin。VSCode 侧由 `updateBuildConfiguration: automatic` 自动重导入; 若 Testing 视图仍空, 跑一次 `Java: Clean Java Language Server Workspace`。
+
 ## 方法论小结
 
 1. **多组件系统先在边界抓数据**:headless nvim + LSP executeCommand 探针,把"服务器到底返回了什么"钉死,再决定往哪层挖
