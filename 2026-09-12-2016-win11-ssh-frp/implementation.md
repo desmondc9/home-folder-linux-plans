@@ -205,3 +205,5 @@ derp / librechat / searxng 三对 A+AAAA → CNAME → bandwagon(与 auth/identi
 **09-12 遗留待办销项**:Task 2 Step 4 的"删除 VPS 侧私钥副本"——VPS `~/.ssh/id_ed25519_winhost`(419B,09-12)仍在,`ssh-keygen -y` 导出公钥指纹与 bootstrap 完全一致后已 `rm` 清除(09-12 的循环测试早已完成,该副本在新钥匙文件下本也无权限,纯风险残渣)。
 
 **遗留(可选,未做)**:①2 枚无注释旧公钥中疑似旧 Termius 那枚可择机清理(需再一次 UAC);②Task 4 Step 3 真外网热点验收、稳定期重启免登录恢复两项用户侧待办,重装后状态归零,需随本次 Termius 验收一并重做。
+
+**验收(2026-10-08 闭环)**:用户手机(一加 15 / Termius)经 `bandwagon.signal-align.com:6001` → frpc → sshd 实连成功——新公钥生效、host key 轮换后的 TOFU 已接受,遗留 ② 中的公网链路验收随之完成(稳定期重启免登录恢复一项仍待日后观察)。
