@@ -123,3 +123,25 @@
 - **macOS**:SFM(sing-box for macOS)导入 profile,App 自动管 TUN
 
 各设备经 90d 可复用 preauth key 自动注册为新节点;Moonlight 全平台客户端连 `100.64.0.7` 串流 Sunshine。**注意鸡生蛋**:新设备入 tailnet 前拿不到 `100.64.0.7:18080` 的下发服务——在家用 `192.168.31.100:18080`,异地设备首次需文件拷贝。复用配置时务必改 `endpoints[].hostname`。
+
+## 附录 v5: 2026-10-08 手机重置后重建(v4 → v5)
+
+**背景**:一加 15 重置(见 [../2026-10-08-1435-android-rejoin-tailnet/](../2026-10-08-1435-android-rejoin-tailnet/spec.md)),SFA app 与 `ts-ep` 的 state_directory(节点身份)一并清零,必须重注册;旧 node 8(oneplus-15-sfa,100.64.0.8)已于当日上午删除。手机 SFA 版本 1.14.2。
+
+**交付 `config.phone-v5.json`**(D:\Desmond\Apps\sing-box\):与 v4 逐字节仅差 `ts-ep.auth_key`(jq 改写 + diff 验证),换为一次性 1h preauth key(`__PREAUTH_KEY_REDACTED__`,已消耗)。
+
+**勘误(本档案此前口头结论修正)**:v4 内嵌的是 90d **可复用** key(附录 v4 所签),窗口至 ~2026-12-11 并未失效——重注册理论上用旧 key 亦可;改发一次性短时效 key 属最小权限原则,非"旧 key 已死"。⚠️ **`config-{winpc,linuxpc,mac}.json` 三份 PC 配置内嵌同一 90d key:2026-12-11 过期后如需重注册必须换新 key**(届时重跑本附录流程即可)。
+
+**兼容性专项核实(SFA 1.14.2,应用户要求上官网核对)**:
+
+- desktop sing-box **1.14.2** 对 v5 `check` 静默通过(SFA 同核,解析一致)
+- 官方 migration/deprecated 逐项过堂:v5 全为 1.14 现行写法——新 DNS server 格式(旧 `address` 格式恰在 1.14.0 移除,本配置族从未用过)、rule actions、`http_clients` 体系(1.14.0 新引入,v4 已迁移)、tailscale endpoint 的 `state_directory/auth_key/control_url/hostname/accept_routes` 全部健在、顶层 `dns.strategy` 合法(1.14 废弃的是 DNS rule 内的 legacy strategy action)
+- 前瞻:tun `stack: gvisor` 于 **1.15.0** 起废弃(1.17.0 移除)——SFA 升 1.15+ 后删该行换新默认栈即可,1.14.2 无需动
+- VPS 服务端:10 月安全加固升级后 active,45575(VLESS+Reality)监听正常
+- **rules/ 目录澄清**(用户当日再问):v4 起手机配置自包含(三条 rule-set 全 remote 经 proxy-http 拉取,futu 域名内联 `domain_suffix`,custom-* 已于 v4 移除),**无需拷贝**;`rules/`(custom-direct/custom-proxy/futu.json)仅 PC 三份配置以绝对路径引用
+
+**结果与验收**:
+
+- 新节点 **node 12 = oneplus-15-sfa = 100.64.0.3**,online——再次回填低位空洞(.3 为当日上午删 node 3 释放的槽位,与 android-rejoin 档案"跨重启回填"结论互证)
+- 三件套全过:①翻墙 google(走 VLESS)②国内直连 ③Termius 经 ts-ep 直连 `100.64.0.10:22`(公钥复用当日加入 `administrators_authorized_keys` 的 Termius 新钥匙,见 [../2026-09-12-2016-win11-ssh-frp/](../2026-09-12-2016-win11-ssh-frp/implementation.md) 增补)
+- SFA 与官方 Tailscale App 互斥(Android 单 VPN):node 11(官方 App)与 node 12(SFA)在 headscale 共存,按场景切换
