@@ -1,7 +1,7 @@
 # 一加 15 重置后重新加入 headscale tailnet
 
 日期: 2026-10-08 · 状态: 已完成(入网+数据面验证通过;手机端后台常驻待设 Always-On VPN)· 实施记录: [implementation.md](implementation.md)
-- 环境: 操作机 WSL2 Ubuntu @ Windows 11 笔记本 YAOSHI15PRO(node 10,经 interop 调 tailscale.exe、经 ssh 免密代跑 VPS);headscale v0.29.3 @ Bandwagon VPS brave-goose-1;客户端 Android 官方 Tailscale App(一加 15 / ColorOS)
+- 环境: 操作机 WSL2 Ubuntu @ Windows 11 笔记本 YAOSHI15PRO(node 10,经 interop 调 tailscale.exe、经 ssh 免密代跑 VPS);headscale v0.29.4 @ Bandwagon VPS brave-goose-1(2026-10 VPS 安全加固中由 0.29.3 升级,见 vps-security-monitoring-hardening 档案);客户端 Android 官方 Tailscale App(一加 15 / ColorOS)
 
 ## 背景与目标
 
