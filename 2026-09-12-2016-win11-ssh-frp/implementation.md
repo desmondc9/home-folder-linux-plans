@@ -183,3 +183,25 @@ VPS 侧零改动(6001 随 frpc 下线自动消失)。
 ## 附录续: zone 级 CNAME 收敛(2026-09-12)
 
 derp / librechat / searxng 三对 A+AAAA → CNAME → bandwagon(与 auth/identity/login/laptop 统一)。保留直连:bandwagon(锚)、apex(MX+SOA 牵制不动)、openclaw(A→100.64.0.1 tailnet 地址,CNAME 无处指)。1.1.1.1 实测三链解析正常,headscale DERP 引用不受影响。操作坑:shell 变量直拼 JSON 会在 comment 字段产生非法载荷(PUT 被拒)——DNS API 调用一律 heredoc/jq 构造 JSON。
+
+## 增补(2026-10-08): 一加 15 Termius 新公钥入钥匙 + 重装后现状对账
+
+**背景**:①手机重置(见 [../2026-10-08-1435-android-rejoin-tailnet/](../2026-10-08-1435-android-rejoin-tailnet/spec.md)),Termius 重新生成密钥对,需入钥匙文件;②本机已于 ~09-20/21 重装 Windows(证据:现主机名 `yaoshi15pro` 而 09-12 档案为 DESKTOP-J7NBNU4、`C:\Users\Desmond\.ssh` 全部 mtime 09-20/21、host key 轮换、tailnet node 7 于 09-19 失联、Apps 目录迁至 D:),本档案多处记载已过时,本次对账修正。
+
+**重装后现状(2026-10-08 实测)**:
+
+- 钥匙文件**不是** `C:\Users\Desmond\.ssh\authorized_keys`(现存 0 字节空文件,残留),而是 **`C:\ProgramData\ssh\administrators_authorized_keys`**——sshd_config 87–88 行 `Match Group administrators` 激活(09-12 档案 Task 1 Step 3 记载的"新版默认无此块"在新机不再成立);`PasswordAuthentication no` 已生效(阶段 2 在重装后落地)
+- frpc/sshd 双服务 RUNNING;frp 目录迁至 `D:\Desmond\Apps\frp\`;frp 代理名仍 `win11-ssh`,VPS :6001 链路实测活
+- **host key 全部轮换**——Task 4 Step 3 入档的三枚旧指纹作废,新指纹(2026-10-08 `ssh-keyscan -p 6001` 实取):ED25519 `SHA256:bpip2iHiZMfXj9Ub6z9/P+LEYARrlPUo/PRzy5+QeFg`、ECDSA `SHA256:AlBlU6WJFU8kkZ0KQYrnD0OVPxojrSAGWha9n2/dexg`、RSA `SHA256:jWGRmZ9Y5Zy08Hb0TuBIXw5g2+53LBhDRnNSfkpnr6Q`;存量客户端(Termius 等)首连报 host key changed 属预期,核对后接受
+- 钥匙文件追加前有 2 枚无注释 ed25519(指纹 `SHA256:dFLb7diK...`/`SHA256:t7rUtCv6...`;其一疑似旧 Termius 钥匙,已随手机重置失效);`ProgramData\ssh` 下另有两个 .txt 残渣(内容与该 2 枚一致,上次会话遗留)
+- bootstrap 钥匙 `desmond-winhost-bootstrap` **不在**新钥匙文件 → WSL 侧已无自测私钥,验收依赖用户手机实连
+
+**本次变更**(提权脚本 `Downloads/add-termius-key-20261008.ps1` + transcript 同目录):
+
+- 追加 1 行:`oneplus-15-termius-20261008`,ED25519,指纹 `SHA256:/+Nwl8D5Wuo4aueWHBE5H6jiEdGKuZSMGtXxDpUyNa8`
+- 备份 `administrators_authorized_keys.bak-20261008`;追加后 3 行全部 `ssh-keygen -lf` 解析通过;ACL 保持 `SYSTEM:(F)`+`Administrators:(F)`;sshd 无需重启(钥匙文件每认证现读)
+- WSL `known_hosts` 过期项清理:127.0.0.1 与 `[bandwagon.signal-align.com]:6001` 旧指纹删除,新指纹已加入
+
+**09-12 遗留待办销项**:Task 2 Step 4 的"删除 VPS 侧私钥副本"——VPS `~/.ssh/id_ed25519_winhost`(419B,09-12)仍在,`ssh-keygen -y` 导出公钥指纹与 bootstrap 完全一致后已 `rm` 清除(09-12 的循环测试早已完成,该副本在新钥匙文件下本也无权限,纯风险残渣)。
+
+**遗留(可选,未做)**:①2 枚无注释旧公钥中疑似旧 Termius 那枚可择机清理(需再一次 UAC);②Task 4 Step 3 真外网热点验收、稳定期重启免登录恢复两项用户侧待办,重装后状态归零,需随本次 Termius 验收一并重做。
