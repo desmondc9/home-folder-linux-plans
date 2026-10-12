@@ -108,6 +108,8 @@
 | 2026-09-22 19:56 | [win11-tailnet-join](./2026-09-22-1956-win11-tailnet-join/) | 耀世15Pro(原 Kubuntu node 1)换 Win11 后重新入网:控制面规范域名 `headscale.signal-align.com` 挂载到现有 headscale 0.29.3(CF 灰云 A 记录+独立 LE 证书+新 vhost `headscale-new`,server_url 不动、存量 9 节点零影响);winget 装 Tailscale 1.102.4,`yaoshi15pro-win=100.64.0.10` 入网并通告+获批 Exit Node(用户决策);删失联旧 node 1;`--accept-dns=false` 防 hijack-dns 互抢;netcheck 全绿(bwg-derp 130.6ms),WSL mirrored 直达 tailnet(ssh/ping .4);**坑:hijack-dns 环境验证 DNS 变更必须走 DoH(负缓存 NXDOMAIN 假象)、approve-routes 后 netmap 传播 ~1 分钟、UAC 弹窗会被全屏终端遮挡、headscale IP 分配不复用释放段**;回退四开关就位 |
 | 2026-10-08 14:35 | [android-rejoin-tailnet](./2026-10-08-1435-android-rejoin-tailnet/) | 一加 15 重置后重新入网 headscale tailnet:删失联 node 3 + 一次性 preauth key + Android 两步注册(⋮ alternate server `headscale.signal-align.com` + auth key,纯登录流程在自建 headscale 下走不通);node 11 拿到**回填的 100.64.0.1** 而非顺延 .11——修正 win11 档案"IP 分配不复用"结论(同进程内不复用,跨重启回填低位空洞;且 .1 为旧 Kubuntu Sunshine 历史地址);0.29 `nodes rename` 是位置参数;中文设备名被压成"15"后服务器侧改名恢复;ColorOS 锁屏杀 VPN 需 Always-On;顺删 SFA v3 遗留节点 oneplus-15-sfa(node 8) |
 
+| 2026-10-12 08:59 | [singbox-ipv6-restore](./2026-10-12-0859-singbox-ipv6-restore/) | RJ45 下恢复 Windows sing-box IPv6：删除历史 AAAA 拦截、prefer_ipv6 + resolve；NSSM 重启，Chrome 八项检测通过；故障回退与 AX6000 长期稳定性未验证 |
+
 ## 关于本仓库
 
 这些记录主要面向"以后回顾自己做过什么、为什么这么做"以及"迁移到新机器时按顺序重放"，不是面向他人协作的项目文档，因此不遵循常规开源项目的 `CONTRIBUTING`/`CODE_OF_CONDUCT` 等惯例。

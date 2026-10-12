@@ -39,3 +39,7 @@
 4. **Windows 侧 AAAA 泄漏的三个入口**要一起堵：网卡静态 DNS（绕过 TUN 的物理/路由器路径）、Tailscale MagicDNS（不经 TUN）、Windows DoH（`netsh dns show global` 查）；只改 sing-box `strategy` 对客户端 AAAA 应答**无效**，必须 `query_type: AAAA → reject` 规则
 5. **WSL 里提权 Windows 服务**：`sc.exe stop/start` 不提权会**静默失败**（查询照常返回 RUNNING，极具迷惑性）；`Start-Process -Verb RunAs` 在 bash 超时被杀后 UAC 点击无效——先落 `.ps1` 再弹 UAC，bash 侧给足超时并轮询产物文件
 6. **多网卡 Windows 的 DNS 是并行竞速**：任一网卡的 DNS（含断开的 Ethernet、Tailscale）都可能抢先应答真 AAAA——排泄漏要 `Get-DnsClientServerAddress` 全量看
+
+## 后续更新（2026-10-12）
+
+有线连接下已移除历史 AAAA 拦截，并恢复 prefer_ipv6；当前运行路径为 D 盘，NSSM 管理服务。Chrome IPv6/双栈/大包测试通过，但没有证明路由器长期稳定或故障回退有效。详见 [恢复档案](../2026-10-12-0859-singbox-ipv6-restore/implementation.md)。本页原始操作与结论保留为历史证据。
