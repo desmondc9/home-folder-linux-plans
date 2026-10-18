@@ -1,6 +1,6 @@
 # WSL PATH Windows 污染根治(appendWindowsPath=false)
 
-日期:2026-09-26 09:48 · 状态:**待生效**(配置已暂存 `~/wsl.conf.new`,待用户 `sudo cp` + `wsl --shutdown` 重启后验证) · 实施记录:[implementation.md](implementation.md)
+日期:2026-09-26 09:48 · 状态:**已生效**(2026-10-18 验证:`/etc/wsl.conf` 已含 `[interop]` 段,PATH 中无 `/mnt/c|d` 条目) · 实施记录:[implementation.md](implementation.md) · 后续:证据 #8 的 `code` 判断仅在 VS Code 集成终端成立,独立终端失效已于 [2026-10-18-1051-wsl-code-command-restore](../2026-10-18-1051-wsl-code-command-restore/spec.md) 修复
 - 环境:Windows 11 宿主 + WSL2 Ubuntu(kernel `6.18.33.2-microsoft-standard-WSL2`),zsh + nvm(node v26.10.0)
 - 起因:pi(`~/.local/bin/pi`)的 MCP 服务器 `zai-mcp-server` 无法连接,用户怀疑与之前 cursor-agent 一样串到了 Windows 侧 NodeJS
 
