@@ -1,5 +1,7 @@
 # 本机执行记录
 
+> 后续用户已授权[完整卸载OpenClaw](../2026-10-29-1516-openclaw-uninstall/implementation.md)。下述「保留安装/数据、可enable恢复」是入口关闭时点的记录；完整卸载后不能再只靠enable原unit恢复。
+
 - [x] 以root ss、服务元数据、headscale选定配置字段核实端口归属，没有打印凭据或完整OpenClaw配置。
 - [x] 检查IPv4/IPv6 ts-input优先于UFW；确认只删allow不足以关闭Tailnet监听。
 - [x] 用户明确选择关闭gateway服务与Nginx入口，同时移除UFW18789/18790，保留安装和数据。

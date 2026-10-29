@@ -116,6 +116,8 @@
 
 | 2026-10-29 14:54 | [ufw-openclaw-closure](./2026-10-29-1454-ufw-openclaw-closure/) | 核实3478=headscale STUN、41641=tailscaled；用户确认后停用OpenClaw gateway/18790 Nginx入口、删除18789/18790双栈规则；其他网络服务保留，11域复测通过；本次先本地记录 |
 
+| 2026-10-29 15:16 | [openclaw-uninstall](./2026-10-29-1516-openclaw-uninstall/) | 用户确认后完整卸载OpenClaw2026.9.2：先root备份2.9GB状态/未提交workspace，移除npm包/数据/缓存/补全/专用Nginx残留；共享Node/npm、源码及11域服务保留；本次先本地记录 |
+
 ## 关于本仓库
 
 这些记录主要面向"以后回顾自己做过什么、为什么这么做"以及"迁移到新机器时按顺序重放"，不是面向他人协作的项目文档，因此不遵循常规开源项目的 `CONTRIBUTING`/`CODE_OF_CONDUCT` 等惯例。
