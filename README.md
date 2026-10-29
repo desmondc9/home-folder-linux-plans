@@ -112,7 +112,7 @@
 
 | 2026-10-12 09:31 | [android-authenticator-push-fix](./2026-10-12-0931-android-authenticator-push-fix/) | 手机重置后 Authenticator Push 不弹(UPS Entra ID SSO 登录 Google Cloud Console;OTP 被策略禁用只剩 Push):根因=出厂重置销毁设备密钥、服务器端 MFA 注册成死引用;趁 Teams 遗产 token 存活,aka.ms/mysecurityinfo 重绑Authenticator 解决(免 IT 工单);观察:APP 添加账号选 skip registry 时 Push 不弹、改 register device 后恢复,因果未确证(疑 CA 要求已注册设备才送达审批,或注册传播延迟);经验:云备份不备份工作账号、丢机先抢存活会话窗口 |
 
-| 2026-10-29 09:40 | [singbox-official-nginx-migration](./2026-10-29-0940-singbox-official-nginx-migration/) | Bandwagon VPS sing-box 233boy → 官方 1.14.4 与 Nginx stream 443 复用：已选 A，完整设计待批准；含 Web 源 IP、host-only Release CD、续期与回滚，尚未实施 |
+| 2026-10-29 09:40 | [singbox-official-nginx-migration](./2026-10-29-0940-singbox-official-nginx-migration/) | Bandwagon VPS sing-box 233boy → 官方 1.14.4 与 Nginx stream 443 复用：已确认 A 与host-only发布范围；#67 + 三阶段实施计划，尚未实施 |
 
 ## 关于本仓库
 
