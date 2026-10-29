@@ -1,0 +1,13 @@
+{
+  "/etc/nginx/sites-enabled/auth": "../sites-available/auth-local-edge",
+  "/etc/nginx/sites-enabled/books": "/etc/nginx/sites-available/books",
+  "/etc/nginx/sites-enabled/derp": "/etc/nginx/sites-available/derp",
+  "/etc/nginx/sites-enabled/headscale": "/etc/nginx/sites-available/headscale",
+  "/etc/nginx/sites-enabled/headscale-new": "/etc/nginx/sites-available/headscale-new",
+  "/etc/nginx/sites-enabled/ntfy": "/etc/nginx/sites-available/ntfy",
+  "/etc/nginx/sites-enabled/openclaw-tailnet": "/etc/nginx/sites-available/openclaw-tailnet",
+  "/etc/nginx/sites-enabled/reading": "/etc/nginx/sites-available/reading",
+  "/usr/local/bin/sing-box": "/usr/local/lib/sing-box/1.14.4/sing-box",
+  "/etc/systemd/system/multi-user.target.wants/sing-box.service": "/etc/systemd/system/sing-box.service",
+  "/usr/local/bin/sb": "ABSENT"
+}

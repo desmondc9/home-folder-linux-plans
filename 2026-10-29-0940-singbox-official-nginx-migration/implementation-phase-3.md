@@ -1,5 +1,7 @@
 # VPS-edge Release/CD 与生产迁移 Implementation Plan
 
+> 已取消的历史发布计划，不执行Release/CD或KV步骤。最终本机配置和Android验收见[final-state.md](./final-state.md)。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 接入 host-only 发布入口，经 CI/PR 后备份并迁移本机，交付私有客户端配置与脱敏结果。

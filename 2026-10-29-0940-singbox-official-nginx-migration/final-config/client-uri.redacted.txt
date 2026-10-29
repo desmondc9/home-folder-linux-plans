@@ -1,0 +1,1 @@
+vless://__UUID_REDACTED__@vs.signal-align.com:443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=www.cloudflare.com&fp=chrome&pbk=__PUBLIC_KEY_REDACTED__&sid=__SHORT_ID_REDACTED__&type=tcp&headerType=none#Bandwagon-VS

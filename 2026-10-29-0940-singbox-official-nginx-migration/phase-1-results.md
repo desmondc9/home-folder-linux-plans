@@ -1,5 +1,7 @@
 # 阶段 1：候选配置与协议验证
 
+> 历史记录：#68后来合并后又由#69撤销，本阶段不是最终生产部署。最终本机状态与Android v2rayNG验收见[final-state.md](./final-state.md)。
+
 - 环境：本机 Ubuntu 24.04.4 LTS / linux amd64，rootless Podman 隔离网络；2026-10-29。
 - 状态：实现与本地验证完成，独立审阅反馈已单轮修复并验证；PR已提交、CI绿，等待合并确认；未发布生产。
 - Issue：[signal-align-umbrella#67](https://github.com/desmondc9/signal-align-umbrella/issues/67)。

@@ -1,0 +1,45 @@
+# headscale control plane - new canonical domain (plans/2026-09-22-1956-win11-tailnet-join)
+# NOTE: legacy vhost file "headscale" serves bandwagon.signal-align.com for existing nodes - do not touch.
+server {
+    server_name headscale.signal-align.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_buffering off;
+        proxy_read_timeout 3600s;
+        proxy_send_timeout 3600s;
+    }
+
+    listen 127.0.0.1:14443 ssl http2 proxy_protocol;
+
+    set_real_ip_from 127.0.0.1;
+
+    real_ip_header proxy_protocol;
+    port_in_redirect off;
+    ssl_certificate /etc/letsencrypt/live/headscale.signal-align.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/headscale.signal-align.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+
+server {
+    if ($host = headscale.signal-align.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    listen [::]:80;
+    server_name headscale.signal-align.com;
+    return 404; # managed by Certbot
+
+
+}

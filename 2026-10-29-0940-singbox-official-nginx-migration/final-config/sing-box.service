@@ -1,0 +1,29 @@
+[Unit]
+Description=sing-box VLESS REALITY server
+Documentation=https://sing-box.sagernet.org/
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=sing-box
+Group=sing-box
+ExecStartPre=/usr/local/lib/sing-box/1.14.4/sing-box check -c /etc/sing-box/config.json
+ExecStart=/usr/local/lib/sing-box/1.14.4/sing-box run -c /etc/sing-box/config.json
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=5s
+LimitNOFILE=65536
+StateDirectory=sing-box
+WorkingDirectory=/var/lib/sing-box
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
+
+[Install]
+WantedBy=multi-user.target

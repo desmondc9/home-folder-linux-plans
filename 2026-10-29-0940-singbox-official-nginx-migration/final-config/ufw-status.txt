@@ -1,0 +1,27 @@
+Status: active
+Logging: on (low)
+Default: deny (incoming), allow (outgoing), allow (routed)
+New profiles: skip
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW IN    Anywhere
+80/tcp                     ALLOW IN    Anywhere
+443/tcp                    ALLOW IN    Anywhere
+7000/tcp                   ALLOW IN    Anywhere
+3478/udp                   ALLOW IN    Anywhere
+41641/udp                  ALLOW IN    Anywhere
+3479/udp                   ALLOW IN    Anywhere                   # derper STUN
+18789/tcp on tailscale0    ALLOW IN    Anywhere                   # openclaw gateway via tailnet only
+18790/tcp on tailscale0    ALLOW IN    Anywhere                   # openclaw wss tailnet
+6001/tcp                   ALLOW IN    Anywhere                   # frps win11-ssh
+22/tcp (v6)                ALLOW IN    Anywhere (v6)
+80/tcp (v6)                ALLOW IN    Anywhere (v6)
+443/tcp (v6)               ALLOW IN    Anywhere (v6)
+7000/tcp (v6)              ALLOW IN    Anywhere (v6)
+3478/udp (v6)              ALLOW IN    Anywhere (v6)
+41641/udp (v6)             ALLOW IN    Anywhere (v6)
+3479/udp (v6)              ALLOW IN    Anywhere (v6)              # derper STUN
+18789/tcp (v6) on tailscale0 ALLOW IN    Anywhere (v6)              # openclaw gateway via tailnet only
+18790/tcp (v6) on tailscale0 ALLOW IN    Anywhere (v6)              # openclaw wss tailnet
+6001/tcp (v6)              ALLOW IN    Anywhere (v6)              # frps win11-ssh

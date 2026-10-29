@@ -1,0 +1,35 @@
+{
+  "log": {
+    "level": "warn"
+  },
+  "inbounds": [
+    {
+      "type": "socks",
+      "listen": "127.0.0.1",
+      "listen_port": 10808
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "vless",
+      "server": "vs.signal-align.com",
+      "server_port": 443,
+      "uuid": "__UUID_REDACTED__",
+      "flow": "xtls-rprx-vision",
+      "connect_timeout": "5s",
+      "tls": {
+        "enabled": true,
+        "server_name": "www.cloudflare.com",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "__PUBLIC_KEY_REDACTED__",
+          "short_id": "__SHORT_ID_REDACTED__"
+        }
+      }
+    }
+  ]
+}

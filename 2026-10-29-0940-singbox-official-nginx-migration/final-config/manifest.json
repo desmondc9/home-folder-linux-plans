@@ -1,0 +1,151 @@
+{
+  "redacted": true,
+  "not_a_raw_backup": true,
+  "files": [
+    {
+      "file": "sing-box.config.redacted.json",
+      "source": "/etc/sing-box/config.json",
+      "sha256_of_published_copy": "9932801211ff4763a5b0963102549e85d230d5f4d0160e8617abd8f3ac79910c"
+    },
+    {
+      "file": "client.config.redacted.json",
+      "source": "/home/desmond/.config/sing-box-client/vs.signal-align.com/2026-10-29-111755-local/client.json",
+      "sha256_of_published_copy": "68e3b9685e9f82ca00e9d90f38da985be6a233b4dab0081c8221965362961504"
+    },
+    {
+      "file": "client-uri.redacted.txt",
+      "source": "/home/desmond/.config/sing-box-client/vs.signal-align.com/2026-10-29-111755-local/client-uri.txt",
+      "sha256_of_published_copy": "4a5be6aa63730260b20d108017d529158395b8443d1c6f89e3c6a5b58dc6acfb"
+    },
+    {
+      "file": "sing-box.service",
+      "source": "/etc/systemd/system/sing-box.service",
+      "sha256_of_published_copy": "f796b72f30b2d9e49b0ec801009105f6f80d420f575fc694e1f74532625c7677"
+    },
+    {
+      "file": "nginx/nginx.conf",
+      "source": "/etc/nginx/nginx.conf",
+      "sha256_of_published_copy": "81aafa40ba91257aa266346eaf8f6168305d28757ccebec5bb719acf461eaed8"
+    },
+    {
+      "file": "nginx/stream-enabled/sing-box-443.conf",
+      "source": "/etc/nginx/stream-enabled/sing-box-443.conf",
+      "sha256_of_published_copy": "9451ea2dc22195dcbd3be742a8f430e4f395057f1ba34b69fec37231f40c3438"
+    },
+    {
+      "file": "nginx/conf.d/headscale-map.conf",
+      "source": "/etc/nginx/conf.d/headscale-map.conf",
+      "sha256_of_published_copy": "9871401179fb2a182969d9976c8909f47090795c01f544b0ea77fed2e039ae12"
+    },
+    {
+      "file": "nginx/modules-enabled/50-mod-stream.conf",
+      "source": "/etc/nginx/modules-enabled/50-mod-stream.conf",
+      "sha256_of_published_copy": "a1bf6e1e25eedbd7e6f816bd608f0a54adc1f2cdb238580890d03574296b81eb"
+    },
+    {
+      "file": "certbot/certbot-dns.cron",
+      "source": "/etc/cron.d/certbot-dns",
+      "sha256_of_published_copy": "0bd09d9659bdf3c250c11c1b4010048c8dec268ca8cffef26665c5036bace06a"
+    },
+    {
+      "file": "nginx/logrotate.conf",
+      "source": "/etc/logrotate.d/nginx",
+      "sha256_of_published_copy": "c6f585f3a98e424c30c5208f2f52c8e39665b76744cd5bcc523efdee0a7d69ee"
+    },
+    {
+      "file": "nginx/sites-available/auth-local-edge",
+      "source": "/etc/nginx/sites-available/auth-local-edge",
+      "sha256_of_published_copy": "41f0c15159089f9757dbd73e00253e6da9c50544666a8b0a210145525035e346"
+    },
+    {
+      "file": "nginx/sites-available/books",
+      "source": "/etc/nginx/sites-available/books",
+      "sha256_of_published_copy": "13b1b95223207fbe3ed1209bc1cfdd359de3ecf2a07eb940fad4bb7cf35d3627"
+    },
+    {
+      "file": "nginx/sites-available/derp",
+      "source": "/etc/nginx/sites-available/derp",
+      "sha256_of_published_copy": "1485b65fdd7a33c770b3e9fc8deb743d78063b1ca5fde20b487ab9fc93967414"
+    },
+    {
+      "file": "nginx/sites-available/headscale",
+      "source": "/etc/nginx/sites-available/headscale",
+      "sha256_of_published_copy": "93b3f9a200f411d434cfecf9813f401c0841c47bd594ddfe3d5ae34b19ea6661"
+    },
+    {
+      "file": "nginx/sites-available/headscale-new",
+      "source": "/etc/nginx/sites-available/headscale-new",
+      "sha256_of_published_copy": "6b111cc2a8481f3ba9fcae418bdc43245c2fca2d98f33127b8cc99998db504d5"
+    },
+    {
+      "file": "nginx/sites-available/ntfy",
+      "source": "/etc/nginx/sites-available/ntfy",
+      "sha256_of_published_copy": "e4afb1a9bc1449c035b7055cefb29441ccbdf0f5a55606d360de02b0d5d54457"
+    },
+    {
+      "file": "nginx/sites-available/openclaw-tailnet",
+      "source": "/etc/nginx/sites-available/openclaw-tailnet",
+      "sha256_of_published_copy": "75a356aae5192c434fea8aace52a318cfa17e006ecc4ad3521ca1353327488e8"
+    },
+    {
+      "file": "nginx/sites-available/reading",
+      "source": "/etc/nginx/sites-available/reading",
+      "sha256_of_published_copy": "c8dbf1ab02318e0e0ed05e62aae35937bab53bce3a5546d4b94045c81b638829"
+    },
+    {
+      "file": "certbot/renewal/bandwagon.signal-align.com.conf",
+      "source": "/etc/letsencrypt/renewal/bandwagon.signal-align.com.conf",
+      "sha256_of_published_copy": "8542ae7ef38dd1c93759ea6c784e96f8c156e08ded97ef907a5805126c120bbb"
+    },
+    {
+      "file": "certbot/renewal/books-desmondchen.conf",
+      "source": "/etc/letsencrypt/renewal/books-desmondchen.conf",
+      "sha256_of_published_copy": "5bce99435a9f701f2620667dac03c8a1d37998da8552f90b0b5402b26110d55f"
+    },
+    {
+      "file": "certbot/renewal/derp.signal-align.com.conf",
+      "source": "/etc/letsencrypt/renewal/derp.signal-align.com.conf",
+      "sha256_of_published_copy": "d1f5d78716ab43164940bf4dd9785cb2ef9f6a3bf1528dd9e27d0b0c3b172bd5"
+    },
+    {
+      "file": "certbot/renewal/headscale.signal-align.com.conf",
+      "source": "/etc/letsencrypt/renewal/headscale.signal-align.com.conf",
+      "sha256_of_published_copy": "aeca5b031e9553a46aa00b5dc5f952ce8f169a4352956412751385adb2c01831"
+    },
+    {
+      "file": "certbot/renewal/ntfy.signal-align.com.conf",
+      "source": "/etc/letsencrypt/renewal/ntfy.signal-align.com.conf",
+      "sha256_of_published_copy": "c0b9107d73d3b13f51765a4bc8268197920a93fde600166e2efe531b9c7f6fad"
+    },
+    {
+      "file": "certbot/renewal/reading-desmondchen.conf",
+      "source": "/etc/letsencrypt/renewal/reading-desmondchen.conf",
+      "sha256_of_published_copy": "72447f5a7c655597cb81a297740b841cc1f14190719ea77d235cb88442aa6208"
+    },
+    {
+      "file": "certbot/renewal/signal-align-auth.conf",
+      "source": "/etc/letsencrypt/renewal/signal-align-auth.conf",
+      "sha256_of_published_copy": "3b01c606581412487f43555be2963ea1fcf00dcb189dd657a3281691d4c34236"
+    },
+    {
+      "file": "certbot/cloudflare.redacted.ini",
+      "source": "/etc/letsencrypt/cloudflare.ini",
+      "sha256_of_published_copy": "efa276f0914ecd9a42fa017d70d5858c7fa41eceed1d925a84b8625ccbb203ff"
+    },
+    {
+      "file": "symlinks.json",
+      "source": "read-only symlink inventory",
+      "sha256_of_published_copy": "32b9b0fa638324d3ddd6024feaf13c4d26fcd67ae7162584182e4b8c918b0b75"
+    },
+    {
+      "file": "ufw-status.txt",
+      "source": "ufw status verbose (read-only; trailing whitespace normalized)",
+      "sha256_of_published_copy": "21ad6a1045f57d5efa7210c6f46bae4a02ba99c59413b33cdffb6bb83f4f38fc"
+    },
+    {
+      "file": "service-observation.txt",
+      "source": "systemctl show sing-box (read-only observation)",
+      "sha256_of_published_copy": "857ba39187e460f873583bd79142466acb5b5b7924e6a112767ffa1f84159ba0"
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 # VPS-edge 备份与限时恢复 Implementation Plan
 
+> 历史计划，草稿未发布、未安装为生产管理框架。最终仅本机迁移及Android验收见[final-state.md](./final-state.md)，不要继续本计划的项目开发。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 提供可复测、默认不激活的宿主机事务处理器，证明配置漂移和失败能安全阻断/恢复。

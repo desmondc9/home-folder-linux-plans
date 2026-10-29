@@ -1,5 +1,7 @@
 # VPS-edge 协议与候选配置 Implementation Plan
 
+> 历史计划，已取消仓库部署路线；不可按本文启动项目开发或服务发布。最终本机配置和Android验收见[final-state.md](./final-state.md)。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 生成并验证官方 sing-box 与 Nginx 的候选配置，不改变生产服务。

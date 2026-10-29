@@ -1,0 +1,43 @@
+{
+  "log": {
+    "level": "warn",
+    "timestamp": true
+  },
+  "inbounds": [
+    {
+      "type": "vless",
+      "tag": "vless-reality",
+      "listen": "127.0.0.1",
+      "listen_port": 24443,
+      "users": [
+        {
+          "uuid": "__UUID_REDACTED__",
+          "flow": "xtls-rprx-vision"
+        }
+      ],
+      "tls": {
+        "enabled": true,
+        "server_name": "www.cloudflare.com",
+        "handshake_timeout": "15s",
+        "reality": {
+          "enabled": true,
+          "handshake": {
+            "server": "www.cloudflare.com",
+            "server_port": 443,
+            "connect_timeout": "5s"
+          },
+          "private_key": "__PRIVATE_KEY_REDACTED__",
+          "short_id": [
+            "__SHORT_ID_REDACTED__"
+          ]
+        }
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "direct",
+      "tag": "direct"
+    }
+  ]
+}

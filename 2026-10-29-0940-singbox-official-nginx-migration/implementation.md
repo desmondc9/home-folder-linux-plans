@@ -1,6 +1,8 @@
 # 实施记录
 
-状态：按用户纠正，仅修改本机必要配置；不再开发/发布框架，不再推送运维记录。#68 已通过 #69 撤销（main=2ba67fd，与#68前44a084d内容一致）。以下本机记录只提交本地Git。
+状态：仅本机必要配置的迁移已完成；用户已确认Android v2rayNG实机连接成功，并在本轮明确授权脱敏档案commit/push。此前“仅本地Git”限制现对本次脱敏档案发布放开，不重新授权业务仓库/框架/CD改动。#68已由#69撤销（main=2ba67fd，与#68前44a084d内容一致）。
+
+最终权威记录：[final-state.md](./final-state.md)；实际配置脱敏快照：[final-config/README.md](./final-config/README.md)。
 
 ## 当前本机操作
 
@@ -16,7 +18,7 @@
 - [x] 最终11域IPv4/IPv6的root状态/跳转/CA/证书及7个health一致；实测Web原始IPv4/IPv6来源保留；独立18790证书不变，其他应用容器未重启。
 - [x] 旧 `/etc/sing-box/sh` 与sb入口不再存在；旧core/脚本/vendor unit仅留root受限备份。新sing-box CLI链接官方core，local unit启用开机启动，User=sing-box、零capability、NRestarts=0。
 - [x] 删除45575的IPv4/IPv6旧UFW放行；旧45574/45575/39586不再监听。临时preview/client单元、运行时凭据副本、测试容器/API/测试镜像已清理。
-- [ ] 外部设备/用户所在网络导入URI后验收；不能用本机端到端测试替代这一项。
+- [x] 外部设备验收：用户2026-10-29确认Android手机v2rayNG实测可以连接；未提供版本/运营商/IP族，不虚构单独公网IPv6验收。
 
 auth 的sites-enabled链接已指向 `/etc/nginx/sites-available/auth-local-edge` 的本机副本，`~/signal-align-auth/nginx-auth.conf` 与原始SHA一致，未编辑。未来auth路由调整需人工同步本机副本；其他vhost保留原路由，仅调整内部TLS监听、real_ip及必要的port_in_redirect设置。
 
@@ -56,16 +58,14 @@ auth 的sites-enabled链接已指向 `/etc/nginx/sites-available/auth-local-edge
 - [x] 阶段 1 Task 3：Nginx 候选与容器内18项真实协议验证；既有9项脚本测试不回归。
 - [x] 阶段 1 全分支独立审阅：后端身份/路径与证书lineage盲点补强；三类错误候选变异均被捕获。
 - [x] 阶段 1 [PR #68](https://github.com/desmondc9/signal-align-umbrella/pull/68)，最终提交6f13183；CI的changes/scripts通过，其他未涉及job按条件跳过。
-- [ ] 阶段 1 合并（等待用户确认）；其后进入阶段 2。
-- [ ] 确认生产配置源码/发布入口，落实备份、回滚与安全部署。
-- [ ] 按获批计划实施、验证客户端及既有应用、检查 DNS-only。
-- [ ] 归档脱敏结果和最终验收证据。
+- 历史后续：#68曾获批合并，随后用户纠正为本机运维并要求撤销；已由#69回退。阶段2草稿未推送、未部署，阶段3框架取消。
+- 原仓库发布计划不再执行；本机备份/回退、迁移、DNS-only验证、既有应用验证和最终验收证据以上方当前记录为准。
 
 ## 文档与 Git
 
-只提交本任务文档和 README 索引。真实备份及未来客户端配置存仓库外，不能随文档跟踪。本机无 `~/Notebook`，没有可同步的本地域笔记。
+只提交本任务文档、明确脱敏的配置快照和 README 索引。真实备份及真实客户端配置存仓库外，不能随文档跟踪。本机无 `~/Notebook`，没有可同步的本地域笔记。本轮仅按用户新授权推送该档案仓库。
 
-## 分阶段实施入口
+## 原分阶段实施入口（已取消，仅供历史追溯）
 
 1. [协议与候选配置](./implementation-phase-1.md)：配置、严格 selector、Nginx PROXY/REALITY 协议契约，生产不变。
 2. [备份与限时恢复](./implementation-phase-2.md)：备份/漂移、续期预检、systemd watchdog 的故障注入，生产不变。

@@ -1,0 +1,7 @@
+NRestarts=0
+CapabilityBoundingSet=
+User=sing-box
+RestrictAddressFamilies=AF_INET AF_INET6 AF_NETLINK AF_UNIX
+ActiveState=active
+SubState=running
+FragmentPath=/etc/systemd/system/sing-box.service

@@ -1,10 +1,10 @@
 # sing-box 官方版本迁移：本机配置
 
-> 2026-10-29 用户纠正范围：仅本机必要改动，~/plans仅本地Git留痕。下文原host-only CD/三阶段项目设计作历史保留，已停止；#68已由#69撤销。实际执行状态以implementation.md「当前本机操作」为准。不再修改项目仓库或推送本任务记录。
+> 最终权威状态：[final-state.md](./final-state.md)，配置快照见[final-config](./final-config/README.md)。本文件下方调查及原设计供追溯，不是当前部署步骤。用户纠正为仅本机必要改动，原host-only CD/三阶段项目设计已取消、#68由#69撤销。Android v2rayNG实机通过后，用户本轮明确授权将脱敏档案commit/push到~/plans；不再修改业务项目仓库或部署框架。
 
 - 环境：Bandwagon VPS，本机 Ubuntu 24.04.4 LTS / linux amd64；IPv4 `104.194.83.82`，IPv6 `2607:8700:5500:7bd3::2`；主机域名 `bandwagon.signal-align.com`。
 - 调查时间：2026-10-29 09:40–09:41 +08:00。
-- 状态：#68已由#69撤销；本机正式备份、官方1.14.4、Nginx双栈443复用与旧脚本清理完成。方案A（VLESS/TCP/REALITY/vision、连接vs.signal-align.com:443、SNI www.cloudflare.com）本机端到端验证通过；外部设备验收待用户导入。无新仓库发布框架/KV，最新记录仅本地Git提交、不推送。
+- 状态：#68已由#69撤销；本机备份、官方1.14.4、Nginx双栈443复用、旧脚本清理与用户Android v2rayNG实机验收均完成。方案A：VLESS/TCP/REALITY/vision，连接vs.signal-align.com:443，SNI www.cloudflare.com。无新发布框架/KV；本轮仅发布脱敏档案。
 - 跟踪：signal-align-umbrella [#67](https://github.com/desmondc9/signal-align-umbrella/issues/67)。
 
 ## 用户目标
@@ -15,7 +15,7 @@
 4. 客户端使用 `vs.signal-align.com:443`；Cloudflare DNS 由用户控制。
 5. 文档用 Git 归档到 `~/plans`；秘密和原始备份不得进入公开仓库。
 
-## 已确认现状
+## 迁移前状态（调查时点，不是最终配置）
 
 - 当前 sing-box **1.14.2**，进程使用 `/etc/sing-box/bin/sing-box run -c /etc/sing-box/config.json -C /etc/sing-box/conf`；service 为 `/usr/lib/systemd/system/sing-box.service`，root 运行。
 - `/usr/local/bin/sing-box` 是指向 `/etc/sing-box/sh/sing-box.sh` 的管理脚本链接，不是核心二进制。卸载必须区分脚本、核心、配置和 service；不能直接执行未经审查的第三方卸载流程。
