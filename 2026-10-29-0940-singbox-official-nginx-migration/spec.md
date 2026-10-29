@@ -4,7 +4,7 @@
 
 - 环境：Bandwagon VPS，本机 Ubuntu 24.04.4 LTS / linux amd64；IPv4 `104.194.83.82`，IPv6 `2607:8700:5500:7bd3::2`；主机域名 `bandwagon.signal-align.com`。
 - 调查时间：2026-10-29 09:40–09:41 +08:00。
-- 状态：已撤销#68，正式本机备份完成；准备官方core与本机配置，尚未切换服务。方案A的VLESS/TCP/REALITY/vision、vs灰云连接地址、外部SNI保留；不使用新的仓库发布框架或KV。
+- 状态：#68已由#69撤销；本机正式备份、官方1.14.4、Nginx双栈443复用与旧脚本清理完成。方案A（VLESS/TCP/REALITY/vision、连接vs.signal-align.com:443、SNI www.cloudflare.com）本机端到端验证通过；外部设备验收待用户导入。无新仓库发布框架/KV，最新记录仅本地Git提交、不推送。
 - 跟踪：signal-align-umbrella [#67](https://github.com/desmondc9/signal-align-umbrella/issues/67)。
 
 ## 用户目标

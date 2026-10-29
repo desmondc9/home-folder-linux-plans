@@ -112,7 +112,7 @@
 
 | 2026-10-12 09:31 | [android-authenticator-push-fix](./2026-10-12-0931-android-authenticator-push-fix/) | 手机重置后 Authenticator Push 不弹(UPS Entra ID SSO 登录 Google Cloud Console;OTP 被策略禁用只剩 Push):根因=出厂重置销毁设备密钥、服务器端 MFA 注册成死引用;趁 Teams 遗产 token 存活,aka.ms/mysecurityinfo 重绑Authenticator 解决(免 IT 工单);观察:APP 添加账号选 skip registry 时 Push 不弹、改 register device 后恢复,因果未确证(疑 CA 要求已注册设备才送达审批,或注册传播延迟);经验:云备份不备份工作账号、丢机先抢存活会话窗口 |
 
-| 2026-10-29 09:40 | [singbox-official-nginx-migration](./2026-10-29-0940-singbox-official-nginx-migration/) | 已撤销#68仓库扩展；纠正为本机操作、仅本地Git。正式备份/新core/双栈预览/11域验证/DNS续期预检完成，443待切换 |
+| 2026-10-29 09:40 | [singbox-official-nginx-migration](./2026-10-29-0940-singbox-official-nginx-migration/) | #68已撤销；本机官方1.14.4+Nginx双栈443复用完成，旧脚本移出运行路径，vs代理/11域/7health通过；含AF_NETLINK与内部端口跳转修正，记录仅本地Git；外部设备待验收 |
 
 ## 关于本仓库
 

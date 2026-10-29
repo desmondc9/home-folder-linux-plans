@@ -11,12 +11,29 @@
 - [x] bandwagon/derp/headscale三张证书通过官方Certbot5.8 reconfigure的真实DNS-01 staging验证（39.3/38.8/39.6秒），改为dns-cloudflare+null installer；活跃证书文件与derper PID未变。
 - [x] 原7个renewal profile均DNS、无nginx installer；保留原03:00 DNS cron并增加reload前nginx -t，停用不支持DNS插件的旧系统timer。旧系统cron带systemd guard，不运行。
 - [x] Cloudflare只读核实：vs灰云CNAME→bandwagon，后者灰云A/AAAA正确，无需DNS写入。
-- [ ] 本机Nginx stream配置、既有站点/续期兼容验证后切换；不改项目源码或CD。
-- [ ] 验证新443代理及原11域/health/证书；移除旧脚本和旧端口规则；私有客户端文件交付。
+- [x] 本机Nginx stream + ssl_preread接管双栈443，Web TLS仅回环14443，PROXY解包中继24444，新core仅回环24443；未改业务项目源码或CD。
+- [x] 正式443分别经127.0.0.1、::1、vs.signal-align.com验证REALITY vision代理HTTP200；以最终私有client.json、desmond用户再测HTTP200。
+- [x] 最终11域IPv4/IPv6的root状态/跳转/CA/证书及7个health一致；实测Web原始IPv4/IPv6来源保留；独立18790证书不变，其他应用容器未重启。
+- [x] 旧 `/etc/sing-box/sh` 与sb入口不再存在；旧core/脚本/vendor unit仅留root受限备份。新sing-box CLI链接官方core，local unit启用开机启动，User=sing-box、零capability、NRestarts=0。
+- [x] 删除45575的IPv4/IPv6旧UFW放行；旧45574/45575/39586不再监听。临时preview/client单元、运行时凭据副本、测试容器/API/测试镜像已清理。
+- [ ] 外部设备/用户所在网络导入URI后验收；不能用本机端到端测试替代这一项。
 
-auth 的sites-enabled链接会指向 `/etc/nginx/sites-available/auth-local-edge` 的本机副本，不直接编辑 `~/signal-align-auth/nginx-auth.conf`。未来auth路由调整需人工同步本机副本；其他vhost仅改TLS监听/real_ip，保留路由。旧服务最终切换前仍运行，未触发生产重启。
+auth 的sites-enabled链接已指向 `/etc/nginx/sites-available/auth-local-edge` 的本机副本，`~/signal-align-auth/nginx-auth.conf` 与原始SHA一致，未编辑。未来auth路由调整需人工同步本机副本；其他vhost保留原路由，仅调整内部TLS监听、real_ip及必要的port_in_redirect设置。
 
-私有客户端文件（0600、目录0700）：`~/.config/sing-box-client/vs.signal-align.com/2026-10-29-111755-local/client.json` 与 `client-uri.txt`。正式443切换前该连接尚未启用；临时预览单元会在切换/收尾停止，不安装永久测试框架。
+私有客户端文件（0600、目录0700）：`~/.config/sing-box-client/vs.signal-align.com/2026-10-29-111755-local/client.json` 与 `client-uri.txt`。正式443连接已启用；URI包含全新认证值，不能提交Git或复制进公开文档。不安装永久测试框架。
+
+### 切换与兼容性修正
+
+- 首次正式尝试因本人unit的RestrictAddressFamilies遗漏AF_NETLINK，core初始化netlink失败；自动恢复旧服务共15.44秒，并核实原11域恢复。未把该次失败当作完成。
+- 用户确认后，仅补AF_NETLINK（仍无NET_ADMIN/任何capability），先以完整正式sandbox属性预览验证稳定启动/代理HTTP200，再切换。成功轮总操作9.14秒，Nginx重启5.17秒，core零重启。
+- 发现静态目录自动跳转暴露内部14443；经用户确认给11个内部Web TLS server补port_in_redirect off并平滑reload，Nginx master PID不变。reading/books的/assets重定向现为正常外部HTTPS默认端口，实际静态资源200。
+- 所有原始备份与失败尝试的新配置均留在root0700的备份目录；原始archive0600及sha256文件保留至少30天。没有上传原始配置、私钥、UUID或客户端URI。
+
+回退注意：原安装archive不含后来创建的 `/etc/systemd/system/sing-box.service`。回退时需先保留/移走新配置并移除这个local override，再恢复旧core/配置、vendor unit、CLI链接和原Nginx树，daemon-reload、重新enable旧unit；仅按需加回45575规则，不盲目覆盖后续防火墙改动。DNS续期也兼容旧Web布局，不必重新启用旧系统Certbot timer。实际回退前必须核对后续人工修改，避免丢失用户工作；本次已实际回退成功一次。
+
+### 性能与容量（实际本机门禁）
+
+触发网关路径与证书外部调用；无DB/缓存/业务应用变更。保留原worker_connections=768和worker数量，不额外调大资源。Web/REALITY约4个Nginx connection slots/完整连接，个人低流量基线下有余量，但未压测、不承诺额定吞吐。stream preread10s、回环connect3s、idle24h；core目标connect5s/TLS握手15s，沿用既有Web长连接超时。stream日志沿用/var/log/nginx/*.log每日/14份轮转并与access.log一致权限；续期仍为原03:00 cron，没有新增周期任务。故障看systemd journal、stream连接日志和既有域名health；本机实测不代表外部网络可达性。
 
 ## 历史记录（下述三阶段仓库方案已停止，不再执行）
 
