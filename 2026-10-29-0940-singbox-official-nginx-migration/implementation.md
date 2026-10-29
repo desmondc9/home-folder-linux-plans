@@ -1,6 +1,24 @@
 # 实施记录
 
-状态：用户已选择 Native；阶段 1 配置与离线协议验证已实现，独立审阅发现的两项测试盲点已按RED→GREEN修复；尚未执行生产配置变更。
+状态：按用户纠正，仅修改本机必要配置；不再开发/发布框架，不再推送运维记录。#68 已通过 #69 撤销（main=2ba67fd，与#68前44a084d内容一致）。以下本机记录只提交本地Git。
+
+## 当前本机操作
+
+- [x] 正式备份：`/var/backups/sing-box-migration/2026-10-29-111755-local/original.tar.gz`（root目录0700、文件0600，含旧core/脚本/配置/service、Nginx、auth链接目标、LE证书和DNS凭据、续期调度、UFW规则）。
+- [x] SHA256：`b0b2d9d2a32535020a38971a27bba01365a107ebac3f9c72f2167fdeb2a0a6a3`；已试解包并验证关键内容、owner/mode、symlink。原始备份不入Git，至少保留30天。
+- [x] 官方1.14.4安装到 `/usr/local/lib/sing-box/1.14.4/`，校验官方archive摘要；新建非登录sing-box用户，生成全新UUID/X25519/short ID，不入Git、不在聊天中打印。
+- [x] 回环预览：新core24443 + 临时Nginx15443，两层stream后IPv4/IPv6 REALITY代理均HTTP200。原11域状态/跳转/CA/证书一致，7个health均200，所有非listen/real_ip指令保持。
+- [x] bandwagon/derp/headscale三张证书通过官方Certbot5.8 reconfigure的真实DNS-01 staging验证（39.3/38.8/39.6秒），改为dns-cloudflare+null installer；活跃证书文件与derper PID未变。
+- [x] 原7个renewal profile均DNS、无nginx installer；保留原03:00 DNS cron并增加reload前nginx -t，停用不支持DNS插件的旧系统timer。旧系统cron带systemd guard，不运行。
+- [x] Cloudflare只读核实：vs灰云CNAME→bandwagon，后者灰云A/AAAA正确，无需DNS写入。
+- [ ] 本机Nginx stream配置、既有站点/续期兼容验证后切换；不改项目源码或CD。
+- [ ] 验证新443代理及原11域/health/证书；移除旧脚本和旧端口规则；私有客户端文件交付。
+
+auth 的sites-enabled链接会指向 `/etc/nginx/sites-available/auth-local-edge` 的本机副本，不直接编辑 `~/signal-align-auth/nginx-auth.conf`。未来auth路由调整需人工同步本机副本；其他vhost仅改TLS监听/real_ip，保留路由。旧服务最终切换前仍运行，未触发生产重启。
+
+私有客户端文件（0600、目录0700）：`~/.config/sing-box-client/vs.signal-align.com/2026-10-29-111755-local/client.json` 与 `client-uri.txt`。正式443切换前该连接尚未启用；临时预览单元会在切换/收尾停止，不安装永久测试框架。
+
+## 历史记录（下述三阶段仓库方案已停止，不再执行）
 
 - [x] 读取 `~/plans/CLAUDE.md`：此档案库直接 main commit/push，无 worktree/issue/PR；公开仓库禁止秘密入库。
 - [x] 检查现有 Git 状态并 fetch；保留原有未跟踪的其他任务目录，不纳入本次提交。

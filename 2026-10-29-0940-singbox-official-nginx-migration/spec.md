@@ -1,8 +1,10 @@
-# sing-box 官方版本迁移：需求与只读调查
+# sing-box 官方版本迁移：本机配置
+
+> 2026-10-29 用户纠正范围：仅本机必要改动，~/plans仅本地Git留痕。下文原host-only CD/三阶段项目设计作历史保留，已停止；#68已由#69撤销。实际执行状态以implementation.md「当前本机操作」为准。不再修改项目仓库或推送本任务记录。
 
 - 环境：Bandwagon VPS，本机 Ubuntu 24.04.4 LTS / linux amd64；IPv4 `104.194.83.82`，IPv6 `2607:8700:5500:7bd3::2`；主机域名 `bandwagon.signal-align.com`。
 - 调查时间：2026-10-29 09:40–09:41 +08:00。
-- 状态：用户选择方案 A、了解 host-only CD 范围并选择 Native；阶段1候选实现已提交PR #68、CI通过，等待合并确认。未开始生产备份、安装、卸载、DNS修改或服务切换；切换前仍须核对并发作业与维护时机。
+- 状态：已撤销#68，正式本机备份完成；准备官方core与本机配置，尚未切换服务。方案A的VLESS/TCP/REALITY/vision、vs灰云连接地址、外部SNI保留；不使用新的仓库发布框架或KV。
 - 跟踪：signal-align-umbrella [#67](https://github.com/desmondc9/signal-align-umbrella/issues/67)。
 
 ## 用户目标
