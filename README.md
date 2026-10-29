@@ -114,6 +114,8 @@
 
 | 2026-10-29 09:40 | [singbox-official-nginx-migration](./2026-10-29-0940-singbox-official-nginx-migration/final-state.md) | #68已撤销；仅本机官方1.14.4+Nginx双栈443复用，vs连接、11域/7health及Android v2rayNG实机通过；完整脱敏配置/备份/回退记录，用户验收后授权commit/push |
 
+| 2026-10-29 14:54 | [ufw-openclaw-closure](./2026-10-29-1454-ufw-openclaw-closure/) | 核实3478=headscale STUN、41641=tailscaled；用户确认后停用OpenClaw gateway/18790 Nginx入口、删除18789/18790双栈规则；其他网络服务保留，11域复测通过；本次先本地记录 |
+
 ## 关于本仓库
 
 这些记录主要面向"以后回顾自己做过什么、为什么这么做"以及"迁移到新机器时按顺序重放"，不是面向他人协作的项目文档，因此不遵循常规开源项目的 `CONTRIBUTING`/`CODE_OF_CONDUCT` 等惯例。

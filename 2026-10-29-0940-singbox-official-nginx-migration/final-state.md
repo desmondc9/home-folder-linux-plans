@@ -6,6 +6,8 @@
 - 发布范围：仅本机必要配置。先前错误扩大到业务仓库的 #68 已由 [#69](https://github.com/desmondc9/signal-align-umbrella/pull/69) 撤销，业务仓库内容恢复到 #68 前；没有创建 Release、执行 CD、修改应用源码/数据库或写入 Key Vault。
 - 归档授权：此前用户要求记录仅本地 Git；本轮在手机验收后，用户明确授权**脱敏后完整记录到 ~/plans 并 commit/push**。该授权只涉及档案仓库，不重新授权业务仓库改动或服务发布。
 
+> 后续变更：迁移验收后，用户另行授权关闭OpenClaw的18789/18790服务入口，见[UFW/OpenClaw关闭记录](../2026-10-29-1454-ufw-openclaw-closure/implementation.md)。本目录快照保留迁移验收时点，不因后续停用去改写历史快照；共享443/sing-box保持运行。
+
 ## 1. 最终连接与流量拓扑
 
 | 项目 | 实际配置 |
