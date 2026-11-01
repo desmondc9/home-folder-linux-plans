@@ -117,6 +117,7 @@
 | 2026-10-29 14:54 | [ufw-openclaw-closure](./2026-10-29-1454-ufw-openclaw-closure/) | 核实3478=headscale STUN、41641=tailscaled；用户确认后停用OpenClaw gateway/18790 Nginx入口、删除18789/18790双栈规则；其他网络服务保留，11域复测通过；本次先本地记录 |
 
 | 2026-10-29 15:16 | [openclaw-uninstall](./2026-10-29-1516-openclaw-uninstall/) | 用户确认后完整卸载OpenClaw2026.9.2：先root备份2.9GB状态/未提交workspace，移除npm包/数据/缓存/补全/专用Nginx残留；共享Node/npm、源码及11域服务保留；本次先本地记录 |
+| 2026-11-01 14:43 | [ipv4-reality-unreachable](./2026-11-01-1443-ipv4-reality-unreachable/) | iPhone/iPad IPv4连不上sing-box的判决性诊断：tcpdump证实SYN到达、SYN-ACK出站后被单向丢弃(三次握手永不完成)，海外IPv4均正常、IPv6正常→本机IPv4已遭线路级单向黑洞；处置选项：维持IPv6/换IP/中转 |
 
 ## 关于本仓库
 
