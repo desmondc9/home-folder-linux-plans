@@ -28,6 +28,6 @@
 
 ## 遗留与注意
 
-- 之前取消的 phase-2 worktree（`feature/singbox-vps-edge-transaction`，含未提交废案代码）仍存在于 opencode worktree 目录，未动；是否清理待用户决定。
+- ~~phase-2 worktree~~ 已于 2026-11-01 经用户确认清除（`git worktree remove --force` + 删本地分支 `feature/singbox-vps-edge-transaction` / `feature/singbox-vps-edge-config` / `fix/revert-pr68`，均为已取消路线的本地遗留，未推送过）；仓库主 checkout 已快进到 `c1571db`。GitHub 远端仍留有 squash 合并后的原分支（`feature/singbox-vps-edge-config` / `fix/revert-pr68` / `fix/vps-domain-probes`），未动。
 - 换 IP 后 `/var/backups` 中各备份的恢复说明仍指旧 IP，仅作历史档案，无需改写。
 - 以后再换 IP 的标准动作：Bandwagon 换 IP → Cloudflare 改 `bandwagon` A 记录（AAAA 若变则一并）→ 完事；DERP/CI/客户端无需再改。
