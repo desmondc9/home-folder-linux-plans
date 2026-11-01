@@ -34,5 +34,6 @@
 
 ## 后续观察
 
+- **用户决定（2026-11-01）**：先观察一周，若 IPv4 不自动恢复，再在 Bandwagon 后台付费换 IPv4。
 - 复测方式：`sudo tcpdump -i eth0 -nn 'tcp port 443 and ip'` 抓包看大陆 IPv4 是否仍是“SYN 到、SYN-ACK 无回应”；或直接看 stream-access.log 是否开始出现大陆 IPv4 条目。
 - 换 IP 后 vs/bandwagon 的 DNS A 记录需要同步更新（AAAA 不变）；Cloudflare 仍是灰云 DNS-only。
