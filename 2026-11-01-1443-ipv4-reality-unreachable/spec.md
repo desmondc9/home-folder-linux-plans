@@ -1,9 +1,10 @@
-# iPhone/iPad IPv4 无法连接 sing-box REALITY 的诊断
+# iPhone/iPad IPv4 无法连接 sing-box REALITY 的诊断（已解决）
 
-- 环境：Bandwagon VPS (Ubuntu 24.04.4, IPv4 104.194.83.82 / IPv6 2607:8700:5500:7bd3::2)，sing-box 1.14.4 + Nginx stream 443 复用（2026-10-29 迁移）；客户端 iPhone/iPad Shadowrocket（节点 Bandwagon-VS，vs.signal-align.com:443）。
+- 环境：Bandwagon VPS (Ubuntu 24.04.4, ~~IPv4 104.194.83.82~~ → **95.169.0.65** / IPv6 2607:8700:5500:7bd3::2)，sing-box 1.14.4 + Nginx stream 443 复用（2026-10-29 迁移）；客户端 iPhone/iPad Shadowrocket（节点 Bandwagon-VS，vs.signal-align.com:443）。
 - 日期：2026-11-01，时区 +08:00。
 - 症状：同一节点，手机走 IPv6（240e: 电信）完全正常，走 IPv4“连不上”。
 - 结论（一句话）：**服务器配置无任何问题；是本 VPS 的 IPv4 在“美国→中国大陆电信”方向被线路侧单向丢包（SYN-ACK 回不去），即 IPv4 出口 IP 已被墙（单向黑洞模式），IPv6 不受影响。**
+- **解决（2026-11-01 23:30 前后）**：用户在 Bandwagon 后台把 IPv4 换为 **95.169.0.65** 并自行更新 DNS；本机重启后全部服务自启。验证：手机 IPv4（114.92.99.221）实时成功走 REALITY（stream 日志 status=200 带真实流量）；当日经 IPv4 的 REALITY 成功连接 86 笔；11/11 域名经新 IPv4 状态码与 CA 校验全部一致。遗留：`/etc/headscale/config.yaml:28` 与 `/etc/headscale/derp-standalone.yaml:12` 的 `ipv4:` 仍为旧 IP（影响 tailnet DERP 的 IPv4 兜底，待用户决定是否修改）；signal-align-umbrella 仓库 workflow 中硬编码的 VPS_IP=104.194.83.82 未动（按约定不改仓库）。
 
 ## 证据链（Phase 1 只读取证）
 
