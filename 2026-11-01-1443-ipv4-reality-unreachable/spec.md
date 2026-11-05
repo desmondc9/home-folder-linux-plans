@@ -5,6 +5,7 @@
 - 症状：同一节点，手机走 IPv6（240e: 电信）完全正常，走 IPv4“连不上”。
 - 结论（一句话）：**服务器配置无任何问题；是本 VPS 的 IPv4 在“美国→中国大陆电信”方向被线路侧单向丢包（SYN-ACK 回不去），即 IPv4 出口 IP 已被墙（单向黑洞模式），IPv6 不受影响。**
 - **解决（2026-11-01 23:30 前后）**：用户在 Bandwagon 后台把 IPv4 换为 **95.169.0.65** 并自行更新 DNS；本机重启后全部服务自启。验证：手机 IPv4（114.92.99.221）实时成功走 REALITY（stream 日志 status=200 带真实流量）；当日经 IPv4 的 REALITY 成功连接 86 笔；11/11 域名经新 IPv4 状态码与 CA 校验全部一致。遗留：`/etc/headscale/config.yaml:28` 与 `/etc/headscale/derp-standalone.yaml:12` 的 `ipv4:` 仍为旧 IP（影响 tailnet DERP 的 IPv4 兜底，待用户决定是否修改）；signal-align-umbrella 仓库 workflow 中硬编码的 VPS_IP=104.194.83.82 未动（按约定不改仓库）。
+- **次日复测（2026-11-02 15:08）**：双栈全通——当日 REALITY 成功连接 IPv4 **10,820** 笔 / IPv6 **10,317** 笔；用户 IPv4（114.92.99.221）有一条 20 分钟长连接，两个 240e: IPv6 设备同时活跃。生产流量证据强于本机自测。附注：当日一次本机自测脚本两次失败（探测配置放在 root 0700 目录导致 desmond 读不了 + systemd 残留 failed 单元），均为探测工具自身问题，非服务故障；临时探测单元/文件已清理。DERP 遗留项与 workflow 旧 IP 已于 11-01 深夜另行处理（见 [de-ip-pin-cleanup](../2026-11-01-2349-de-ip-pin-cleanup/spec.md)）。
 
 ## 证据链（Phase 1 只读取证）
 
