@@ -119,6 +119,7 @@
 | 2026-10-29 15:16 | [openclaw-uninstall](./2026-10-29-1516-openclaw-uninstall/) | 用户确认后完整卸载OpenClaw2026.9.2：先root备份2.9GB状态/未提交workspace，移除npm包/数据/缓存/补全/专用Nginx残留；共享Node/npm、源码及11域服务保留；本次先本地记录 |
 | 2026-11-01 14:43 | [ipv4-reality-unreachable](./2026-11-01-1443-ipv4-reality-unreachable/) | iPhone/iPad IPv4连不上sing-box的判决性诊断：tcpdump证实SYN到达、SYN-ACK出站后被单向丢弃→旧IPv4遭线路级单向黑洞；11-01换IP 95.169.0.65后恢复，11-02复测双栈全通(当日IPv4 10820/IPv6 10317笔) |
 | 2026-11-01 23:49 | [de-ip-pin-cleanup](./2026-11-01-2349-de-ip-pin-cleanup/) | 换IP(95.169.0.65)后的去硬编码：headscale DERP删ipv4/ipv6改纯域名(重启验证通过)；umbrella CI探测改公共DNS(PR#71已合并)；换IP标准动作收敛为仅改bandwagon A记录 |
+| 2026-11-05 08:47 | [mq-research-kafka-nats](./2026-11-05-0847-mq-research-kafka-nats/) | reading-app 领域事件 MQ 选型调研(一手来源2026-11-05核实)：单节点 Kafka 4.4 KRaft 跑得动(RSS~1.5G) vs NATS 2.15 JetStream(百MB级,CNCF刚毕业)；轻量替代盘点——Redpanda 每核≥2G反而更重；结论倾向 NATS(7条自检全命中)，远程接入=直连4222+TLS+多账号，待部署 |
 
 ## 关于本仓库
 
