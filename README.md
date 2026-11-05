@@ -120,6 +120,7 @@
 | 2026-11-01 14:43 | [ipv4-reality-unreachable](./2026-11-01-1443-ipv4-reality-unreachable/) | iPhone/iPad IPv4连不上sing-box的判决性诊断：tcpdump证实SYN到达、SYN-ACK出站后被单向丢弃→旧IPv4遭线路级单向黑洞；11-01换IP 95.169.0.65后恢复，11-02复测双栈全通(当日IPv4 10820/IPv6 10317笔) |
 | 2026-11-01 23:49 | [de-ip-pin-cleanup](./2026-11-01-2349-de-ip-pin-cleanup/) | 换IP(95.169.0.65)后的去硬编码：headscale DERP删ipv4/ipv6改纯域名(重启验证通过)；umbrella CI探测改公共DNS(PR#71已合并)；换IP标准动作收敛为仅改bandwagon A记录 |
 | 2026-11-05 08:47 | [mq-research-kafka-nats](./2026-11-05-0847-mq-research-kafka-nats/) | reading-app 领域事件 MQ 选型调研(一手来源2026-11-05核实)：单节点 Kafka 4.4 KRaft 跑得动(RSS~1.5G) vs NATS 2.15 JetStream(百MB级,CNCF刚毕业)；轻量替代盘点——Redpanda 每核≥2G反而更重；结论倾向 NATS(7条自检全命中)，远程接入=直连4222+TLS+多账号，待部署 |
+| 2026-11-05 12:30 | [k8s-single-node-comparison](./2026-11-05-1230-k8s-single-node-comparison/) | 单节点K8s发行版选型(Minikube/K3s/MicroK8s,一手来源当日核实)：K3s v1.37.2认证齐全+实测~1.6G最轻+两flag让出被nginx占用的80/443,首选；MicroK8s版本滞后+snap每天自动刷新,次选；Minikube官方定位学习开发且当前版本无一致性认证；含swap(FailSwapOn=false源码核实)/6443只对tailnet开放/iptables共存未验证需实测/k3s-uninstall.sh一键回滚；渐进路线=新服务(如NATS)先进k3s旧服务留docker |
 
 ## 关于本仓库
 
