@@ -27,6 +27,18 @@
 
 ## 遗留/后续
 
-- [ ] 模型未配置（按用户决策，UI onboarding 自连）——连接前 bot 无法回复
-- [ ] 首次备份尚未执行（.env + pgdump 到 ~/atlas-backups，建议本周内）
-- [ ] 首个真实升级窗口待观察（下一个官方 stable release 发布后的 04:00 run）
+- ~~模型未配置~~ / ~~首次备份~~ / ~~首个升级窗口~~ —— 均随停用作废
+
+## 停用（2026-11-12 当日晚间）
+
+用户试用后弃用：**开源 self-host 版无法与 Outlook 等集成**。清除（全部验证）：
+
+1. `docker compose down -v --remove-orphans`（容器/网络/卷全删）
+2. `restrict-computer-egress.sh --remove`（DOCKER-USER 规则 + systemd 单元）
+3. nginx vhost 删除 + reload；`certbot delete` 证书
+4. authorized_keys deploy key 行删除；repo secret 删除
+5. 镜像删除（~5.1G 回收）；Cloudflare `rakazo` A/AAAA 删除
+6. `daily-upgrade.yml` 删除（定时任务消失）；repo 打 DECOMMISSIONED 横幅保留为档案（PR #4）
+7. `~/rakazo-deploy/`（含 .env secrets）整目录删除
+
+机器验证：无 rakazo 容器/镜像/目录、3100/5173 端口释放、`nginx -t` 通过、DNS 查询无记录。
