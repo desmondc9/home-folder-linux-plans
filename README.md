@@ -121,6 +121,7 @@
 | 2026-11-01 23:49 | [de-ip-pin-cleanup](./2026-11-01-2349-de-ip-pin-cleanup/) | 换IP(95.169.0.65)后的去硬编码：headscale DERP删ipv4/ipv6改纯域名(重启验证通过)；umbrella CI探测改公共DNS(PR#71已合并)；换IP标准动作收敛为仅改bandwagon A记录 |
 | 2026-11-05 08:47 | [mq-research-kafka-nats](./2026-11-05-0847-mq-research-kafka-nats/) | reading-app 领域事件 MQ 选型调研(一手来源2026-11-05核实)：单节点 Kafka 4.4 KRaft 跑得动(RSS~1.5G) vs NATS 2.15 JetStream(百MB级,CNCF刚毕业)；轻量替代盘点——Redpanda 每核≥2G反而更重；结论倾向 NATS(7条自检全命中)，远程接入=直连4222+TLS+多账号，待部署 |
 | 2026-11-05 12:30 | [k8s-single-node-comparison](./2026-11-05-1230-k8s-single-node-comparison/) | 单节点K8s发行版选型(Minikube/K3s/MicroK8s,一手来源当日核实)：K3s v1.37.2认证齐全+实测~1.6G最轻+两flag让出被nginx占用的80/443,首选；MicroK8s版本滞后+snap每天自动刷新,次选；Minikube官方定位学习开发且当前版本无一致性认证；含swap(FailSwapOn=false源码核实)/6443只对tailnet开放/iptables共存未验证需实测/k3s-uninstall.sh一键回滚；渐进路线=新服务(如NATS)先进k3s旧服务留docker |
+| 2026-11-12 15:17 | [rakazo-deploy](./2026-11-12-1517-rakazo-deploy/) | Rakazo自托管(rakazo.signal-align.com,v0.10.0官方镜像)+每日04:00自动升级流水线：按官方SETUP_PROMPT published-images路径,Docker而非podman(API 1.45硬要求)；新增第6个nginx子域名vhost(stream SNI→14443)+LE证书+Cloudflare灰云A/AAAA；bot计算机egress走DOCKER-USER仅rakazo-c*桥(不影响librechat栈)；Action=GH runner+restrict SSH key同vps-cd惯例,pin文件bump直推main,失败自动回滚+revert(force重部署空commit坑已修)；secrets全在宿主.env零入git；8G机服务caps 6.5G+计算机2G/台,并发计算机≤1；权威档案=私有仓desmondc9/rakazo-deploy |
 
 ## 关于本仓库
 
