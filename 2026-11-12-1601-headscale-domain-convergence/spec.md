@@ -1,6 +1,6 @@
 # headscale 控制面域名收敛(bandwagon → headscale.signal-align.com)
 
-日期: 2026-11-12 · 状态: 执行中 · 实施记录: [implementation.md](implementation.md)
+日期: 2026-11-12 · 状态: 已完成 · 实施记录: [implementation.md](implementation.md)
 - 环境: Bandwagon VPS brave-goose-1(95.169.0.65),headscale v0.29.3 @ 127.0.0.1:8080,nginx 1.24 前置(stream 443 SNI 分流 → 127.0.0.1:14443)
 - 前置任务: [2026-09-22-1956-win11-tailnet-join](../2026-09-22-1956-win11-tailnet-join/)(新域名入口的建立,当时明确保留旧入口)
 
@@ -38,8 +38,8 @@
 
 ## 验收标准
 
-- [ ] `server_url` 为新域名,headscale active,/health 双路径验证(新 200)
-- [ ] VPS 节点 ControlURL = 新域名,tailscale status 在线,节点 id 4 / 100.64.0.4 不变
-- [ ] sites-enabled 仅一个 headscale 软链;nginx -t 通过;新域名 /health 200
-- [ ] certbot certificates 无 bandwagon 条目
-- [ ] 证书续期定时器对其余证书无影响
+- [x] `server_url` 为新域名,headscale active,/health 双路径验证(新 200)
+- [x] VPS 节点 ControlURL = 新域名,tailscale status 在线,节点 id 4 / 100.64.0.4 不变
+- [x] sites-enabled 仅一个 headscale 软链;nginx -t 通过;新域名 /health 200
+- [x] certbot certificates 无 bandwagon 条目
+- [x] 证书续期定时器对其余证书无影响(各 vhost + 80 端口 server 块均未触碰)
