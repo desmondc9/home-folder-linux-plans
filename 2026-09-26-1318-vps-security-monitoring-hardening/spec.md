@@ -2,6 +2,7 @@
 
 > 日期：2026-09-26 13:18 ｜ 类型：调查审计 + 基础设施加固（无 repo 代码变更，无 PR）
 > 完整调研报告（含暴露面明细、工具对比、应急预案、复现命令）：`~/docs/vps-security-monitoring-research.md`
+> **⚠️ 2026-11-14 更新**:本档所建 ntfy 告警通道因订阅端从未落地(全量日志 subscribers 恒为 0)已整体下线,详见 [2026-11-14-1141-ntfy-removal](../2026-11-14-1141-ntfy-removal/spec.md);每日安全摘要与 recidive 封禁推送随之移除,fail2ban 封禁本身不受影响。
 
 ## 背景与目标
 
