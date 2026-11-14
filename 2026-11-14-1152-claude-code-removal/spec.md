@@ -34,9 +34,11 @@
 - 配置/历史备份:`~/Backups/claude-code-removal-2026-11-14/`(`dot-claude/`、`claude.json`、`state-claude/`,共 8.9M;12G 程序本体未备份,可重装)。
 - 重装 Claude Code 后将 `dot-claude/` 恢复为 `~/.claude/`、`claude.json` 恢复为 `~/.claude.json` 即可;如需恢复软链形态:`ln -sf ~/.claude/CLAUDE.md ~/.config/opencode/AGENTS.md`。
 
-## 后续变更(2026-11-14 11:55)
+## 后续变更(2026-11-14)
 
-应用户要求,`coding-agents-update.timer` 已执行 `systemctl --user disable --now`:停止且不再随登录/开机启用,opencode/kimi/pi 转为手动更新。unit 文件(`~/.config/systemd/user/coding-agents-update.{service,timer}`)与 `~/.local/bin/update-coding-agents.sh` 保留未删;恢复命令:`systemctl --user enable --now coding-agents-update.timer`。
+- **11:55 停用**:应用户要求 `systemctl --user disable --now coding-agents-update.timer`,停止且不再随登录/开机启用,opencode/kimi/pi 转为手动更新。
+- **11:57 彻底删除**:应用户要求,unit 文件(`coding-agents-update.{service,timer}`)、脚本 `~/.local/bin/update-coding-agents.sh`、日志 `~/.local/state/coding-agents-update.log`(36K,含末次 04:00 运行记录)全部删除;`daemon-reload` + `reset-failed` 后 systemd 无任何 coding 残留条目(status 报 `could not be found`)。zshrc / crontab / `/tmp/cua-*.out` 均无引用或残留。
+- 备份:`~/Backups/coding-agents-update-removal-2026-11-14/`(unit ×2 + 脚本 + 日志);恢复 = 还原三处文件后 `systemctl --user daemon-reload && systemctl --user enable --now coding-agents-update.timer`。
 
 ## 验收标准
 
