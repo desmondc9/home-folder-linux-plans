@@ -48,4 +48,5 @@ rm -rf ~/.local/share/claude ~/.cache/claude ~/.cache/claude-cli-nodejs \
 
 - 本会话的指令原本加载自 `~/.claude/CLAUDE.md`,删除后 harness 已卸载该指令集;内容完整保存于 `~/.config/opencode/AGENTS.md`,后续新会话照常加载。
 - `update-coding-agents.sh` 零改动:claude 段自跳过,opencode/kimi/pi 更新不受影响(最小变更原则,避免改脚本引入凌晨定时任务故障)。
+- 后续(同日 11:55):`systemctl --user disable --now coding-agents-update.timer` —— 应用户要求停止自动更新;已验证 `inactive` + `disabled`,timer 列表无条目。恢复:`systemctl --user enable --now coding-agents-update.timer`。
 - `~/.claude.json`(OAuth 凭据,0600)已随备份保存;若确定永不回退,可择日清除 `~/Backups/claude-code-removal-2026-11-14/`。

@@ -34,6 +34,10 @@
 - 配置/历史备份:`~/Backups/claude-code-removal-2026-11-14/`(`dot-claude/`、`claude.json`、`state-claude/`,共 8.9M;12G 程序本体未备份,可重装)。
 - 重装 Claude Code 后将 `dot-claude/` 恢复为 `~/.claude/`、`claude.json` 恢复为 `~/.claude.json` 即可;如需恢复软链形态:`ln -sf ~/.claude/CLAUDE.md ~/.config/opencode/AGENTS.md`。
 
+## 后续变更(2026-11-14 11:55)
+
+应用户要求,`coding-agents-update.timer` 已执行 `systemctl --user disable --now`:停止且不再随登录/开机启用,opencode/kimi/pi 转为手动更新。unit 文件(`~/.config/systemd/user/coding-agents-update.{service,timer}`)与 `~/.local/bin/update-coding-agents.sh` 保留未删;恢复命令:`systemctl --user enable --now coding-agents-update.timer`。
+
 ## 验收标准
 
 - [x] 7 处 claude 路径全部 `No such file or directory`;`command -v claude` 为空
