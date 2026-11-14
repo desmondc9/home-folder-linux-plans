@@ -1,5 +1,11 @@
 # nginx 配置审查（http2 迁移后全量复查）
 
+> **修复执行记录（2026-11-14 15:24，当日完成）**：A/B/C/D 四项已全部修复并验证——
+> - repo 侧：PR #11（Issue #10）删除 rakazo.conf 重复 map；
+> - 机器侧：`/tmp/opencode/nginx-hardening/apply.sh`（用户 sudo 执行，备份 backup-20261114-152426，nginx -t 零警告）安装 nginx.conf 收紧版（A+B）+ `00-default` 显式 catch-all（C，444，snakeoil 证书）+ repo 版 rakazo vhost（D）；
+> - 验证：`Server: nginx`（无版本号）；未知 SNI/Host 均 444 静默丢弃；auth TLS1.2（ECDHE-ECDSA-AES256-GCM）/TLS1.3 握手正常，TLS1.0/1.1 配置面上已不可能；4 个公网 vhost 双协议（h2+1.1）状态码全部不变（auth 307/derp 200/headscale 405/rakazo 200）；map 仅剩 conf.d 全局一份且引用有效。
+> 本节以下为审查原文（未改动）。
+
 - 环境: Bandwagon VPS，nginx/1.28.3 (Ubuntu)；入口 = 公网 443 → stream SNI 预读（`stream-enabled/sing-box-443.conf`，`www.cloudflare.com`→sing-box 24443，default→127.0.0.1:14443 proxy_protocol）→ http vhost；80 直接 http。
 - 日期: 2026-11-14
 - 状态: 审查完成；**未做任何变更**（修复建议待用户决定）
