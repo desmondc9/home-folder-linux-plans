@@ -67,7 +67,7 @@
 
 ## 决策
 
-待用户选择。调研者建议：若目标是"给 VPS 减负 + hobby 级用量"→ Upstash 免费层起步（区域选离 VPS 最近）；若用量以内存为主、且访问持续 → Aiven Valkey Free 更宽裕；只是临时要用一下 → 本地拉起 `~/redis-deploy` 最省事。
+**2026-11-14 用户决定：暂不迁移/不使用，调研留档备查**（与同日 rakazo→Supabase 调研同样的处置）。将来若要启用，按场景取用调研结论：给 VPS 减负 + hobby 级用量 → Upstash 免费层起步（区域选离 VPS 最近，先实测 ping）；用量以内存为主且访问持续 → Aiven Valkey Free 更宽裕；只是临时要用一下 → 本地拉起 `~/redis-deploy` 最省事（`docker network create shared-infra && cd ~/redis-deploy && docker compose up -d`）。
 
 ## 测试计划
 
