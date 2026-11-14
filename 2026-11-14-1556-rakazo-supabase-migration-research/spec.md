@@ -50,3 +50,21 @@
 ## 五、建议
 
 维持本地 PG（升级不动卷、数据已实证安全），把「数据安全」诉求转化为**本地自动备份**：每日/每周 `.env` + `pg_dumpall` → `~/atlas-backups`（已有 restic-Azure 备份体系可挂载）。共享 Supabase 免费实例做多租户的目标，适合轻量/无状态应用（reading/books 类），不适合 Rakazo 这种「多 schema + 角色自治 + 高频轮询」的 DB 密集应用。
+
+## 六、追加调研（同日）：迁到本机系统 PostgreSQL 18（Ubuntu 26.04 自带）——✅ 可行且推荐度远高于 Supabase
+
+机器事实（2026-11-14 实测）：Ubuntu **26.04.1**，系统 **PostgreSQL 18.6** 已随系统升级安装并运行（cluster `18/main` @ 5432，仅监听 loopback；空闲无业务库）；5433 空闲；rakazo_app 网络 172.21.0.0/16。
+
+可行性依据：
+1. **网络路径实测通**：api 容器 → 宿主 docker0 IP `172.17.0.1:80` 与自身网关 `172.21.0.1:80` 均 OK → PG 监听加 docker0 IP 后容器可达（亚毫秒同机）
+2. **上游官方支持外部 DB 双 URL 模式**（同前述）：api/worker 已带 `host.docker.internal:host-gateway` extra_hosts；migrate 服务缺 extra_hosts 需在 override 补
+3. **PG16(容器) → PG18(宿主)** 逻辑恢复兼容（pg_dump 21MB）；无扩展依赖；RLS/角色模型在 superuser 下完整可用
+4. **数据脱离 compose 卷生命周期**：`down -v` 不再可能删库（真实稳健性收益）；备份直接挂宿主节奏
+
+方案骨架（若执行）：
+- PG18 `listen_addresses` 加 `172.17.0.1`（docker0 恒存，不随项目网络重建变化）+ `pg_hba: hostssl/all 172.16.0.0/12 scram-sha-256`（PG 仅监听 loopback+docker0，公网不可达，ufw 兜底）
+- `docker-compose.override.yml`（installer 自动加载、升级自动化不覆盖）：api/worker/migrate 三服务 URL → `@host.docker.internal:5432/rakazo`（migrate 补 extra_hosts）+ `postgres` 服务 stub 化（恒真 healthcheck 占位，满足 depends_on）
+- 建库建角色（postgres superuser 或按官方托管模式 provisionRuntimeRole 自建）→ `pg_dump -Fc` 容器库 → restore 到宿主 18 → 起 override 栈 → 验证（health/发消息/RLS/graphile 消费）
+- 回退：本地 pgdata 卷保留一周，秒切回
+
+代价（比 Supabase 少得多，但如实列出）：override 与官方 compose 形态的长期偏离（pin diff 审查可见）；unattended-upgrades 升级/重启 PG 时 Rakazo 短断连（连接池自动重连）；宿主 PG 多一份需要维护的系统组件（当前空闲，边际成本低）。
