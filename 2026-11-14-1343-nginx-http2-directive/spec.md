@@ -2,7 +2,7 @@
 
 - 环境: Bandwagon VPS，nginx 1.24.0 → 1.28.3（2026-11-14 12:00 批量升级引入 deprecation 警告）
 - 日期: 2026-11-14
-- 状态: 完成。6 个 vhost（auth-local-edge×3 块、books×2、derp、headscale、rakazo、reading×2，共 10 处）全部改为 `listen 127.0.0.1:14443 ssl proxy_protocol;` + 独立 `http2 on;` 行（≥1.25.1 语法）。ntfy/headscale-new 已是新写法未动。
+- 状态: 完成。6 个 vhost（auth-local-edge×3 块、books×2、derp、headscale、rakazo、reading×2，共 10 处）全部改为 `listen 127.0.0.1:14443 ssl proxy_protocol;` + 独立 `http2 on;` 行（≥1.25.1 语法）。**勘误（2026-11-14 审查时更正）：ntfy/headscale-new 并非"新写法未动"，其 vhost 文件已于 11-14 12:00 维护中被整体删除（sites-available/enabled 均无）**。
 - 关联: rakazo vhost 源文件经 PR 落库（desmondc9/rakazo-deploy#8/#9，staged live 文件与 repo 版本 diff 逐字节一致）
 
 ## 执行方式（no-NOPASSWD 模式第二次实践）
