@@ -2,7 +2,7 @@
 
 - 环境: Bandwagon VPS（Ubuntu 24.04.4 LTS，8G 内存/6 vCPU/160G 盘；docker 29.1.3 + nginx 反代 + certbot + headscale/derper/tailscaled/frps/sing-box 共存；公网 95.169.0.65 + 2607:8700:5500:7bd3::2，DNS=Cloudflare）。新增第 6 个 nginx 子域名 vhost。
 - 日期: 2026-11-12
-- 状态: **已停用（2026-11-12 当日试用后弃用并完全清除）**——self-host 版无法与 Outlook 等集成，不满足使用需求；容器/卷/镜像/nginx vhost/证书/egress 规则/DNS/deploy key/定时 workflow/secret/部署目录全部移除，机器已无残留。停用清除清单见私有仓 implementation.md 停用记录段。
+- 状态: **已停用（2026-11-12 当日试用后弃用并完全清除）→ 2026-11-14 重新启用**，见 [2026-11-14-1255-rakazo-reenable](../2026-11-14-1255-rakazo-reenable/)（v0.11.0，全新实例）。停用清除清单见私有仓 implementation.md 停用记录段。
 - 权威档案: 私有仓库 **desmondc9/rakazo-deploy**（保留为历史档案，已打 DECOMMISSIONED 横幅；`plans/2026-11-12-1517-rakazo-initial-deploy/` 含完整 spec/implementation/验收证据/停用记录）。本档案只做机器级变更摘要。
 
 ## 背景
