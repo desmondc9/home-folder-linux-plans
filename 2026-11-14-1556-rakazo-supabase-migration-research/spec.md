@@ -2,7 +2,7 @@
 
 - 环境: Bandwagon VPS 上的 rakazo-deploy v0.11.0（Docker compose，本地 PG16，21MB/133 表/3 schema）；调研对象 Supabase Free（2026-11-14 官方文档）
 - 日期: 2026-11-14
-- 状态: **调研完成，未做任何变更**。用户设想：免费 Supabase 实例只有一个 → 用 PostgreSQL schema（如 `rakazo`）区分组织多个应用
+- 状态: **调研完成，未做任何变更。用户决策（2026-11-14）：暂不执行迁移**——调研结论与 §6 方案骨架保留备用，未来若执行按该骨架走 repo PR + root 脚本 + 切换验证流程。用户设想：免费 Supabase 实例只有一个 → 用 PostgreSQL schema（如 `rakazo`）区分组织多个应用
 - 方法: 本机库实证（psql 只读）+ 官方源码调研（Prisma 迁移/RLS/graphile/realtime 实现，repo@main 92eeb44）+ Supabase 官方文档
 
 ## 结论（TL;DR）
