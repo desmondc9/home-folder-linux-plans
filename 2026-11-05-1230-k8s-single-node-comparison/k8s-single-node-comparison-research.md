@@ -12,7 +12,7 @@
 | 系统 | Ubuntu 24.04.4 LTS x86_64，内核 6.8.0-147-generic |
 | 资源 | 8G 内存（已用约 1.5G）/ 6 vCPU / 160G 磁盘（已用 65G） |
 | swap | 10G swapfile 开启；cgroup v2 |
-| 已跑服务 | docker.service + containerd.service（LibreChat、reading-app、redis、rustfs、codeapi 等 compose 工作负载）；podman 4.9.3（rootless，无运行中容器） |
+| 已跑服务 | docker.service + containerd.service（signal-align-auth、books-and-articles、reading-app 等 compose 工作负载；**更正 2026-11-14**：原文误列 LibreChat/redis/rustfs/codeapi——四栈已于 2026-09-22 全部下线（ADR-0010），此处沿用了停机前旧清单）；podman 4.9.3（rootless，无运行中容器） |
 | 反代 | nginx.service 占用 80/443（**按"80/443 已被占用"约束分析**） |
 | 网络/安全 | headscale + derper + tailscaled（自建 tailnet）、frps、sing-box、fail2ban、haveged；AppArmor 已加载；snapd 2.76.3 正常 |
 
@@ -163,7 +163,7 @@
 
 - **kompose（官方现状：活跃）**：kubernetes.io 官方任务页《Translate a Docker Compose File to Kubernetes Resources》当前有效，kompose 当前版本 v1.34.0、**三周一个发布周期**，`kompose convert` 可把 compose 转 Deployment/Service/PVC 等（也支持 OpenShift）。适合做初稿，再人工修（探针、资源限额、密钥）。(来源: https://kubernetes.io/docs/tasks/configure-pod-container/translate-compose-kubernetes/)
 - **Helm 化 / 手写 manifests**：对 LibreChat 这类多容器 compose 栈，长期看手写（或 Helm chart + values）质量更高；kompose 输出当作起点。
-- **逐个迁 vs 全量迁**：建议**逐个迁**——现有 LibreChat/redis/rustfs 等继续留在 docker compose（不受影响，K3s 用自己的 containerd，MicroK8s 也是），新服务（如将来要上的 NATS JetStream）直接以 k8s 方式部署进集群，跑顺后再回头迁旧服务。理由：单机 8G 内存对"全量双轨"（docker + k8s 各一份）不友好；且一次迁一个便于归因。
+- **逐个迁 vs 全量迁**：建议**逐个迁**——现有 reading-app/signal-align-auth 等继续留在 docker compose（不受影响，K3s 用自己的 containerd，MicroK8s 也是），新服务（如将来要上的 NATS JetStream）直接以 k8s 方式部署进集群，跑顺后再回头迁旧服务。理由：单机 8G 内存对"全量双轨"（docker + k8s 各一份）不友好；且一次迁一个便于归因。（更正 2026-11-14：原示例 LibreChat/redis/rustfs 已于 2026-09-22 下线，替换为在跑负载。）
 
 **2) 与继续运行的 docker/nginx/tailnet 共存**：
 
@@ -256,7 +256,7 @@ curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" sh -s - \
 ### C3. "不建议 / 缓一缓"的诚实评估
 
 - **这台机器装 K3s 是可行的**（余量账：1.5G 现有 + ~1.6G K3s + 应用 ≤ 4G，8G 内有余地），但有两个真实代价要接受：① 每周量级的运维注意力（升级、备份、证书、防火墙）；② iptables 规则与 sing-box/tailscale 共存**未经官方验证**，出问题时要能回滚（`k3s-uninstall.sh` 一键清掉）。
-- **不建议全量迁移**：LibreChat（含数据库依赖）、rustfs 等已稳定运行在 docker compose，迁移收益低、回归风险实打实。建议**现有服务留在 docker，新服务（NATS 等）进 K3s，旧的按需逐个迁**。
+- **不建议全量迁移**：reading-app（含数据库依赖）、signal-align-auth 等已稳定运行在 docker compose，迁移收益低、回归风险实打实。建议**现有服务留在 docker，新服务（NATS 等）进 K3s，旧的按需逐个迁**。（更正 2026-11-14：原示例 LibreChat/rustfs 已于 2026-09-22 下线，替换为在跑负载。）
 - **如果目标只是"学 k8s"**：不急着上常驻集群——在这台机器上 `minikube start` 起个临时集群练手、用完 `minikube delete`，比把它变成第二套常驻基础设施更划算。
 - **出现以下任一情况应暂缓**：内存空闲长期 < 3G；无法接受偶发的维护窗停机；近期没有真正要按 k8s 方式部署的新服务。
 

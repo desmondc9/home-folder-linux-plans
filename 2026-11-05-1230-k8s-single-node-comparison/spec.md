@@ -1,6 +1,6 @@
 # 单节点 K8s 发行版选型调研：Minikube vs K3s vs MicroK8s
 
-- 环境: Bandwagon VPS（Ubuntu 24.04.4 LTS x86_64，内核 6.8.0-147-generic，8G 内存（已用约 1.5G）/ 6 vCPU / 160G 磁盘已用 65G；10G swapfile 开启；cgroup v2；AppArmor 已加载；snapd 2.76.3 正常）。已跑常驻服务：docker+containerd（LibreChat/reading-app/redis/rustfs/codeapi 等 compose 负载）、nginx（占 80/443）、headscale、derper、tailscaled、frps、sing-box、fail2ban、haveged；另有 podman 4.9.3（rootless，未用）。
+- 环境: Bandwagon VPS（Ubuntu 24.04.4 LTS x86_64，内核 6.8.0-147-generic，8G 内存（已用约 1.5G）/ 6 vCPU / 160G 磁盘已用 65G；10G swapfile 开启；cgroup v2；AppArmor 已加载；snapd 2.76.3 正常）。已跑常驻服务：docker+containerd（signal-align-auth、books-and-articles、reading-app 等 compose 负载）、nginx（占 80/443）、headscale、derper、tailscaled、frps、sing-box、fail2ban、haveged；另有 podman 4.9.3（rootless，未用）。（**更正 2026-11-14**：原文盘点误列 LibreChat/redis/rustfs/codeapi 为在跑负载——四栈已于 2026-09-22 随 LibreChat 停栈 `down --rmi all` 下线，见 [ADR-0010](../2026-09-22-1957-librechat-stack-shutdown/adr-0010-decommission-librechat.md)，此处沿用了停机前旧清单。按容器创建时间核实，2026-11-05 当日实际在跑的 compose 容器为 signal-align-auth ×3、books-and-articles-api（2026-09-23 起）、reading-app-api（2026-11-03 起）。）
 - 日期: 2026-11-05
 - 状态: 调研完成，结论 K3s 单节点为首选（渐进路线：新服务先上 k3s，旧服务留 docker）；未部署。
 
@@ -38,7 +38,7 @@
 ### 迁移路径（与"统一环境"目标）
 
 - kompose 活跃（v1.34.0、kubernetes.io 官方任务页在列）可做 compose→manifests 初稿，再人工修探针/限额/密钥。
-- **渐进路线（推荐）**：LibreChat/rustfs 等已稳定服务留 docker compose；新服务（如 NATS JetStream）直接以 manifests/Helm 进 K3s（local-path 提供 PV）；跑顺后按需逐个迁旧服务。全量双轨对 8G 内存不友好。
+- **渐进路线（推荐）**：reading-app/signal-align-auth 等已稳定服务留 docker compose；新服务（如 NATS JetStream）直接以 manifests/Helm 进 K3s（local-path 提供 PV）；跑顺后按需逐个迁旧服务。全量双轨对 8G 内存不友好。（更正 2026-11-14：原示例 LibreChat/rustfs 已于 2026-09-22 下线，示例替换为在跑负载。）
 - 环境统一成色：K3s/MicroK8s 均为认证发行版，manifest/Helm/kubectl/GitOps 资产可直接搬；**不要**把核心工作负载绑在 K3s 的 HelmChartConfig/auto-deploy 或 MicroK8s addon 等发行版扩展上。
 
 ## 决策
@@ -64,4 +64,4 @@ curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" sh -s - \
 
 - [k8s-single-node-comparison-research.md](./k8s-single-node-comparison-research.md) — 全量调研（A 逐产品档案 / B 横向对比 / C 结论与落地清单），报告原生成于 `~/docs/`（research 技能产物），归档时迁入。
 - 前置调研：[2026-11-05-0847-mq-research-kafka-nats](../2026-11-05-0847-mq-research-kafka-nats/)（NATS JetStream 为"新服务先进 k3s"的第一个候选）。
-- compose 负载位置：`~/librechat-deploy`、`~/reading-app`、`~/redis-deploy`、`~/rustfs-deploy` 等。
+- compose 负载位置：在跑——`~/reading-app` 等；已停栈（2026-09-22 下线，配置目录与 `.env` 保留）——`~/librechat-deploy`、`~/redis-deploy`、`~/rustfs-deploy`。（更正 2026-11-14：原文未区分在跑/已停。）
